@@ -577,7 +577,7 @@ document.addEventListener('DOMContentLoaded', () => {
         if (state.motivationalQuotesEnabled) {
             quoteTimer = setInterval(() => {
                 if (state.status === 'running' && Date.now() - lastQuotePlayedTime > 180000) {
-                    if (Math.random() < 0.1) { // Random chance to play
+                    if (Math.random() < 0.8) { // Random chance to play
                         playRandomQuote();
                     }
                 }

@@ -125,6 +125,56 @@
         .panel.hidden { opacity: 0; transform: scale(0.98); pointer-events: none; display: none; }
         .preset-btn.saving { background-color: var(--btn-save) !important; }
         .preset-btn.saving:hover { background-color: var(--btn-save-hover) !important; }
+        /* Toggle Switch Styles */
+        .toggle-label {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            cursor: pointer;
+            padding: 0.75rem;
+            border-radius: 0.5rem;
+            background-color: var(--bg-tertiary);
+        }
+        .toggle-switch {
+            position: relative;
+            display: inline-block;
+            width: 50px;
+            height: 28px;
+        }
+        .toggle-switch input {
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+        .slider {
+            position: absolute;
+            cursor: pointer;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: var(--bg-accent);
+            transition: .4s;
+            border-radius: 28px;
+        }
+        .slider:before {
+            position: absolute;
+            content: "";
+            height: 20px;
+            width: 20px;
+            left: 4px;
+            bottom: 4px;
+            background-color: white;
+            transition: .4s;
+            border-radius: 50%;
+        }
+        input:checked + .slider {
+            background-color: var(--btn-start);
+        }
+        input:checked + .slider:before {
+            transform: translateX(22px);
+        }
+
     </style>
 </head>
 <body class="bg-gray-900 text-white flex items-center justify-center min-h-screen p-4">
@@ -132,7 +182,6 @@
     <div class="w-full max-w-md mx-auto">
         <!-- Main Timer View -->
         <div id="timer-container" class="rounded-2xl shadow-2xl p-6 relative panel" style="background-color: var(--bg-secondary);">
-            <!-- Timer Display -->
             <div id="display-area" class="text-center mb-4 relative h-64 flex flex-col items-center justify-center rounded-xl" style="background-color: var(--bg-primary);">
                 <div id="timer-display-content" class="z-0">
                     <div id="phase-display" class="text-2xl font-bold uppercase mb-2" style="color: var(--color-prepare);">Prepare</div>
@@ -147,13 +196,11 @@
                 </div>
             </div>
             
-            <!-- Exercise Display -->
             <div id="exercise-display-container" class="text-center mb-4 p-3 rounded-lg" style="background-color: var(--bg-tertiary);">
                 <h4 class="text-sm font-semibold uppercase" style="color: var(--text-secondary);">Current Exercise</h4>
                 <p id="exercise-display" class="text-xl font-bold truncate" style="color: var(--text-primary);">---</p>
             </div>
 
-            <!-- Controls -->
             <div id="controls-container" class="grid grid-cols-3 gap-4">
                 <button id="start-pause-btn" class="text-white font-bold py-3 px-4 rounded-lg text-lg btn" style="background-color: var(--btn-start);">Start</button>
                 <button id="reset-btn" class="text-white font-bold py-3 px-4 rounded-lg text-lg btn" style="background-color: var(--btn-secondary);">Reset</button>
@@ -161,11 +208,13 @@
             </div>
         </div>
 
-        <!-- Settings Panel (Initially Hidden) -->
+        <!-- Settings Panel -->
         <div id="settings-panel" class="rounded-2xl shadow-2xl p-6 hidden panel" style="background-color: var(--bg-secondary);">
             <h3 class="text-2xl font-bold mb-6 text-center">Settings</h3>
             
             <div id="timer-inputs-container" class="grid grid-cols-2 gap-x-6 gap-y-4 mb-6"></div>
+
+            <div id="settings-toggles-container" class="space-y-4 mb-6"></div>
 
             <div class="p-4 rounded-lg text-center grid grid-cols-2 gap-4 mb-6" style="background-color: var(--bg-tertiary);">
                 <div>
@@ -195,9 +244,7 @@
         <!-- Themes Panel -->
         <div id="themes-panel" class="rounded-2xl shadow-2xl p-6 hidden panel" style="background-color: var(--bg-secondary);">
             <h3 class="text-2xl font-bold mb-6 text-center">Select a Theme</h3>
-            <div id="theme-buttons-container" class="grid grid-cols-2 gap-4">
-                <!-- Theme buttons will be generated here -->
-            </div>
+            <div id="theme-buttons-container" class="grid grid-cols-2 gap-4"></div>
             <button id="back-to-settings-from-themes-btn" class="mt-6 w-full text-white font-bold py-3 px-4 rounded-lg text-lg btn" style="background-color: var(--btn-primary);">Back</button>
         </div>
         
@@ -239,6 +286,7 @@ document.addEventListener('DOMContentLoaded', () => {
         setDurationDisplay: getElem('set-duration-display'),
         totalDurationDisplay: getElem('total-duration-display'),
         timerInputsContainer: getElem('timer-inputs-container'),
+        settingsTogglesContainer: getElem('settings-toggles-container'),
         presetHeading: getElem('preset-heading'),
         savePresetModeBtn: getElem('save-preset-mode-btn'),
         presetButtonsContainer: getElem('preset-buttons-container'),
@@ -251,18 +299,10 @@ document.addEventListener('DOMContentLoaded', () => {
     let isSavingPreset = false;
 
     const themes = [
-        { id: 'default', name: 'Default Dark' },
-        { id: 'forest', name: 'Forest' },
-        { id: 'ocean', name: 'Ocean' },
-        { id: 'sunset', name: 'Sunset' },
-        { id: 'spring', name: 'Spring' },
-        { id: 'summer', name: 'Summer' },
-        { id: 'winter', name: 'Winter' },
-        { id: 'desert', name: 'Desert' },
-        { id: 'jungle', name: 'Jungle' },
-        { id: 'mountain', name: 'Mountain' },
-        { id: 'coast', name: 'Coast' },
-        { id: 'sakura', name: 'Sakura' },
+        { id: 'default', name: 'Default Dark' }, { id: 'forest', name: 'Forest' }, { id: 'ocean', name: 'Ocean' },
+        { id: 'sunset', name: 'Sunset' }, { id: 'spring', name: 'Spring' }, { id: 'summer', name: 'Summer' },
+        { id: 'winter', name: 'Winter' }, { id: 'desert', name: 'Desert' }, { id: 'jungle', name: 'Jungle' },
+        { id: 'mountain', name: 'Mountain' }, { id: 'coast', name: 'Coast' }, { id: 'sakura', name: 'Sakura' },
     ];
 
     const soundFiles = {
@@ -271,6 +311,11 @@ document.addEventListener('DOMContentLoaded', () => {
     };
     let audioPlayers = {};
     let audioInitialized = false;
+
+    const motivationalQuotes = [ 'MQ/quote1.mp3', 'MQ/quote2.mp3', 'MQ/quote3.mp3' ];
+    let quotePlayers = [];
+    let lastQuotePlayedTime = 0;
+    let quoteTimer = null;
 
     const defaultState = {
         timer: null, status: 'idle', phase: 'prepare', currentTime: 0, currentRound: 0, currentSet: 0,
@@ -287,13 +332,14 @@ document.addEventListener('DOMContentLoaded', () => {
             "2nd": { workTime: 32, restTime: 32, roundsPerSet: 3, numSets: 12, restBetweenSets: 0, exercises: ["Pull ups", "Push ups", "Pallof press", "Jefferson curls", "Back extension", "Suitcase carry", "Shoulder carry", "Monster walks", "3 Glutes", "Neck & forearms", "4-Plank", "YTWL"] },
             "Cardio": { workTime: 30, restTime: 15, roundsPerSet: 10, numSets: 5, restBetweenSets: 75, exercises: ["High Knees", "Burpees", "Jumping Jacks", "Mountain Climbers", "Jump Rope", "Tuck Jumps", "Skater Jumps", "Box Jumps", "Lunge Jumps", "Sprints"] }
         },
-        theme: 'default'
+        theme: 'default',
+        motivationalQuotesEnabled: true,
     };
     
     // --- DATA PERSISTENCE ---
     const saveState = () => {
         try {
-            const stateToSave = { settings: state.settings, presets: state.presets, theme: state.theme };
+            const stateToSave = { settings: state.settings, presets: state.presets, theme: state.theme, motivationalQuotesEnabled: state.motivationalQuotesEnabled };
             localStorage.setItem('tabataTimerState', JSON.stringify(stateToSave));
         } catch (e) { console.error("Could not save state", e); }
     };
@@ -307,6 +353,9 @@ document.addEventListener('DOMContentLoaded', () => {
                 if (savedState.settings) state.settings = { ...state.settings, ...savedState.settings };
                 if (savedState.presets) state.presets = savedState.presets;
                 if (savedState.theme) state.theme = savedState.theme;
+                if (typeof savedState.motivationalQuotesEnabled === 'boolean') {
+                    state.motivationalQuotesEnabled = savedState.motivationalQuotesEnabled;
+                }
             }
         } catch (e) {
             console.error("Could not load state", e);
@@ -333,6 +382,21 @@ document.addEventListener('DOMContentLoaded', () => {
             button.style.backgroundColor = 'var(--bg-accent)';
             container.appendChild(button);
         });
+    };
+
+    const generateSettingsToggles = () => {
+        const container = elements.settingsTogglesContainer;
+        container.innerHTML = '';
+        const checked = state.motivationalQuotesEnabled ? 'checked' : '';
+        container.innerHTML = `
+            <label class="toggle-label">
+                <span class="font-medium" style="color: var(--text-primary);">Enable Motivational Quotes</span>
+                <div class="toggle-switch">
+                    <input type="checkbox" id="mq-toggle" ${checked}>
+                    <span class="slider"></span>
+                </div>
+            </label>
+        `;
     };
 
     const createStepperInput = (id, label, value, isFullWidth = false) => {
@@ -391,10 +455,26 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // --- CORE TIMER FUNCTIONS ---
     const playSound = (soundType) => {
+        if (soundType === 'countdown') {
+            const countdownAudio = new Audio(soundFiles.countdown);
+            countdownAudio.play().catch(e => console.error("Error playing countdown sound:", e));
+            return;
+        }
         const player = audioPlayers[soundType];
         if (player) {
             player.currentTime = 0;
             player.play().catch(e => console.error(`Error playing sound: ${soundType}`, e));
+        }
+    };
+
+    const playRandomQuote = () => {
+        if (quotePlayers.length === 0) return;
+        const randomIndex = Math.floor(Math.random() * quotePlayers.length);
+        const player = quotePlayers[randomIndex];
+        if (player) {
+            player.currentTime = 0;
+            player.play().catch(e => console.error(`Error playing quote`, e));
+            lastQuotePlayedTime = Date.now();
         }
     };
     
@@ -446,6 +526,7 @@ document.addEventListener('DOMContentLoaded', () => {
     
     const workoutComplete = () => {
         clearInterval(state.timer);
+        clearInterval(quoteTimer);
         state.status = 'idle'; state.phase = 'complete';
         playSound(state.sounds.workoutComplete);
         elements.timerDisplayContent.classList.add('hidden');
@@ -457,8 +538,25 @@ document.addEventListener('DOMContentLoaded', () => {
     const start = () => {
         if (state.status === 'running') return;
         if (!audioInitialized) {
-            for (const key in soundFiles) {
-                if (soundFiles[key]) audioPlayers[key] = new Audio(soundFiles[key]);
+            const allAudioFiles = { ...soundFiles };
+            motivationalQuotes.forEach((path, index) => {
+                allAudioFiles[`quote${index}`] = path;
+            });
+
+            for (const key in allAudioFiles) {
+                const player = new Audio(allAudioFiles[key]);
+                player.volume = 0;
+                player.play().catch(()=>{});
+                setTimeout(() => {
+                    player.pause();
+                    player.currentTime = 0;
+                    player.volume = 1;
+                }, 10);
+                if (key.startsWith('quote')) {
+                    quotePlayers.push(player);
+                } else {
+                    audioPlayers[key] = player;
+                }
             }
             audioInitialized = true;
         }
@@ -469,6 +567,16 @@ document.addEventListener('DOMContentLoaded', () => {
             if(state.settings.preStartDelay > 0) playSound(state.sounds.preStart);
         }
         state.status = 'running';
+        lastQuotePlayedTime = Date.now();
+        if (state.motivationalQuotesEnabled) {
+            quoteTimer = setInterval(() => {
+                if (state.status === 'running' && Date.now() - lastQuotePlayedTime > 180000) {
+                    if (Math.random() < 0.1) { // Random chance to play
+                        playRandomQuote();
+                    }
+                }
+            }, 5000); // Check every 5 seconds
+        }
         elements.timerDisplay.style.color = 'var(--color-prepare)';
         if (state.currentTime > 0) {
             state.timer = setInterval(tick, 1000);
@@ -482,22 +590,24 @@ document.addEventListener('DOMContentLoaded', () => {
     const pause = () => {
         if (state.status !== 'running') return;
         clearInterval(state.timer);
+        clearInterval(quoteTimer);
         state.status = 'paused';
         updateButtonState();
     };
 
     const reset = (fullReset = true) => {
         clearInterval(state.timer);
+        clearInterval(quoteTimer);
         state.status = 'idle';
         state.phase = 'prepare';
         state.currentRound = 0;
         state.currentSet = 0;
-        state.currentTime = 0; // Set to 0 for initial display
+        state.currentTime = 0;
         if (fullReset) {
             elements.timerDisplayContent.classList.remove('hidden');
             elements.completionMessage.classList.add('hidden');
             updateButtonState();
-            updateDisplay(true); // Pass true to handle initial "Get Ready" state
+            updateDisplay(true);
         }
     };
 
@@ -564,6 +674,7 @@ document.addEventListener('DOMContentLoaded', () => {
         generatePresetButtons();
         generateExerciseInputs();
         generateThemeButtons();
+        generateSettingsToggles();
         updateDurations();
         reset(true);
     };
@@ -663,6 +774,15 @@ document.addEventListener('DOMContentLoaded', () => {
         elements.themeButtonsContainer.addEventListener('click', e => {
             const themeBtn = e.target.closest('.theme-btn');
             if (themeBtn) applyTheme(themeBtn.dataset.themeId);
+        });
+        elements.settingsTogglesContainer.addEventListener('change', e => {
+            if (e.target.id === 'mq-toggle') {
+                state.motivationalQuotesEnabled = e.target.checked;
+                if (!state.motivationalQuotesEnabled) {
+                    clearInterval(quoteTimer);
+                }
+                saveState();
+            }
         });
     };
 

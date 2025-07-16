@@ -167,7 +167,7 @@ document.addEventListener('DOMContentLoaded', () => {
     let state = {}; // Will be populated by loadState
     let isSavingPreset = false;
 
-    // --- AUDIO FILE MAPPING ---
+    // --- AUDIO HANDLING ---
     const soundFiles = {
         work: 'sound/work.mp3',
         rest: 'sound/rest.mp3',
@@ -175,6 +175,8 @@ document.addEventListener('DOMContentLoaded', () => {
         setEnd: 'sound/set_end.mp3',
         finish: 'sound/finish.mp3'
     };
+    let audioPlayers = {}; // Will hold the pre-loaded audio objects
+    let audioInitialized = false; // Flag to ensure we only initialize once
 
     const defaultState = {
         timer: null,
@@ -185,12 +187,12 @@ document.addEventListener('DOMContentLoaded', () => {
         currentSet: 0,
         settings: {
             workTime: 30,
-            restTime: 30,
-            roundsPerSet: 3,
-            numSets: 6,
-            restBetweenSets: 30,
+            restTime: 15,
+            roundsPerSet: 10,
+            numSets: 5,
+            restBetweenSets: 90,
             preStartDelay: 3,
-            exercises: ["High Knees", "Jumping jacks", "Side bends", "Good mornings", "Skater hops", "Squats"]
+            exercises: ["High Knees", "Burpees", "Jumping Jacks", "Mountain Climbers", "Jump Rope", "Tuck Jumps", "Skater Jumps", "Box Jumps", "Lunge Jumps", "Sprints"]
         },
         // This maps a phase to a sound type from the soundFiles object
         sounds: {
@@ -322,11 +324,11 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // --- CORE TIMER FUNCTIONS ---
     const playSound = (soundType) => {
-        const path = soundFiles[soundType];
-        if (!path) return; // Don't play if no path is defined
-
-        const audio = new Audio(path);
-        audio.play().catch(e => console.error("Error playing sound:", e)); // Add error handling
+        const player = audioPlayers[soundType];
+        if (player) {
+            player.currentTime = 0; // Rewind to the start
+            player.play().catch(e => console.error(`Error playing sound: ${soundType}`, e));
+        }
     };
     
     const formatTime = (seconds) => {
@@ -340,8 +342,9 @@ document.addEventListener('DOMContentLoaded', () => {
         updateDisplay();
 
         if (state.currentTime > 0) {
-            if (state.phase === 'prepare' || (state.currentTime <= 3 && state.currentTime > 0)) {
-                if(state.phase !== 'work' && state.phase !== 'rest') playSound(state.sounds.preStart);
+            // Only play the countdown sound during the initial "prepare" phase.
+            if (state.phase === 'prepare') {
+                playSound(state.sounds.preStart);
             }
             return;
         }
@@ -404,6 +407,17 @@ document.addEventListener('DOMContentLoaded', () => {
     const start = () => {
         if (state.status === 'running') return;
         
+        // Pre-load all sounds on the first tap to satisfy mobile autoplay policies.
+        if (!audioInitialized) {
+            for (const key in soundFiles) {
+                if (soundFiles[key]) {
+                    audioPlayers[key] = new Audio(soundFiles[key]);
+                    audioPlayers[key].load(); // Start loading the file
+                }
+            }
+            audioInitialized = true;
+        }
+
         if (state.status === 'idle' || state.phase === 'complete') {
             reset(false); // Soft reset without full UI update
             state.phase = 'prepare';

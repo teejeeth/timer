@@ -726,7 +726,7 @@ document.addEventListener('DOMContentLoaded', () => {
             numSets: presetSettings.numSets, restBetweenSets: presetSettings.restBetweenSets,
             exercises: presetSettings.exercises || []
         };
-        state.settings = { ...state.settings, ...cleanPresetSettings };
+        state.settings = { ...defaultState.settings, ...cleanPresetSettings };
         updateUIFromState();
         saveState();
     };
@@ -788,6 +788,17 @@ document.addEventListener('DOMContentLoaded', () => {
                     clearInterval(quoteTimer);
                 }
                 saveState();
+            }
+        });
+        elements.presetButtonsContainer.addEventListener('click', e => {
+            const presetBtn = e.target.closest('.preset-btn');
+            if (presetBtn) {
+                const presetName = presetBtn.dataset.presetName;
+                if (isSavingPreset) {
+                    savePreset(presetName);
+                } else {
+                    applyPreset(presetName);
+                }
             }
         });
     };

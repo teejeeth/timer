@@ -31,6 +31,7 @@
             --btn-preset-hover: #0d9488; /* teal-600 */
             --btn-save: #f59e0b; /* amber-500 */
             --btn-save-hover: #d97706; /* amber-600 */
+            --color-next-exercise-border: var(--color-set-rest); 
         }
         .theme-forest {
             --bg-primary: #1a2e29; --bg-secondary: #2d4a43; --bg-tertiary: #3e6058; --bg-accent: #507a6d;
@@ -38,6 +39,7 @@
             --color-prepare: #ffb74d; --color-work: #aed581; --color-rest: #90a4ae; --color-set-rest: #7986cb;
             --btn-primary: #4db6ac; --btn-primary-hover: #26a69a; --btn-secondary: #e57373; --btn-secondary-hover: #ef5350;
             --btn-start: #81c784; --btn-start-hover: #66bb6a; --btn-preset: #66bb6a; --btn-preset-hover: #4caf50;
+            --color-next-exercise-border: #facc15; 
         }
         .theme-spring {
             --bg-primary: #f0fff4; --bg-secondary: #d4edda; --bg-tertiary: #b8e0c2; --bg-accent: #9cd3ab;
@@ -47,9 +49,9 @@
             --btn-start: #4caf50; --btn-start-hover: #45a049; --btn-preset: #ffa726; --btn-preset-hover: #fb8c00;
         }
         .theme-winter {
-            --bg-primary: #e3f2fd; --bg-secondary: #9fd2fc; --bg-tertiary: #6eb9f7; --bg-accent: #64b5f6;
+            --bg-primary: #e3f2fd; --bg-secondary: #bbdefb; --bg-tertiary: #90caf9; --bg-accent: #64b5f6;
             --text-primary: #0d47a1; --text-secondary: #1565c0; --text-accent: #1976d2;
-            --color-prepare: #fbc02d; --color-work: #e67300; --color-rest: #1ab2ff; --color-set-rest: #00cc44;
+            --color-prepare: #fbc02d; --color-work: #d32f2f; --color-rest: #7b1fa2; --color-set-rest: #00796b;
             --btn-primary: #1976d2; --btn-primary-hover: #1565c0; --btn-secondary: #d32f2f; --btn-secondary-hover: #c62828;
             --btn-start: #388e3c; --btn-start-hover: #2e7d32; --btn-preset: #512da8; --btn-preset-hover: #4527a0;
         }
@@ -63,7 +65,7 @@
         .theme-stormy {
             --bg-primary: #384959; --bg-secondary: #6A89A7; --bg-tertiary: #88BDF2; --bg-accent: #384959;
             --text-primary: #FFFFFF; --text-secondary: #BDDDFC; --text-accent: #FFFFFF;
-            --color-prepare: #f5d042; --color-work: #40e0d0; --color-rest: #88BDF2; --color-set-rest: #66cccc;
+            --color-prepare: #f5d042; --color-work: #BDDDFC; --color-rest: #88BDF2; --color-set-rest: #6A89A7;
             --btn-primary: #88BDF2; --btn-primary-hover: #77a8d9; --btn-secondary: #e57373; --btn-secondary-hover: #ef5350;
             --btn-start: #4caf50; --btn-start-hover: #45a049; --btn-preset: #384959; --btn-preset-hover: #2c3a47;
         }
@@ -82,14 +84,14 @@
             --btn-start: #2E6F40; --btn-start-hover: #245833; --btn-preset: #253D2C; --btn-preset-hover: #1a291f;
         }
         .theme-chili {
-            --bg-primary: #38000A; --bg-secondary: #9B1313; --bg-tertiary: #cd1b18; --bg-accent: #38000A;
-            --text-primary: #fde8ea; --text-secondary: #ffd4cc; --text-accent: #f5c1b6;
-            --color-prepare: #facc15; --color-work: #FB8B24; --color-rest: #ADFF2F; --color-set-rest: #A7D8DE;
+            --bg-primary: #38000A; --bg-secondary: #9B1313; --bg-tertiary: #CD1C18; --bg-accent: #38000A;
+            --text-primary: #FFFFFF; --text-secondary: #fde8ea; --text-accent: #f5c1b6;
+            --color-prepare: #facc15; --color-work: #FFA896; --color-rest: #CD1C18; --color-set-rest: #9B1313;
             --btn-primary: #1a237e; --btn-primary-hover: #0d125a; --btn-secondary: #CD1C18; --btn-secondary-hover: #b21815;
             --btn-start: #388e3c; --btn-start-hover: #2e7d32; --btn-preset: #38000A; --btn-preset-hover: #270007;
         }
         .theme-hydrangea {
-            --bg-primary: #AD56C4; --bg-secondary: #d083e2; --bg-tertiary: #ff8097; --bg-accent: #AD56C4;
+            --bg-primary: #AD56C4; --bg-secondary: #d083e2; --bg-tertiary: #FF8DA1; --bg-accent: #AD56C4;
             --text-primary: #FFFFFF; --text-secondary: #fce4ec; --text-accent: #f8bbd0;
             --color-prepare: #fdd835; --color-work: #FFC2BA; --color-rest: #FF9CE9; --color-set-rest: #FF8DA1;
             --btn-primary: #AD56C4; --btn-primary-hover: #9c4cb3; --btn-secondary: #e91e63; --btn-secondary-hover: #c2185b;
@@ -196,7 +198,23 @@
             background: var(--btn-primary);
             cursor: pointer;
         }
-
+        /* Subtle Skip Button Style */
+        .skip-subtle-btn {
+            background-color: var(--bg-tertiary);
+            color: var(--text-primary);
+            border-radius: 50%;
+            width: 28px;
+            height: 28px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.25rem;
+            line-height: 1;
+            font-weight: 600;
+        }
+        .skip-subtle-btn:hover {
+            background-color: var(--bg-accent);
+        }
     </style>
 </head>
 <body class="bg-gray-900 text-white flex items-center justify-center min-h-screen p-4">
@@ -208,9 +226,13 @@
                 <div id="timer-display-content" class="z-0">
                     <div id="phase-display" class="text-2xl font-bold uppercase mb-2" style="color: var(--color-prepare);">Prepare</div>
                     <div id="timer-display" class="text-8xl md:text-9xl timer-display" style="color: var(--color-work);">--:--</div>
-                    <div id="progress-display" class="text-xl mt-2" style="color: var(--text-secondary);">
-                        Round <span id="current-round">0</span>/<span id="total-rounds">10</span> |
-                        Set <span id="current-set">0</span>/<span id="total-sets">5</span>
+                    <div id="progress-display" class="text-xl mt-2 flex items-center justify-center gap-3" style="color: var(--text-secondary);">
+                        <button id="skip-back-subtle-btn" class="skip-subtle-btn hidden btn">&lt;</button>
+                        <span>
+                            Round <span id="current-round">0</span>/<span id="total-rounds">10</span> |
+                            Set <span id="current-set">0</span>/<span id="total-sets">5</span>
+                        </span>
+                        <button id="skip-forward-subtle-btn" class="skip-subtle-btn hidden btn">&gt;</button>
                     </div>
                 </div>
                 <div id="completion-message" class="z-10 hidden">
@@ -223,8 +245,7 @@
                 <p id="exercise-display" class="text-xl font-bold truncate" style="color: var(--text-primary);">---</p>
             </div>
             
-            <!-- NEW: Next Exercise Preview -->
-            <div id="next-exercise-container" class="text-center mb-4 p-3 rounded-lg hidden" style="background-color: var(--bg-tertiary); border: 2px dashed var(--color-set-rest);">
+            <div id="next-exercise-container" class="text-center mb-4 p-3 rounded-lg hidden" style="background-color: var(--bg-tertiary); border: 2px dashed var(--color-next-exercise-border);">
                 <h4 class="text-sm font-semibold uppercase" style="color: var(--text-secondary);">Next Exercise</h4>
                 <p id="next-exercise-display" class="text-xl font-bold truncate" style="color: var(--text-primary);">---</p>
             </div>
@@ -300,7 +321,6 @@ document.addEventListener('DOMContentLoaded', () => {
         currentSetDisplay: getElem('current-set'),
         totalSetsDisplay: getElem('total-sets'),
         exerciseDisplay: getElem('exercise-display'),
-        // NEW: Next exercise elements
         nextExerciseContainer: getElem('next-exercise-container'),
         nextExerciseDisplay: getElem('next-exercise-display'),
         timerDisplay: getElem('timer-display'),
@@ -309,6 +329,8 @@ document.addEventListener('DOMContentLoaded', () => {
         startPauseBtn: getElem('start-pause-btn'),
         resetBtn: getElem('reset-btn'),
         settingsBtn: getElem('settings-btn'),
+        skipForwardSubtleBtn: getElem('skip-forward-subtle-btn'),
+        skipBackSubtleBtn: getElem('skip-back-subtle-btn'),
         closeSettingsBtn: getElem('close-settings-btn'),
         themesSettingsBtn: getElem('themes-settings-btn'),
         exerciseSettingsBtn: getElem('exercise-settings-btn'),
@@ -362,23 +384,23 @@ document.addEventListener('DOMContentLoaded', () => {
             exercises: ["High Knees", "Burpees", "Jumping Jacks", "Mountain Climbers", "Jump Rope", "Tuck Jumps", "Skater Jumps", "Box Jumps", "Lunge Jumps", "Sprints"]
         },
         sounds: { preStart: 'countdown', workStart: 'work', restStart: 'rest', setEnd: 'setEnd', workoutComplete: 'finish' },
+        // UPDATED: Preset values and names changed
         presets: {
-            "Main": { workTime: 35, restTime: 35, roundsPerSet: 8, numSets: 4, restBetweenSets: 40, exercises: ["Landmine row", "Landmine press", "Landmine squat", "Kettlebell swings"] },
-            "More": { workTime: 32, restTime: 32, roundsPerSet: 3, numSets: 12, restBetweenSets: 0, exercises: ["Woodchoppers", "Bowman", "Shoulder 360s", "Face pulls", "Good mornings", "Reverse hyper", "Split squats", "Glute Circuit", "Hip flexor march", "Hamstring slides", "Push/Pull", "Neck/Forearms"] },
-            "5x30": { workTime: 35, restTime: 35, roundsPerSet: 4, numSets: 7, restBetweenSets: 75, exercises: ["Kettlebell power cleans", "kettlebell swings", "split squat", "squat", "Hip thrust", "monster walk", "banded row"] },
-            "1st": { workTime: 35, restTime: 35, roundsPerSet: 8, numSets: 4, restBetweenSets: 40, exercises: ["Barbell power cleans", "Barbell row", "Zercher squat", "Hip thrust"] },
-            "2nd": { workTime: 32, restTime: 32, roundsPerSet: 3, numSets: 12, restBetweenSets: 0, exercises: ["Pull ups", "Push ups", "Pallof press", "Jefferson curls", "Back extension", "Suitcase carry", "Shoulder carry", "Monster walks", "3 Glutes", "Neck & forearms", "4-Plank", "YTWL"] },
+            "༼ つ ◕_◕ ༽つ": { workTime: 35, restTime: 35, roundsPerSet: 6, numSets: 4, restBetweenSets: 75, exercises: ["Landmine row", "Landmine press", "Landmine squat", "Kettlebell swings"] },
+            "(ﾉ◕ヮ◕)ﾉ*": { workTime: 32, restTime: 32, roundsPerSet: 3, numSets: 12, restBetweenSets: 0, exercises: ["Woodchoppers", "Bowman", "Shoulder 360s", "Face pulls", "Good mornings", "Reverse hyper", "Split squats", "Glute Circuit", "Hip flexor march", "Hamstring slides", "Push/Pull", "Neck/Forearms"] },
+            "Thasmin": { workTime: 35, restTime: 35, roundsPerSet: 4, numSets: 7, restBetweenSets: 75, exercises: ["Kettlebell power cleans", "kettlebell swings", "split squat", "squat", "Hip thrust", "monster walk", "banded row"] },
+            "ヾ(⌐■_■)ノ": { workTime: 35, restTime: 35, roundsPerSet: 6, numSets: 4, restBetweenSets: 75, exercises: ["Barbell power cleans", "Barbell row", "Zercher squat", "Hip thrust"] },
+            "ᕙ(⇀‸↼‶)ᕗ": { workTime: 32, restTime: 32, roundsPerSet: 3, numSets: 12, restBetweenSets: 0, exercises: ["Pull ups", "Push ups", "Pallof press", "Jefferson curls", "Back extension", "Suitcase carry", "Shoulder carry", "Monster walks", "3 Glutes", "Neck & forearms", "4-Plank", "YTWL"] },
             "Cardio": { workTime: 30, restTime: 15, roundsPerSet: 10, numSets: 5, restBetweenSets: 75, exercises: ["High Knees", "Burpees", "Jumping Jacks", "Mountain Climbers", "Jump Rope", "Tuck Jumps", "Skater Jumps", "Box Jumps", "Lunge Jumps", "Sprints"] }
         },
         theme: 'default',
         motivationalQuotesEnabled: true,
-        volume: 0.5, // NEW: Volume state
+        volume: 0.5,
     };
     
     // --- DATA PERSISTENCE ---
     const saveState = () => {
         try {
-            // UPDATED: Save volume as well
             const stateToSave = { 
                 settings: state.settings, 
                 presets: state.presets, 
@@ -402,7 +424,6 @@ document.addEventListener('DOMContentLoaded', () => {
                 if (typeof savedState.motivationalQuotesEnabled === 'boolean') {
                     state.motivationalQuotesEnabled = savedState.motivationalQuotesEnabled;
                 }
-                // NEW: Load volume
                 if (typeof savedState.volume === 'number') {
                     state.volume = savedState.volume;
                 }
@@ -438,7 +459,6 @@ document.addEventListener('DOMContentLoaded', () => {
         const container = elements.settingsTogglesContainer;
         container.innerHTML = '';
         const checked = state.motivationalQuotesEnabled ? 'checked' : '';
-        // UPDATED: Renamed label and added volume control
         container.innerHTML = `
             <label class="toggle-label">
                 <span class="font-medium" style="color: var(--text-primary);">Enable Quotes</span>
@@ -549,31 +569,34 @@ document.addEventListener('DOMContentLoaded', () => {
             if (state.phase === 'prepare') playSound(state.sounds.preStart);
             return;
         }
+        
         if (state.phase === 'prepare') {
             state.phase = 'work'; state.currentRound = 1; state.currentSet = 1;
             state.currentTime = state.settings.workTime;
             playSound(state.sounds.workStart);
         } else if (state.phase === 'work') {
-            if (state.currentRound >= state.settings.roundsPerSet && state.currentSet >= state.settings.numSets) {
-                workoutComplete(); return;
-            }
-            state.phase = 'rest'; state.currentTime = state.settings.restTime;
-            playSound(state.sounds.restStart);
-        } else if (state.phase === 'rest') {
-            if (state.currentRound >= state.settings.roundsPerSet) {
-                 if (state.currentSet < state.settings.numSets && state.settings.restBetweenSets > 0) {
-                    state.phase = 'setRest'; state.currentTime = state.settings.restBetweenSets;
+            if (state.currentRound >= state.settings.roundsPerSet) { 
+                if (state.currentSet >= state.settings.numSets) { 
+                    workoutComplete(); return;
+                }
+                if (state.settings.restBetweenSets > 0) {
+                    state.phase = 'setRest';
+                    state.currentTime = state.settings.restBetweenSets;
                     playSound(state.sounds.setEnd);
-                 } else {
+                } else {
                     state.currentSet++; state.currentRound = 1; state.phase = 'work';
                     state.currentTime = state.settings.workTime;
                     playSound(state.sounds.workStart);
-                 }
-            } else {
-                state.currentRound++; state.phase = 'work';
-                state.currentTime = state.settings.workTime;
-                playSound(state.sounds.workStart);
+                }
+            } else { 
+                state.phase = 'rest';
+                state.currentTime = state.settings.restTime;
+                playSound(state.sounds.restStart);
             }
+        } else if (state.phase === 'rest') {
+            state.currentRound++; state.phase = 'work';
+            state.currentTime = state.settings.workTime;
+            playSound(state.sounds.workStart);
         } else if (state.phase === 'setRest') {
             state.currentSet++; state.currentRound = 1; state.phase = 'work';
             state.currentTime = state.settings.workTime;
@@ -589,7 +612,7 @@ document.addEventListener('DOMContentLoaded', () => {
         playSound(state.sounds.workoutComplete);
         elements.timerDisplayContent.classList.add('hidden');
         elements.completionMessage.classList.remove('hidden');
-        elements.nextExerciseContainer.classList.add('hidden'); // Hide preview on completion
+        elements.nextExerciseContainer.classList.add('hidden');
         updateButtonState();
         setTimeout(() => reset(true), 5000);
     };
@@ -604,12 +627,12 @@ document.addEventListener('DOMContentLoaded', () => {
 
             for (const key in allAudioFiles) {
                 const player = new Audio(allAudioFiles[key]);
-                player.volume = 0; // Start muted for initialization
+                player.volume = 0;
                 player.play().catch(()=>{});
                 setTimeout(() => {
                     player.pause();
                     player.currentTime = 0;
-                    player.volume = state.volume; // Set to user-defined volume
+                    player.volume = state.volume;
                 }, 10);
                 if (key.startsWith('quote')) {
                     quotePlayers.push(player);
@@ -630,11 +653,11 @@ document.addEventListener('DOMContentLoaded', () => {
         if (state.motivationalQuotesEnabled) {
             quoteTimer = setInterval(() => {
                 if (state.status === 'running' && Date.now() - lastQuotePlayedTime > 180000) {
-                    if (Math.random() < 0.1) { // Random chance to play
+                    if (Math.random() < 0.1) {
                         playRandomQuote();
                     }
                 }
-            }, 5000); // Check every 5 seconds
+            }, 5000);
         }
         elements.timerDisplay.style.color = 'var(--color-prepare)';
         if (state.currentTime > 0) {
@@ -697,7 +720,6 @@ document.addEventListener('DOMContentLoaded', () => {
         elements.totalSetsDisplay.textContent = state.settings.numSets;
         elements.exerciseDisplay.textContent = (state.currentSet > 0 && state.settings.exercises[state.currentSet - 1]) ? state.settings.exercises[state.currentSet - 1] : '---';
 
-        // NEW: Next exercise preview logic
         if (state.phase === 'setRest' && state.currentSet < state.settings.numSets) {
             elements.nextExerciseDisplay.textContent = state.settings.exercises[state.currentSet] || '---';
             elements.nextExerciseContainer.classList.remove('hidden');
@@ -716,6 +738,11 @@ document.addEventListener('DOMContentLoaded', () => {
     
     const updateButtonState = () => {
         const startBtn = elements.startPauseBtn;
+        const isTimerActive = state.status === 'running' || state.status === 'paused';
+        
+        elements.skipForwardSubtleBtn.classList.toggle('hidden', !isTimerActive);
+        elements.skipBackSubtleBtn.classList.toggle('hidden', !isTimerActive);
+        
         if (state.status === 'running') {
             elements.controlsContainer.className = 'flex justify-center';
             elements.resetBtn.classList.add('hidden');
@@ -728,7 +755,7 @@ document.addEventListener('DOMContentLoaded', () => {
             elements.settingsBtn.classList.remove('hidden');
             startBtn.textContent = 'Resume';
             startBtn.style.backgroundColor = 'var(--btn-start)';
-        } else {
+        } else { // idle
             elements.controlsContainer.className = 'grid grid-cols-3 gap-4';
             elements.resetBtn.classList.remove('hidden');
             elements.settingsBtn.classList.remove('hidden');
@@ -750,6 +777,52 @@ document.addEventListener('DOMContentLoaded', () => {
     // --- EVENT HANDLERS ---
     const handleStartPause = () => { (state.status === 'running') ? pause() : start(); };
     
+    const handleSkipForward = () => {
+        if (state.status === 'idle') return;
+        clearInterval(state.timer);
+
+        if (state.currentRound >= state.settings.roundsPerSet) {
+            if (state.currentSet >= state.settings.numSets) {
+                workoutComplete();
+                return;
+            }
+            state.currentSet++;
+            state.currentRound = 1;
+        } else {
+            state.currentRound++;
+        }
+
+        state.phase = 'work';
+        state.currentTime = state.settings.workTime;
+        playSound(state.sounds.workStart);
+        updateDisplay();
+        
+        if (state.status === 'running') {
+            state.timer = setInterval(tick, 1000);
+        }
+    };
+
+    const handleSkipBack = () => {
+        if (state.status === 'idle' || (state.currentSet <= 1 && state.currentRound <= 1)) return;
+        clearInterval(state.timer);
+
+        state.currentRound--;
+
+        if (state.currentRound < 1) {
+            state.currentSet--;
+            state.currentRound = state.settings.roundsPerSet;
+        }
+
+        state.phase = 'work';
+        state.currentTime = state.settings.workTime;
+        playSound(state.sounds.workStart);
+        updateDisplay();
+        
+        if (state.status === 'running') {
+            state.timer = setInterval(tick, 1000);
+        }
+    };
+
     const adjustExerciseArray = (newSize) => {
         const currentExercises = state.settings.exercises;
         if (!Array.isArray(currentExercises)) state.settings.exercises = [];
@@ -771,7 +844,6 @@ document.addEventListener('DOMContentLoaded', () => {
             generateExerciseInputs();
         }
         updateDurations();
-        if (state.status === 'idle') reset(true);
         saveState();
     };
     
@@ -830,7 +902,15 @@ document.addEventListener('DOMContentLoaded', () => {
         elements.startPauseBtn.addEventListener('click', handleStartPause);
         elements.resetBtn.addEventListener('click', () => reset(true));
         elements.settingsBtn.addEventListener('click', () => showPanel(elements.settingsPanel));
-        elements.closeSettingsBtn.addEventListener('click', () => showPanel(elements.timerContainer));
+        
+        elements.closeSettingsBtn.addEventListener('click', () => {
+            showPanel(elements.timerContainer);
+            reset(true);
+        });
+
+        elements.skipForwardSubtleBtn.addEventListener('click', handleSkipForward);
+        elements.skipBackSubtleBtn.addEventListener('click', handleSkipBack);
+        
         elements.themesSettingsBtn.addEventListener('click', () => showPanel(elements.themesPanel));
         elements.exerciseSettingsBtn.addEventListener('click', () => showPanel(elements.exerciseSettingsPanel));
         elements.backToSettingsFromThemesBtn.addEventListener('click', () => showPanel(elements.settingsPanel));
@@ -843,7 +923,6 @@ document.addEventListener('DOMContentLoaded', () => {
             const themeBtn = e.target.closest('.theme-btn');
             if (themeBtn) applyTheme(themeBtn.dataset.themeId);
         });
-        // UPDATED: Event delegation for toggles and volume
         elements.settingsTogglesContainer.addEventListener('input', e => {
             if (e.target.id === 'mq-toggle') {
                 state.motivationalQuotesEnabled = e.target.checked;
@@ -854,7 +933,6 @@ document.addEventListener('DOMContentLoaded', () => {
             } else if (e.target.id === 'volume-slider') {
                 const newVolume = parseFloat(e.target.value);
                 state.volume = newVolume;
-                // Update volume for all existing audio players
                 Object.values(audioPlayers).forEach(player => player.volume = newVolume);
                 quotePlayers.forEach(player => player.volume = newVolume);
                 saveState();

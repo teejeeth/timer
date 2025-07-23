@@ -198,22 +198,23 @@
             background: var(--btn-primary);
             cursor: pointer;
         }
-        /* Subtle Skip Button Style */
+        /* Minimalist Arrow Button Style */
         .skip-subtle-btn {
-            background-color: var(--bg-tertiary);
-            color: var(--text-primary);
-            border-radius: 50%;
+            background-color: transparent; /* No background */
+            color: var(--text-accent);
+            border-radius: 0.5rem; /* 8px for hover effect */
             width: 28px;
             height: 28px;
             display: inline-flex;
             align-items: center;
             justify-content: center;
-            font-size: 1.25rem;
+            font-size: 1.5rem; /* 24px */
             line-height: 1;
-            font-weight: 600;
+            font-weight: 900; /* Bolder arrow */
         }
         .skip-subtle-btn:hover {
-            background-color: var(--bg-accent);
+            background-color: var(--bg-tertiary);
+            color: var(--text-primary);
         }
     </style>
 </head>
@@ -226,13 +227,14 @@
                 <div id="timer-display-content" class="z-0">
                     <div id="phase-display" class="text-2xl font-bold uppercase mb-2" style="color: var(--color-prepare);">Prepare</div>
                     <div id="timer-display" class="text-8xl md:text-9xl timer-display" style="color: var(--color-work);">--:--</div>
+                    <!-- UPDATED: Button characters changed -->
                     <div id="progress-display" class="text-xl mt-2 flex items-center justify-center gap-3" style="color: var(--text-secondary);">
-                        <button id="skip-back-subtle-btn" class="skip-subtle-btn hidden btn">&lt;</button>
+                        <button id="skip-back-subtle-btn" class="skip-subtle-btn hidden btn">◀</button>
                         <span>
                             Round <span id="current-round">0</span>/<span id="total-rounds">10</span> |
                             Set <span id="current-set">0</span>/<span id="total-sets">5</span>
                         </span>
-                        <button id="skip-forward-subtle-btn" class="skip-subtle-btn hidden btn">&gt;</button>
+                        <button id="skip-forward-subtle-btn" class="skip-subtle-btn hidden btn">▶</button>
                     </div>
                 </div>
                 <div id="completion-message" class="z-10 hidden">
@@ -384,7 +386,6 @@ document.addEventListener('DOMContentLoaded', () => {
             exercises: ["High Knees", "Burpees", "Jumping Jacks", "Mountain Climbers", "Jump Rope", "Tuck Jumps", "Skater Jumps", "Box Jumps", "Lunge Jumps", "Sprints"]
         },
         sounds: { preStart: 'countdown', workStart: 'work', restStart: 'rest', setEnd: 'setEnd', workoutComplete: 'finish' },
-        // UPDATED: Preset values and names changed
         presets: {
             "༼ つ ◕_◕ ༽つ": { workTime: 35, restTime: 35, roundsPerSet: 6, numSets: 4, restBetweenSets: 75, exercises: ["Landmine row", "Landmine press", "Landmine squat", "Kettlebell swings"] },
             "(ﾉ◕ヮ◕)ﾉ*": { workTime: 32, restTime: 32, roundsPerSet: 3, numSets: 12, restBetweenSets: 0, exercises: ["Woodchoppers", "Bowman", "Shoulder 360s", "Face pulls", "Good mornings", "Reverse hyper", "Split squats", "Glute Circuit", "Hip flexor march", "Hamstring slides", "Push/Pull", "Neck/Forearms"] },

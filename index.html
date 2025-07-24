@@ -35,6 +35,10 @@
             --btn-rename: #8b5cf6; /* violet-500 */
             --btn-rename-hover: #7c3aed; /* violet-600 */
             --color-next-exercise-border: var(--color-set-rest); 
+            /* NEW: Static button colors */
+            --btn-main-start: #22c55e;
+            --btn-main-reset: #ef4444;
+            --btn-main-settings: #3b82f6;
         }
         .theme-forest {
             --bg-primary: #1a2e29; --bg-secondary: #2d4a43; --bg-tertiary: #3e6058; --bg-accent: #507a6d;
@@ -264,9 +268,9 @@
             </div>
 
             <div id="controls-container" class="grid grid-cols-3 gap-4">
-                <button id="start-pause-btn" class="text-white font-bold py-3 px-4 rounded-lg text-lg btn" style="background-color: var(--btn-start);">Start</button>
-                <button id="reset-btn" class="text-white font-bold py-3 px-4 rounded-lg text-lg btn" style="background-color: var(--btn-secondary);">Reset</button>
-                <button id="settings-btn" class="text-white font-bold py-3 px-4 rounded-lg text-lg btn" style="background-color: var(--btn-primary);">Settings</button>
+                <button id="start-pause-btn" class="text-white font-bold py-3 px-4 rounded-lg text-lg btn" style="background-color: var(--btn-main-start);">Start</button>
+                <button id="reset-btn" class="text-white font-bold py-3 px-4 rounded-lg text-lg btn" style="background-color: var(--btn-main-reset);">Reset</button>
+                <button id="settings-btn" class="text-white font-bold py-3 px-4 rounded-lg text-lg btn" style="background-color: var(--btn-main-settings);">Settings</button>
             </div>
         </div>
 
@@ -290,7 +294,6 @@
                     </div>
                 </div>
 
-                <!-- UPDATED: Preset section -->
                 <div class="mb-2">
                     <label for="preset-select" class="block text-center font-semibold uppercase text-sm mb-2" style="color: var(--text-secondary);">Presets</label>
                     <div id="preset-success-message" class="hidden text-center text-sm font-semibold p-2 rounded-lg mb-2" style="background-color: var(--color-work); color: var(--bg-primary);">Preset updated!</div>
@@ -300,13 +303,13 @@
                 <div class="grid grid-cols-3 gap-2 mb-4">
                     <button id="update-preset-btn" class="w-full text-white font-bold py-2 px-3 rounded-lg text-base btn" style="background-color: var(--btn-save);">Update</button>
                     <button id="save-as-new-preset-btn" class="w-full text-white font-bold py-2 px-3 rounded-lg text-base btn" style="background-color: var(--btn-primary);">Save as</button>
-                    <button id="manage-presets-btn" class="w-full text-white font-bold py-2 px-3 rounded-lg text-base btn" style="background-color: var(--bg-accent);">Manage</button>
+                    <button id="manage-presets-btn" class="w-full text-white font-bold py-2 px-3 rounded-lg text-base btn" style="background-color: var(--btn-rename);">Manage</button>
                 </div>
                 
                 <div class="grid grid-cols-3 gap-2">
                     <button id="themes-settings-btn" class="w-full text-white font-bold py-3 px-4 rounded-lg text-lg btn" style="background-color: var(--bg-accent);">Themes</button>
-                    <button id="exercise-settings-btn" class="w-full text-white font-bold py-3 px-4 rounded-lg text-lg btn" style="background-color: var(--bg-accent);">Exercises</button>
-                    <button id="close-settings-btn" class="w-full text-white font-bold py-3 px-4 rounded-lg text-lg btn" style="background-color: var(--btn-primary);">Done</button>
+                    <button id="exercise-settings-btn" class="w-full text-white font-bold py-3 px-4 rounded-lg text-lg btn" style="background-color: var(--btn-preset);">Exercises</button>
+                    <button id="close-settings-btn" class="w-full text-white font-bold py-3 px-4 rounded-lg text-lg btn" style="background-color: var(--btn-start);">Done</button>
                 </div>
             </div>
 
@@ -386,7 +389,7 @@ document.addEventListener('DOMContentLoaded', () => {
         timerInputsContainer: getElem('timer-inputs-container'),
         settingsTogglesContainer: getElem('settings-toggles-container'),
         presetSelect: getElem('preset-select'),
-        presetSuccessMessage: getElem('preset-success-message'), // NEW
+        presetSuccessMessage: getElem('preset-success-message'),
         updatePresetBtn: getElem('update-preset-btn'),
         saveAsNewPresetBtn: getElem('save-as-new-preset-btn'),
         managePresetsBtn: getElem('manage-presets-btn'),
@@ -448,9 +451,9 @@ document.addEventListener('DOMContentLoaded', () => {
             "Cardio": { workTime: 30, restTime: 15, roundsPerSet: 10, numSets: 5, restBetweenSets: 75, exercises: ["High Knees", "Burpees", "Jumping Jacks", "Mountain Climbers", "Jump Rope", "Tuck Jumps", "Skater Jumps", "Box Jumps", "Lunge Jumps", "Sprints"] }
         },
         theme: 'default',
-        motivationalQuotesEnabled: true,
+        motivationalQuotesEnabled: false,
         warmUpEnabled: false,
-        volume: 0.5,
+        volume: 0.8,
         lastPreset: "༼ つ ◕_◕ ༽つ"
     };
     
@@ -854,13 +857,13 @@ document.addEventListener('DOMContentLoaded', () => {
             elements.resetBtn.classList.remove('hidden');
             elements.settingsBtn.classList.remove('hidden');
             startBtn.textContent = 'Resume';
-            startBtn.style.backgroundColor = 'var(--btn-start)';
+            startBtn.style.backgroundColor = 'var(--btn-main-start)';
         } else { // idle
             elements.controlsContainer.className = 'grid grid-cols-3 gap-4';
             elements.resetBtn.classList.remove('hidden');
             elements.settingsBtn.classList.remove('hidden');
             startBtn.textContent = 'Start';
-            startBtn.style.backgroundColor = 'var(--btn-start)';
+            startBtn.style.backgroundColor = 'var(--btn-main-start)';
         }
     };
 

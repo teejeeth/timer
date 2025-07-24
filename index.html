@@ -417,10 +417,11 @@ document.addEventListener('DOMContentLoaded', () => {
 
     const defaultState = {
         timer: null, status: 'idle', phase: 'prepare', currentTime: 0, currentRound: 0, currentSet: 0,
+        // UPDATED: Default settings now match the "༼ つ ◕_◕ ༽つ" preset
         settings: {
-            workTime: 30, restTime: 15, roundsPerSet: 10, numSets: 5, restBetweenSets: 90, preStartDelay: 3,
-            warmUpDuration: 300, // NEW: Warm up duration setting
-            exercises: ["High Knees", "Burpees", "Jumping Jacks", "Mountain Climbers", "Jump Rope", "Tuck Jumps", "Skater Jumps", "Box Jumps", "Lunge Jumps", "Sprints"]
+            workTime: 35, restTime: 35, roundsPerSet: 6, numSets: 4, restBetweenSets: 75, preStartDelay: 3,
+            warmUpDuration: 300,
+            exercises: ["Landmine row", "Landmine press", "Landmine squat", "Kettlebell swings"]
         },
         sounds: { preStart: 'countdown', workStart: 'work', restStart: 'rest', setEnd: 'setEnd', workoutComplete: 'finish' },
         presets: {
@@ -558,7 +559,6 @@ document.addEventListener('DOMContentLoaded', () => {
         updateInputLayout();
     };
     
-    // NEW: Function to control input layout
     const updateInputLayout = () => {
         const restWrapper = getElem('rest-between-sets-wrapper');
         const warmUpWrapper = getElem('warm-up-duration-wrapper');

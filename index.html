@@ -418,7 +418,8 @@ document.addEventListener('DOMContentLoaded', () => {
 
     const soundFiles = {
         work: 'sound/work.mp3', rest: 'sound/rest.mp3', countdown: 'sound/countdown.mp3',
-        setEnd: 'sound/set_end.mp3', finish: 'sound/finish.mp3'
+        setEnd: 'sound/set_end.mp3', finish: 'sound/finish.mp3',
+        countdownBeep: 'sound/countdown_beep.mp3'
     };
     let audioPlayers = {};
     let audioInitialized = false;
@@ -656,6 +657,11 @@ document.addEventListener('DOMContentLoaded', () => {
     const tick = () => {
         state.currentTime--;
         updateDisplay();
+
+        if ((state.phase === 'rest' || state.phase === 'setRest') && state.currentTime <= 3 && state.currentTime > 0) {
+            playSound('countdownBeep');
+        }
+
         if (state.currentTime > 0) {
             if (state.phase === 'prepare') playSound(state.sounds.preStart);
             return;
@@ -1045,7 +1051,6 @@ document.addEventListener('DOMContentLoaded', () => {
         elements.exerciseSettingsBtn.addEventListener('click', () => showPanel(elements.exerciseSettingsPanel));
         elements.backToSettingsFromThemesBtn.addEventListener('click', () => showPanel(elements.settingsPanel));
         elements.backToSettingsFromExercisesBtn.addEventListener('click', () => showPanel(elements.settingsPanel));
-        elements.timerInputsContainer.addEventListener('click', e => { if (e.target.closest('[data-action]')) handleStepper(e); });
         elements.timerInputsContainer.addEventListener('input', e => { if (e.target.matches('.timer-setting-input')) handleSettingsChange(e); });
         elements.exerciseInputsContainer.addEventListener('input', e => { if (e.target.matches('.exercise-input')) handleExerciseInputChange(e); });
         elements.themeButtonsContainer.addEventListener('click', e => {

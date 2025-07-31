@@ -448,15 +448,15 @@ document.addEventListener('DOMContentLoaded', () => {
             "1+": { workTime: 32, restTime: 32, roundsPerSet: 3, numSets: 11, restBetweenSets: 0, exercises: ["Woodchoppers", "Bowman", "Shoulder 360s", "Split squats", "Good mornings", "Reverse hyper", "Jefferson curl", "Medius plate", "Hip flexor march", "Hamstring slides", "Push/Pull"] },
             "Thasmin": { workTime: 35, restTime: 35, roundsPerSet: 4, numSets: 7, restBetweenSets: 75, exercises: ["Kettlebell power cleans", "kettlebell swings", "split squat", "squat", "Hip thrust", "monster walk", "banded row"] },
             "Barbell": { workTime: 35, restTime: 35, roundsPerSet: 6, numSets: 4, restBetweenSets: 75, exercises: ["Barbell power cleans", "Barbell row", "Zercher squat", "Hip thrust"] },
-            "2+: { workTime: 32, restTime: 32, roundsPerSet: 3, numSets: 11, restBetweenSets: 0, exercises: ["Pull ups", "Push ups", "Pallof press", "Jefferson curls", "Back extension", "Suitcase carry", "Shoulder carry", "Monster walks/Band push", "Medius kicks", "4-Plank", "YTWL"] },
+            "2+": { workTime: 32, restTime: 32, roundsPerSet: 3, numSets: 11, restBetweenSets: 0, exercises: ["Pull ups", "Push ups", "Pallof press", "Jefferson curls", "Back extension", "Suitcase carry", "Shoulder carry", "Monster walks/Band push", "Medius kicks", "4-Plank", "YTWL"] },
             "Cardio": { workTime: 30, restTime: 15, roundsPerSet: 10, numSets: 5, restBetweenSets: 75, exercises: ["High Knees", "Burpees", "Jumping Jacks", "Mountain Climbers", "Jump Rope", "Tuck Jumps", "Skater Jumps", "Box Jumps", "Lunge Jumps", "Neck/Forearms"] },
-            "Stretch": { workTime: 125, restTime: 20, roundsPerSet: 8, numSets: 1, restBetweenSets: 75, exercises: ["Hip flexor reps", "Child's pose", "Cobra", "90-90", "Butterfly", "T-Rotations", "Backpod swings", "Hang"] }
+            "Stretch": { workTime: 125, restTime: 20, roundsPerSet: 8, numSets: 1, restBetweenSets: 75, exercises: ["Hip flexor reps", "Child's/frog pose", "Cobra", "90-90", "Butterfly", "T-Rotations", "Backpod swings", "Hang"] }
         },
         theme: 'default',
         motivationalQuotesEnabled: false,
         warmUpEnabled: false,
         volume: 0.8,
-        lastPreset: "༼ つ ◕_◕ ༽つ"
+        lastPreset: "Landmine"
     };
     
     // --- DATA PERSISTENCE ---
@@ -1053,6 +1053,7 @@ document.addEventListener('DOMContentLoaded', () => {
         elements.backToSettingsFromThemesBtn.addEventListener('click', () => showPanel(elements.settingsPanel));
         elements.backToSettingsFromExercisesBtn.addEventListener('click', () => showPanel(elements.settingsPanel));
         elements.timerInputsContainer.addEventListener('input', e => { if (e.target.matches('.timer-setting-input')) handleSettingsChange(e); });
+        elements.timerInputsContainer.addEventListener('click', e => { if (e.target.closest('[data-action]')) handleStepper(e); });
         elements.exerciseInputsContainer.addEventListener('input', e => { if (e.target.matches('.exercise-input')) handleExerciseInputChange(e); });
         elements.themeButtonsContainer.addEventListener('click', e => {
             const themeBtn = e.target.closest('.theme-btn');

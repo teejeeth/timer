@@ -444,14 +444,79 @@ document.addEventListener('DOMContentLoaded', () => {
         },
         sounds: { preStart: 'countdown', workStart: 'work', restStart: 'rest', setEnd: 'setEnd', workoutComplete: 'finish' },
         presets: {
-            "Landmine": { workTime: 35, restTime: 35, roundsPerSet: 6, numSets: 4, restBetweenSets: 75, exercises: ["Landmine row", "Landmine press", "Landmine squat", "Kettlebell swings"] },
-            "1+": { workTime: 32, restTime: 32, roundsPerSet: 3, numSets: 11, restBetweenSets: 0, exercises: ["Woodchoppers", "Hip flexor march", "Shoulder 360s", "Split squats", "Good mornings", "Reverse hyper", "Jefferson curl", "Medius plate", "QL side bend", "Hamstring slides", "Biceps/Triceps"] },
-            "Thasmin": { workTime: 35, restTime: 35, roundsPerSet: 4, numSets: 7, restBetweenSets: 75, exercises: ["Kettlebell power cleans", "kettlebell swings", "split squat", "squat", "Hip thrust", "monster walk", "banded row"] },
-            "Barbell": { workTime: 35, restTime: 35, roundsPerSet: 6, numSets: 4, restBetweenSets: 75, exercises: ["Barbell power cleans", "Barbell row", "Zercher squat", "Hip thrust"] },
-            "2+": { workTime: 32, restTime: 32, roundsPerSet: 3, numSets: 11, restBetweenSets: 0, exercises: ["Pallof press", "Jefferson curls", "Back extension", "QL side bend", "Suitcase carry", "Shoulder carry", "Monster walks/Band push", "Medius kicks", "4-Plank", "YTWL", "Biceps/Triceps"] },
-            "Cardio": { workTime: 30, restTime: 15, roundsPerSet: 10, numSets: 5, restBetweenSets: 75, exercises: ["High Knees", "Burpees", "Jumping Jacks", "Mountain Climbers", "Jump Rope", "Tuck Jumps", "Skater Jumps", "Box Jumps", "Lunge Jumps", "Neck/Forearms"] },
-            "Stretch": { workTime: 90, restTime: 12, roundsPerSet: 2, numSets: 12, restBetweenSets: 5, exercises: ["Arm/leg swings", "Hip flexor reps/Air humps", "Child's pose/Frog pose", "Cobra", "90-90", "Butterfly/pancake", "90-90","lat stretch", "T-Rotations/Backpod swings", "Pec stretch", "Couch stretch", "Hang"] }
-        },
+    "Barbell Strength": {
+        workTime: 35,
+        restTime: 35,
+        roundsPerSet: 5,
+        numSets: 4,
+        restBetweenSets: 75,
+        exercises: ["Barbell Cleans", "Deadlift", "Zercher Squat", "Hip Thrust", "Barbell Row"]
+    },
+    "Landmine Focus": {
+        workTime: 35,
+        restTime: 35,
+        roundsPerSet: 5,
+        numSets: 4,
+        restBetweenSets: 75,
+        exercises: ["Landmine Press", "Landmine hinge", "Landmine Row", "Landmine Squat", "Landmine rotations"]
+    },
+    "Unilateral Stability": {
+        workTime: 32,
+        restTime: 32,
+        roundsPerSet: 6,
+        numSets: 3,
+        restBetweenSets: 60,
+        exercises: ["SL Squat", "S-Dumbell OHP", "SL Hip Thrust", "S-Dumbell Row", "SL Deadlift"]
+    },
+    "Athletic Power": {
+        workTime: 30,
+        restTime: 30,
+        roundsPerSet: 5,
+        numSets: 5,
+        restBetweenSets: 60,
+        exercises: ["Single Arm Row", "S-Dumbell OHP", "Hip marches", "Pallof Press", "Woodchoppers"]
+    },
+    "Kettlebell": {
+        workTime: 40,
+        restTime: 20,
+        roundsPerSet: 5,
+        numSets: 4,
+        restBetweenSets: 75,
+        exercises: ["Kettlebell Cleans", "Kettlebell row", "Kettlebell Windmill", "Kettlebell Swings", "Suitcase Carry"]
+    },
+    "Functional Core & Carry": {
+        workTime: 35,
+        restTime: 25,
+        roundsPerSet: 5,
+        numSets: 4,
+        restBetweenSets: 60,
+        exercises: ["Glute medius plate", "Farmer's Walk", "Monster Walk", "Hamstring Slides", "Copenhagen Plank"]
+    },
+    "Accessoires": {
+        workTime: 30,
+        restTime: 15,
+        roundsPerSet: 8,
+        numSets: 3,
+        restBetweenSets: 60,
+        exercises: ["Split squat", "Back Extension", "Reverse Hyper", "Side plank thruster", "Good Morning", "Jefferson Curl", "QL Side Bend", "Crunches"]
+    },
+    "A. Recovery day": {
+        workTime: 45,
+        restTime: 15,
+        roundsPerSet: 6,
+        numSets: 2,
+        restBetweenSets: 45,
+        exercises: ["Forearms", "Neck", "Shrugs", "Biceps", "Triceps", "Lu raises/shoulder 30s"]
+    },
+    "Thasmin": {
+        workTime: 35,
+        restTime: 35,
+        roundsPerSet: 4,
+        numSets: 7,
+        restBetweenSets: 75,
+        exercises: ["Kettlebell power cleans", "kettlebell swings", "split squat", "squat", "Hip thrust", "monster walk", "banded row"]
+    }
+},
         theme: 'default',
         motivationalQuotesEnabled: false,
         warmUpEnabled: false,
@@ -1199,6 +1264,7 @@ document.addEventListener('DOMContentLoaded', () => {
 </script>
 </body>
 </html>
+
 
 
 

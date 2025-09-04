@@ -1,1274 +1,605 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>beep boop timer</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;900&display=swap" rel="stylesheet">
-    <style>
-        :root {
-            --bg-primary: #111827; /* gray-900 */
-            --bg-secondary: #1f2937; /* gray-800 */
-            --bg-tertiary: #374151; /* gray-700 */
-            --bg-accent: #4b5563; /* gray-600 */
-            --text-primary: #f9fafb; /* gray-50 */
-            --text-secondary: #d1d5db; /* gray-300 */
-            --text-accent: #6b7280; /* gray-500 */
-            --color-warm-up: #f59e0b; /* amber-500 */
-            --color-prepare: #facc15; /* yellow-400 */
-            --color-work: #4ade80; /* green-400 */
-            --color-rest: #a78bfa; /* violet-400 */
-            --color-set-rest: #60a5fa; /* blue-400 */
-            --btn-primary: #3b82f6; /* blue-500 */
-            --btn-primary-hover: #2563eb; /* blue-600 */
-            --btn-secondary: #ef4444; /* red-500 */
-            --btn-secondary-hover: #dc2626; /* red-600 */
-            --btn-start: #22c55e; /* green-500 */
-            --btn-start-hover: #16a34a; /* green-600 */
-            --btn-preset: #14b8a6; /* teal-500 */
-            --btn-preset-hover: #0d9488; /* teal-600 */
-            --btn-save: #f59e0b; /* amber-500 */
-            --btn-save-hover: #d97706; /* amber-600 */
-            --btn-rename: #8b5cf6; /* violet-500 */
-            --btn-rename-hover: #7c3aed; /* violet-600 */
-            --color-next-exercise-border: var(--color-set-rest); 
-            /* NEW: Static button colors */
-            --btn-main-start: #22c55e;
-            --btn-main-reset: #ef4444;
-            --btn-main-settings: #3b82f6;
-        }
-        .theme-forest {
-            --bg-primary: #1a2e29; --bg-secondary: #2d4a43; --bg-tertiary: #3e6058; --bg-accent: #507a6d;
-            --text-primary: #e8f5e9; --text-secondary: #a5d6a7; --text-accent: #81c784;
-            --color-warm-up: #ffb74d; --color-prepare: #ffb74d; --color-work: #aed581; --color-rest: #90a4ae; --color-set-rest: #7986cb;
-            --btn-primary: #4db6ac; --btn-primary-hover: #26a69a; --btn-secondary: #e57373; --btn-secondary-hover: #ef5350;
-            --btn-start: #81c784; --btn-start-hover: #66bb6a; --btn-preset: #66bb6a; --btn-preset-hover: #4caf50;
-            --color-next-exercise-border: #facc15; 
-        }
-        .theme-spring {
-            --bg-primary: #f0fff4; --bg-secondary: #d4edda; --bg-tertiary: #b8e0c2; --bg-accent: #9cd3ab;
-            --text-primary: #0c3b2e; --text-secondary: #1e4620; --text-accent: #3e624d;
-            --color-warm-up: #ffa726; --color-prepare: #ffc107; --color-work: #ff6b6b; --color-rest: #4dabf7; --color-set-rest: #9c88ff;
-            --btn-primary: #4dabf7; --btn-primary-hover: #3b9bff; --btn-secondary: #ff6b6b; --btn-secondary-hover: #ff4d4d;
-            --btn-start: #4caf50; --btn-start-hover: #45a049; --btn-preset: #ffa726; --btn-preset-hover: #fb8c00;
-        }
-        .theme-winter {
-            --bg-primary: #e3f2fd; --bg-secondary: #bbdefb; --bg-tertiary: #90caf9; --bg-accent: #64b5f6;
-            --text-primary: #0d47a1; --text-secondary: #1565c0; --text-accent: #1976d2;
-            --color-warm-up: #fbc02d; --color-prepare: #fbc02d; --color-work: #d32f2f; --color-rest: #7b1fa2; --color-set-rest: #00796b;
-            --btn-primary: #1976d2; --btn-primary-hover: #1565c0; --btn-secondary: #d32f2f; --btn-secondary-hover: #c62828;
-            --btn-start: #388e3c; --btn-start-hover: #2e7d32; --btn-preset: #512da8; --btn-preset-hover: #4527a0;
-        }
-        .theme-sakura {
-            --bg-primary: #fff0f5; --bg-secondary: #ffe4e1; --bg-tertiary: #ffc0cb; --bg-accent: #ffb6c1;
-            --text-primary: #8b0000; --text-secondary: #a52a2a; --text-accent: #bc8f8f;
-            --color-warm-up: #ffd700; --color-prepare: #ffd700; --color-work: #ff1493; --color-rest: #48d1cc; --color-set-rest: #9370db;
-            --btn-primary: #9370db; --btn-primary-hover: #825fce; --btn-secondary: #db7093; --btn-secondary-hover: #c71585;
-            --btn-start: #32cd32; --btn-start-hover: #228b22; --btn-preset: #dda0dd; --btn-preset-hover: #da70d6;
-        }
-        .theme-stormy {
-            --bg-primary: #384959; --bg-secondary: #6A89A7; --bg-tertiary: #88BDF2; --bg-accent: #384959;
-            --text-primary: #FFFFFF; --text-secondary: #BDDDFC; --text-accent: #FFFFFF;
-            --color-warm-up: #f5d042; --color-prepare: #f5d042; --color-work: #BDDDFC; --color-rest: #88BDF2; --color-set-rest: #6A89A7;
-            --btn-primary: #88BDF2; --btn-primary-hover: #77a8d9; --btn-secondary: #e57373; --btn-secondary-hover: #ef5350;
-            --btn-start: #4caf50; --btn-start-hover: #45a049; --btn-preset: #384959; --btn-preset-hover: #2c3a47;
-        }
-        .theme-mossy {
-            --bg-primary: #3D4127; --bg-secondary: #636B2F; --bg-tertiary: #92977e; --bg-accent: #3D4127;
-            --text-primary: #f1f2e2; --text-secondary: #D4DE95; --text-accent: #BAC095;
-            --color-warm-up: #ffb74d; --color-prepare: #ffb74d; --color-work: #D4DE95; --color-rest: #BAC095; --color-set-rest: #636B2F;
-            --btn-primary: #5c6bc0; --btn-primary-hover: #3f51b5; --btn-secondary: #a96363; --btn-secondary-hover: #985252;
-            --btn-start: #8bc34a; --btn-start-hover: #7cb342; --btn-preset: #3D4127; --btn-preset-hover: #2c2f1c;
-        }
-        .theme-lush {
-            --bg-primary: #253D2C; --bg-secondary: #2E6F40; --bg-tertiary: #68BA7F; --bg-accent: #253D2C;
-            --text-primary: #f0fff5; --text-secondary: #CFFFDC; --text-accent: #a3e9b8;
-            --color-warm-up: #facc15; --color-prepare: #facc15; --color-work: #CFFFDC; --color-rest: #68BA7F; --color-set-rest: #2E6F40;
-            --btn-primary: #00796b; --btn-primary-hover: #00695c; --btn-secondary: #c86a6a; --btn-secondary-hover: #b35e5e;
-            --btn-start: #2E6F40; --btn-start-hover: #245833; --btn-preset: #253D2C; --btn-preset-hover: #1a291f;
-        }
-        .theme-chili {
-            --bg-primary: #38000A; --bg-secondary: #9B1313; --bg-tertiary: #CD1C18; --bg-accent: #38000A;
-            --text-primary: #FFFFFF; --text-secondary: #fde8ea; --text-accent: #f5c1b6;
-            --color-warm-up: #facc15; --color-prepare: #facc15; --color-work: #FFA896; --color-rest: #CD1C18; --color-set-rest: #9B1313;
-            --btn-primary: #1a237e; --btn-primary-hover: #0d125a; --btn-secondary: #CD1C18; --btn-secondary-hover: #b21815;
-            --btn-start: #388e3c; --btn-start-hover: #2e7d32; --btn-preset: #38000A; --btn-preset-hover: #270007;
-        }
-        .theme-hydrangea {
-            --bg-primary: #AD56C4; --bg-secondary: #d083e2; --bg-tertiary: #FF8DA1; --bg-accent: #AD56C4;
-            --text-primary: #FFFFFF; --text-secondary: #fce4ec; --text-accent: #f8bbd0;
-            --color-warm-up: #fdd835; --color-prepare: #fdd835; --color-work: #FFC2BA; --color-rest: #FF9CE9; --color-set-rest: #FF8DA1;
-            --btn-primary: #AD56C4; --btn-primary-hover: #9c4cb3; --btn-secondary: #e91e63; --btn-secondary-hover: #c2185b;
-            --btn-start: #4caf50; --btn-start-hover: #45a049; --btn-preset: #AD56C4; --btn-preset-hover: #9c4cb3;
-        }
-        body {
-            font-family: 'Inter', sans-serif;
-            touch-action: manipulation;
-            background-color: var(--bg-primary);
-            color: var(--text-primary);
-        }
-        .timer-display { font-weight: 900; line-height: 1; }
-        .btn { transition: all 0.2s ease; }
-        .btn:active { transform: scale(0.95); }
-        input[type="number"]::-webkit-inner-spin-button,
-        input[type="number"]::-webkit-outer-spin-button { -webkit-appearance: none; margin: 0; }
-        input[type="number"] { -moz-appearance: textfield; }
-        .panel { transition: opacity 0.3s ease, transform 0.3s ease; }
-        .panel.hidden { opacity: 0; transform: scale(0.98); pointer-events: none; display: none; }
-        /* Toggle Switch Styles */
-        .toggle-label {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            cursor: pointer;
-            padding: 0.75rem;
-            border-radius: 0.5rem;
-            background-color: var(--bg-tertiary);
-        }
-        .toggle-switch {
-            position: relative;
-            display: inline-block;
-            width: 50px;
-            height: 28px;
-        }
-        .toggle-switch input {
-            opacity: 0;
-            width: 0;
-            height: 0;
-        }
-        .slider {
-            position: absolute;
-            cursor: pointer;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background-color: var(--bg-accent);
-            transition: .4s;
-            border-radius: 28px;
-        }
-        .slider:before {
-            position: absolute;
-            content: "";
-            height: 20px;
-            width: 20px;
-            left: 4px;
-            bottom: 4px;
-            background-color: white;
-            transition: .4s;
-            border-radius: 50%;
-        }
-        input:checked + .slider {
-            background-color: var(--btn-start);
-        }
-        input:checked + .slider:before {
-            transform: translateX(22px);
-        }
-        /* Volume Slider */
-        .volume-control-container {
-            padding: 0.75rem;
-            border-radius: 0.5rem;
-            background-color: var(--bg-tertiary);
-        }
-        input[type="range"] {
-            -webkit-appearance: none;
-            appearance: none;
-            width: 100%;
-            height: 8px;
-            border-radius: 5px;
-            background: var(--bg-accent);
-            outline: none;
-            opacity: 0.7;
-            transition: opacity .2s;
-        }
-        input[type="range"]:hover {
-            opacity: 1;
-        }
-        input[type="range"]::-webkit-slider-thumb {
-            -webkit-appearance: none;
-            appearance: none;
-            width: 20px;
-            height: 20px;
-            border-radius: 50%;
-            background: var(--btn-primary);
-            cursor: pointer;
-        }
-        input[type="range"]::-moz-range-thumb {
-            width: 20px;
-            height: 20px;
-            border-radius: 50%;
-            background: var(--btn-primary);
-            cursor: pointer;
-        }
-        /* Minimalist Arrow Button Style */
-        .skip-subtle-btn {
-            background-color: transparent;
-            color: var(--text-accent);
-            border-radius: 0.5rem;
-            width: 28px;
-            height: 28px;
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 1.5rem;
-            line-height: 1;
-            font-weight: 900;
-        }
-        .skip-subtle-btn:hover {
-            background-color: var(--bg-tertiary);
-            color: var(--text-primary);
-        }
-        /* Custom Select Styling */
-        .custom-select {
-            -webkit-appearance: none;
-            -moz-appearance: none;
-            appearance: none;
-            background-image: url('data:image/svg+xml;utf8,<svg fill="white" height="24" viewBox="0 0 24 24" width="24" xmlns="http://www.w3.org/2000/svg"><path d="M7 10l5 5 5-5z"/></svg>');
-            background-repeat: no-repeat;
-            background-position: right 0.7rem center;
-            background-size: 1.2em;
-            padding-right: 2.5rem;
-        }
-    </style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>beep boop timer</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;900&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg-primary: #111827; /* gray-900 */
+            --bg-secondary: #1f2937; /* gray-800 */
+            --bg-tertiary: #374151; /* gray-700 */
+            --bg-accent: #4b5563; /* gray-600 */
+            --text-primary: #f9fafb; /* gray-50 */
+            --text-secondary: #d1d5db; /* gray-300 */
+            --text-accent: #6b7280; /* gray-500 */
+            --color-warm-up: #f59e0b; /* amber-500 */
+            --color-prepare: #facc15; /* yellow-400 */
+            --color-work: #4ade80; /* green-400 */
+            --color-rest: #a78bfa; /* violet-400 */
+            --color-set-rest: #60a5fa; /* blue-400 */
+            --btn-primary: #3b82f6; /* blue-500 */
+            --btn-primary-hover: #2563eb; /* blue-600 */
+            --btn-secondary: #ef4444; /* red-500 */
+            --btn-secondary-hover: #dc2626; /* red-600 */
+            --btn-start: #22c55e; /* green-500 */
+            --btn-start-hover: #16a34a; /* green-600 */
+            --btn-preset: #14b8a6; /* teal-500 */
+            --btn-preset-hover: #0d9488; /* teal-600 */
+            --btn-save: #f59e0b; /* amber-500 */
+            --btn-save-hover: #d97706; /* amber-600 */
+            --btn-rename: #8b5cf6; /* violet-500 */
+            --btn-rename-hover: #7c3aed; /* violet-600 */
+            --color-next-exercise-border: var(--color-set-rest); 
+            /* NEW: Static button colors */
+            --btn-main-start: #22c55e;
+            --btn-main-reset: #ef4444;
+            --btn-main-settings: #3b82f6;
+        }
+        .theme-forest {
+            --bg-primary: #1a2e29; --bg-secondary: #2d4a43; --bg-tertiary: #3e6058; --bg-accent: #507a6d;
+            --text-primary: #e8f5e9; --text-secondary: #a5d6a7; --text-accent: #81c784;
+            --color-warm-up: #ffb74d; --color-prepare: #ffb74d; --color-work: #aed581; --color-rest: #90a4ae; --color-set-rest: #7986cb;
+            --btn-primary: #4db6ac; --btn-primary-hover: #26a69a; --btn-secondary: #e57373; --btn-secondary-hover: #ef5350;
+            --btn-start: #81c784; --btn-start-hover: #66bb6a; --btn-preset: #66bb6a; --btn-preset-hover: #4caf50;
+            --color-next-exercise-border: #facc15; 
+        }
+        .theme-spring {
+            --bg-primary: #f0fff4; --bg-secondary: #d4edda; --bg-tertiary: #b8e0c2; --bg-accent: #9cd3ab;
+            --text-primary: #0c3b2e; --text-secondary: #1e4620; --text-accent: #3e624d;
+            --color-warm-up: #ffa726; --color-prepare: #ffc107; --color-work: #ff6b6b; --color-rest: #4dabf7; --color-set-rest: #9c88ff;
+            --btn-primary: #4dabf7; --btn-primary-hover: #3b9bff; --btn-secondary: #ff6b6b; --btn-secondary-hover: #ff4d4d;
+            --btn-start: #4caf50; --btn-start-hover: #45a049; --btn-preset: #ffa726; --btn-preset-hover: #fb8c00;
+        }
+        .theme-winter {
+            --bg-primary: #e3f2fd; --bg-secondary: #bbdefb; --bg-tertiary: #90caf9; --bg-accent: #64b5f6;
+            --text-primary: #0d47a1; --text-secondary: #1565c0; --text-accent: #1976d2;
+            --color-warm-up: #fbc02d; --color-prepare: #fbc02d; --color-work: #d32f2f; --color-rest: #7b1fa2; --color-set-rest: #00796b;
+            --btn-primary: #1976d2; --btn-primary-hover: #1565c0; --btn-secondary: #d32f2f; --btn-secondary-hover: #c62828;
+            --btn-start: #388e3c; --btn-start-hover: #2e7d32; --btn-preset: #512da8; --btn-preset-hover: #4527a0;
+        }
+        .theme-sakura {
+            --bg-primary: #fff0f5; --bg-secondary: #ffe4e1; --bg-tertiary: #ffc0cb; --bg-accent: #ffb6c1;
+            --text-primary: #8b0000; --text-secondary: #a52a2a; --text-accent: #bc8f8f;
+            --color-warm-up: #ffd700; --color-prepare: #ffd700; --color-work: #ff1493; --color-rest: #48d1cc; --color-set-rest: #9370db;
+            --btn-primary: #9370db; --btn-primary-hover: #825fce; --btn-secondary: #db7093; --btn-secondary-hover: #c71585;
+            --btn-start: #32cd32; --btn-start-hover: #228b22; --btn-preset: #dda0dd; --btn-preset-hover: #da70d6;
+        }
+        .theme-stormy {
+            --bg-primary: #384959; --bg-secondary: #6A89A7; --bg-tertiary: #88BDF2; --bg-accent: #384959;
+            --text-primary: #FFFFFF; --text-secondary: #BDDDFC; --text-accent: #FFFFFF;
+            --color-warm-up: #f5d042; --color-prepare: #f5d042; --color-work: #BDDDFC; --color-rest: #88BDF2; --color-set-rest: #6A89A7;
+            --btn-primary: #88BDF2; --btn-primary-hover: #77a8d9; --btn-secondary: #e57373; --btn-secondary-hover: #ef5350;
+            --btn-start: #4caf50; --btn-start-hover: #45a049; --btn-preset: #384959; --btn-preset-hover: #2c3a47;
+        }
+        .theme-mossy {
+            --bg-primary: #3D4127; --bg-secondary: #636B2F; --bg-tertiary: #92977e; --bg-accent: #3D4127;
+            --text-primary: #f1f2e2; --text-secondary: #D4DE95; --text-accent: #BAC095;
+            --color-warm-up: #ffb74d; --color-prepare: #ffb74d; --color-work: #D4DE95; --color-rest: #BAC095; --color-set-rest: #636B2F;
+            --btn-primary: #5c6bc0; --btn-primary-hover: #3f51b5; --btn-secondary: #a96363; --btn-secondary-hover: #985252;
+            --btn-start: #8bc34a; --btn-start-hover: #7cb342; --btn-preset: #3D4127; --btn-preset-hover: #2c2f1c;
+        }
+        .theme-lush {
+            --bg-primary: #253D2C; --bg-secondary: #2E6F40; --bg-tertiary: #68BA7F; --bg-accent: #253D2C;
+            --text-primary: #f0fff5; --text-secondary: #CFFFDC; --text-accent: #a3e9b8;
+            --color-warm-up: #facc15; --color-prepare: #facc15; --color-work: #CFFFDC; --color-rest: #68BA7F; --color-set-rest: #2E6F40;
+            --btn-primary: #00796b; --btn-primary-hover: #00695c; --btn-secondary: #c86a6a; --btn-secondary-hover: #b35e5e;
+            --btn-start: #2E6F40; --btn-start-hover: #245833; --btn-preset: #253D2C; --btn-preset-hover: #1a291f;
+        }
+        .theme-chili {
+            --bg-primary: #38000A; --bg-secondary: #9B1313; --bg-tertiary: #CD1C18; --bg-accent: #38000A;
+            --text-primary: #FFFFFF; --text-secondary: #fde8ea; --text-accent: #f5c1b6;
+            --color-warm-up: #facc15; --color-prepare: #facc15; --color-work: #FFA896; --color-rest: #CD1C18; --color-set-rest: #9B1313;
+            --btn-primary: #1a237e; --btn-primary-hover: #0d125a; --btn-secondary: #CD1C18; --btn-secondary-hover: #b21815;
+            --btn-start: #388e3c; --btn-start-hover: #2e7d32; --btn-preset: #38000A; --btn-preset-hover: #270007;
+        }
+        .theme-hydrangea {
+            --bg-primary: #AD56C4; --bg-secondary: #d083e2; --bg-tertiary: #FF8DA1; --bg-accent: #AD56C4;
+            --text-primary: #FFFFFF; --text-secondary: #fce4ec; --text-accent: #f8bbd0;
+            --color-warm-up: #fdd835; --color-prepare: #fdd835; --color-work: #FFC2BA; --color-rest: #FF9CE9; --color-set-rest: #FF8DA1;
+            --btn-primary: #AD56C4; --btn-primary-hover: #9c4cb3; --btn-secondary: #e91e63; --btn-secondary-hover: #c2185b;
+            --btn-start: #4caf50; --btn-start-hover: #45a049; --btn-preset: #AD56C4; --btn-preset-hover: #9c4cb3;
+        }
+        body {
+            font-family: 'Inter', sans-serif;
+            touch-action: manipulation;
+            background-color: var(--bg-primary);
+            color: var(--text-primary);
+        }
+        .timer-display { font-weight: 900; line-height: 1; }
+        .btn { transition: all 0.2s ease; }
+        .btn:active { transform: scale(0.95); }
+        input[type="number"]::-webkit-inner-spin-button,
+        input[type="number"]::-webkit-outer-spin-button { -webkit-appearance: none; margin: 0; }
+        input[type="number"] { -moz-appearance: textfield; }
+        .panel { transition: opacity 0.3s ease, transform 0.3s ease; }
+        .panel.hidden { opacity: 0; transform: scale(0.98); pointer-events: none; display: none; }
+        /* Toggle Switch Styles */
+        .toggle-label {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            cursor: pointer;
+            padding: 0.75rem;
+            border-radius: 0.5rem;
+            background-color: var(--bg-tertiary);
+        }
+        .toggle-switch {
+            position: relative;
+            display: inline-block;
+            width: 50px;
+            height: 28px;
+        }
+        .toggle-switch input {
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+        .slider {
+            position: absolute;
+            cursor: pointer;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: var(--bg-accent);
+            transition: .4s;
+            border-radius: 28px;
+        }
+        .slider:before {
+            position: absolute;
+            content: "";
+            height: 20px;
+            width: 20px;
+            left: 4px;
+            bottom: 4px;
+            background-color: white;
+            transition: .4s;
+            border-radius: 50%;
+        }
+        input:checked + .slider {
+            background-color: var(--btn-start);
+        }
+        input:checked + .slider:before {
+            transform: translateX(22px);
+        }
+        /* Volume Slider */
+        .volume-control-container {
+            padding: 0.75rem;
+            border-radius: 0.5rem;
+            background-color: var(--bg-tertiary);
+        }
+        input[type="range"] {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 100%;
+            height: 8px;
+            border-radius: 5px;
+            background: var(--bg-accent);
+            outline: none;
+            opacity: 0.7;
+            transition: opacity .2s;
+        }
+        input[type="range"]:hover {
+            opacity: 1;
+        }
+        input[type="range"]::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            background: var(--btn-primary);
+            cursor: pointer;
+        }
+        input[type="range"]::-moz-range-thumb {
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            background: var(--btn-primary);
+            cursor: pointer;
+        }
+        /* Minimalist Arrow Button Style */
+        .skip-subtle-btn {
+            background-color: transparent;
+            color: var(--text-accent);
+            border-radius: 0.5rem;
+            width: 28px;
+            height: 28px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            line-height: 1;
+            font-weight: 900;
+        }
+        .skip-subtle-btn:hover {
+            background-color: var(--bg-tertiary);
+            color: var(--text-primary);
+        }
+        /* Custom Select Styling */
+        .custom-select {
+            -webkit-appearance: none;
+            -moz-appearance: none;
+            appearance: none;
+            background-image: url('data:image/svg+xml;utf8,<svg fill="white" height="24" viewBox="0 0 24 24" width="24" xmlns="http://www.w3.org/2000/svg"><path d="M7 10l5 5 5-5z"/></svg>');
+            background-repeat: no-repeat;
+            background-position: right 0.7rem center;
+            background-size: 1.2em;
+            padding-right: 2.5rem;
+        }
+    </style>
 </head>
 <body class="bg-gray-900 text-white flex items-center justify-center min-h-screen p-4">
 
-    <div class="w-full max-w-md mx-auto">
-        <!-- Main Timer View -->
-        <div id="timer-container" class="rounded-2xl shadow-2xl p-6 relative panel" style="background-color: var(--bg-secondary);">
-            <div id="display-area" class="text-center mb-4 relative h-64 flex flex-col items-center justify-center rounded-xl" style="background-color: var(--bg-primary);">
-                <div id="timer-display-content" class="z-0">
-                    <div id="phase-display" class="text-2xl font-bold uppercase mb-2" style="color: var(--color-prepare);">Prepare</div>
-                    <div id="timer-display" class="text-8xl md:text-9xl timer-display" style="color: var(--color-work);">--:--</div>
-                    <div id="progress-display" class="text-xl mt-2 flex items-center justify-center gap-3" style="color: var(--text-secondary);">
-                        <button id="skip-back-subtle-btn" class="skip-subtle-btn hidden btn">◀</button>
-                        <span>
-                            Round <span id="current-round">0</span>/<span id="total-rounds">10</span> |
-                            Set <span id="current-set">0</span>/<span id="total-sets">5</span>
-                        </span>
-                        <button id="skip-forward-subtle-btn" class="skip-subtle-btn hidden btn">▶</button>
-                    </div>
-                </div>
-                <div id="completion-message" class="z-10 hidden">
-                    <h2 class="text-4xl md:text-5xl font-extrabold" style="color: var(--color-work);">Workout Completed!</h2>
-                </div>
-            </div>
-            
-            <div id="exercise-display-container" class="text-center mb-4 p-3 rounded-lg" style="background-color: var(--bg-tertiary);">
-                <h4 class="text-sm font-semibold uppercase" style="color: var(--text-secondary);">Current Exercise</h4>
-                <p id="exercise-display" class="text-xl font-bold truncate" style="color: var(--text-primary);">---</p>
-            </div>
-            
-            <div id="next-exercise-container" class="text-center mb-4 p-3 rounded-lg hidden" style="background-color: var(--bg-tertiary); border: 2px dashed var(--color-next-exercise-border);">
-                <h4 class="text-sm font-semibold uppercase" style="color: var(--text-secondary);">Next Exercise</h4>
-                <p id="next-exercise-display" class="text-xl font-bold truncate" style="color: var(--text-primary);">---</p>
-            </div>
+    <div class="w-full max-w-md mx-auto">
+                <div id="timer-container" class="rounded-2xl shadow-2xl p-6 relative panel" style="background-color: var(--bg-secondary);">
+            <div id="display-area" class="text-center mb-4 relative h-64 flex flex-col items-center justify-center rounded-xl" style="background-color: var(--bg-primary);">
+                <div id="timer-display-content" class="z-0">
+                    <div id="phase-display" class="text-2xl font-bold uppercase mb-2" style="color: var(--color-prepare);">Prepare</div>
+                    <div id="timer-display" class="text-8xl md:text-9xl timer-display" style="color: var(--color-work);">--:--</div>
+                    <div id="progress-display" class="text-xl mt-2 flex items-center justify-center gap-3" style="color: var(--text-secondary);">
+                        <button id="skip-back-subtle-btn" class="skip-subtle-btn hidden btn">◀</button>
+                        <span>
+                            Round <span id="current-round">0</span>/<span id="total-rounds">10</span> |
+                            Set <span id="current-set">0</span>/<span id="total-sets">5</span>
+                        </span>
+                        <button id="skip-forward-subtle-btn" class="skip-subtle-btn hidden btn">▶</button>
+                    </div>
+                </div>
+                <div id="completion-message" class="z-10 hidden">
+                    <h2 class="text-4xl md:text-5xl font-extrabold" style="color: var(--color-work);">Workout Completed!</h2>
+                </div>
+            </div>
+            
+            <div id="exercise-display-container" class="text-center mb-4 p-3 rounded-lg" style="background-color: var(--bg-tertiary);">
+                <h4 class="text-sm font-semibold uppercase" style="color: var(--text-secondary);">Current Exercise</h4>
+                <p id="exercise-display" class="text-xl font-bold truncate" style="color: var(--text-primary);">---</p>
+            </div>
 
-            <div id="controls-container" class="grid grid-cols-3 gap-4">
-                <button id="start-pause-btn" class="text-white font-bold py-3 px-4 rounded-lg text-lg btn" style="background-color: var(--btn-main-start);">Start</button>
-                <button id="reset-btn" class="text-white font-bold py-3 px-4 rounded-lg text-lg btn" style="background-color: var(--btn-main-reset);">Reset</button>
-                <button id="settings-btn" class="text-white font-bold py-3 px-4 rounded-lg text-lg btn" style="background-color: var(--btn-main-settings);">Settings</button>
-            </div>
-        </div>
+                        <div id="main-preset-container" class="mb-4">
+                <label for="main-preset-select" class="block text-center font-semibold uppercase text-sm mb-2" style="color: var(--text-secondary);">Workout Preset</label>
+                <select id="main-preset-select" class="custom-select w-full text-white font-bold py-3 px-4 rounded-lg text-lg btn" style="background-color: var(--bg-tertiary); border: none;"></select>
+            </div>
+            
+            <div id="next-exercise-container" class="text-center mb-4 p-3 rounded-lg hidden" style="background-color: var(--bg-tertiary); border: 2px dashed var(--color-next-exercise-border);">
+                <h4 class="text-sm font-semibold uppercase" style="color: var(--text-secondary);">Next Exercise</h4>
+                <p id="next-exercise-display" class="text-xl font-bold truncate" style="color: var(--text-primary);">---</p>
+            </div>
 
-        <!-- Settings Panel -->
-        <div id="settings-panel" class="rounded-2xl shadow-2xl p-6 hidden panel" style="background-color: var(--bg-secondary);">
-            <div id="main-settings-content">
-                <h3 class="text-2xl font-bold mb-6 text-center">Settings</h3>
-                
-                <div id="timer-inputs-container" class="grid grid-cols-2 gap-x-6 gap-y-4 mb-6"></div>
+            <div id="controls-container" class="grid grid-cols-3 gap-4">
+                <button id="start-pause-btn" class="text-white font-bold py-3 px-4 rounded-lg text-lg btn" style="background-color: var(--btn-main-start);">Start</button>
+                <button id="reset-btn" class="text-white font-bold py-3 px-4 rounded-lg text-lg btn" style="background-color: var(--btn-main-reset);">Reset</button>
+                <button id="settings-btn" class="text-white font-bold py-3 px-4 rounded-lg text-lg btn" style="background-color: var(--btn-main-settings);">Settings</button>
+            </div>
+        </div>
 
-                <div id="settings-toggles-container" class="space-y-4 mb-6"></div>
+                <div id="settings-panel" class="rounded-2xl shadow-2xl p-6 hidden panel" style="background-color: var(--bg-secondary);">
+            <div id="main-settings-content">
+                <h3 class="text-2xl font-bold mb-6 text-center">Settings</h3>
+                
+                <div id="timer-inputs-container" class="grid grid-cols-2 gap-x-6 gap-y-4 mb-6"></div>
 
-                <div class="p-4 rounded-lg text-center grid grid-cols-2 gap-4 mb-6" style="background-color: var(--bg-tertiary);">
-                    <div>
-                        <h4 class="text-sm font-semibold uppercase" style="color: var(--text-secondary);">Set Duration</h4>
-                        <p id="set-duration-display" class="text-2xl font-bold">00:00</p>
-                    </div>
-                    <div>
-                        <h4 class="text-sm font-semibold uppercase" style="color: var(--text-secondary);">Total Workout</h4>
-                        <p id="total-duration-display" class="text-2xl font-bold">00:00</p>
-                    </div>
-                </div>
+                <div id="settings-toggles-container" class="space-y-4 mb-6"></div>
 
-                <div class="mb-2">
-                    <label for="preset-select" class="block text-center font-semibold uppercase text-sm mb-2" style="color: var(--text-secondary);">Presets</label>
-                    <div id="preset-success-message" class="hidden text-center text-sm font-semibold p-2 rounded-lg mb-2" style="background-color: var(--color-work); color: var(--bg-primary);">Preset updated!</div>
-                    <select id="preset-select" class="custom-select w-full text-white font-bold py-3 px-4 rounded-lg text-lg btn" style="background-color: var(--bg-tertiary); border: none;"></select>
-                </div>
-                
-                <div class="grid grid-cols-3 gap-2 mb-4">
-                    <button id="update-preset-btn" class="w-full text-white font-bold py-2 px-3 rounded-lg text-base btn" style="background-color: var(--btn-save);">Update</button>
-                    <button id="save-as-new-preset-btn" class="w-full text-white font-bold py-2 px-3 rounded-lg text-base btn" style="background-color: var(--btn-primary);">Save as</button>
-                    <button id="manage-presets-btn" class="w-full text-white font-bold py-2 px-3 rounded-lg text-base btn" style="background-color: var(--btn-rename);">Manage</button>
-                </div>
-                
-                <div class="grid grid-cols-3 gap-2">
-                    <button id="themes-settings-btn" class="w-full text-white font-bold py-3 px-4 rounded-lg text-lg btn" style="background-color: var(--bg-accent);">Themes</button>
-                    <button id="exercise-settings-btn" class="w-full text-white font-bold py-3 px-4 rounded-lg text-lg btn" style="background-color: var(--btn-preset);">Exercises</button>
-                    <button id="close-settings-btn" class="w-full text-white font-bold py-3 px-4 rounded-lg text-lg btn" style="background-color: var(--btn-start);">Done</button>
-                </div>
-            </div>
+                <div class="p-4 rounded-lg text-center grid grid-cols-2 gap-4 mb-6" style="background-color: var(--bg-tertiary);">
+                    <div>
+                        <h4 class="text-sm font-semibold uppercase" style="color: var(--text-secondary);">Set Duration</h4>
+                        <p id="set-duration-display" class="text-2xl font-bold">00:00</p>
+                    </div>
+                    <div>
+                        <h4 class="text-sm font-semibold uppercase" style="color: var(--text-secondary);">Total Workout</h4>
+                        <p id="total-duration-display" class="text-2xl font-bold">00:00</p>
+                    </div>
+                </div>
 
-            <!-- Manage Presets View -->
-            <div id="manage-presets-content" class="hidden">
-                <h3 class="text-2xl font-bold mb-6 text-center">Manage Presets</h3>
-                <div id="preset-management-list" class="space-y-2 max-h-96 overflow-y-auto pr-2"></div>
-                <button id="back-to-settings-from-manage-btn" class="mt-6 w-full text-white font-bold py-3 px-4 rounded-lg text-lg btn" style="background-color: var(--btn-primary);">Back</button>
-            </div>
-        </div>
+                <div class="mb-2">
+                    <label for="preset-select" class="block text-center font-semibold uppercase text-sm mb-2" style="color: var(--text-secondary);">Presets</label>
+                    <div id="preset-success-message" class="hidden text-center text-sm font-semibold p-2 rounded-lg mb-2" style="background-color: var(--color-work); color: var(--bg-primary);">Preset updated!</div>
+                    <select id="preset-select" class="custom-select w-full text-white font-bold py-3 px-4 rounded-lg text-lg btn" style="background-color: var(--bg-tertiary); border: none;"></select>
+                </div>
+                
+                <div class="grid grid-cols-3 gap-2 mb-4">
+                    <button id="update-preset-btn" class="w-full text-white font-bold py-2 px-3 rounded-lg text-base btn" style="background-color: var(--btn-save);">Update</button>
+                    <button id="save-as-new-preset-btn" class="w-full text-white font-bold py-2 px-3 rounded-lg text-base btn" style="background-color: var(--btn-primary);">Save as</button>
+                    <button id="manage-presets-btn" class="w-full text-white font-bold py-2 px-3 rounded-lg text-base btn" style="background-color: var(--btn-rename);">Manage</button>
+                </div>
+                
+                <div class="grid grid-cols-3 gap-2">
+                    <button id="themes-settings-btn" class="w-full text-white font-bold py-3 px-4 rounded-lg text-lg btn" style="background-color: var(--bg-accent);">Themes</button>
+                    <button id="exercise-settings-btn" class="w-full text-white font-bold py-3 px-4 rounded-lg text-lg btn" style="background-color: var(--btn-preset);">Exercises</button>
+                    <button id="close-settings-btn" class="w-full text-white font-bold py-3 px-4 rounded-lg text-lg btn" style="background-color: var(--btn-start);">Done</button>
+                </div>
+            </div>
 
-        <!-- Themes Panel -->
-        <div id="themes-panel" class="rounded-2xl shadow-2xl p-6 hidden panel" style="background-color: var(--bg-secondary);">
-            <h3 class="text-2xl font-bold mb-6 text-center">Select a Theme</h3>
-            <div id="theme-buttons-container" class="grid grid-cols-2 gap-4"></div>
-            <button id="back-to-settings-from-themes-btn" class="mt-6 w-full text-white font-bold py-3 px-4 rounded-lg text-lg btn" style="background-color: var(--btn-primary);">Back</button>
-        </div>
-        
-        <!-- Exercise Settings Panel -->
-        <div id="exercise-settings-panel" class="rounded-2xl shadow-2xl p-6 hidden panel" style="background-color: var(--bg-secondary);">
-            <h3 class="text-2xl font-bold mb-6 text-center">Exercise List</h3>
-            <div id="exercise-inputs-container" class="space-y-4 max-h-96 overflow-y-auto pr-2"></div>
-            <button id="back-to-settings-from-exercises-btn" class="mt-6 w-full text-white font-bold py-3 px-4 rounded-lg text-lg btn" style="background-color: var(--btn-primary);">Back</button>
-        </div>
-    </div>
+                        <div id="manage-presets-content" class="hidden">
+                <h3 class="text-2xl font-bold mb-6 text-center">Manage Presets</h3>
+                <div id="preset-management-list" class="space-y-2 max-h-96 overflow-y-auto pr-2"></div>
+                <button id="back-to-settings-from-manage-btn" class="mt-6 w-full text-white font-bold py-3 px-4 rounded-lg text-lg btn" style="background-color: var(--btn-primary);">Back</button>
+            </div>
+        </div>
 
-    <!-- Custom Modal -->
-    <div id="modal-overlay" class="fixed inset-0 bg-black bg-opacity-75 hidden items-center justify-center p-4 z-50">
-        <div id="modal-box" class="w-full max-w-sm rounded-2xl shadow-2xl p-6" style="background-color: var(--bg-secondary);">
-            <h3 id="modal-title" class="text-xl font-bold mb-4 text-center" style="color: var(--text-primary);"></h3>
-            <p id="modal-text" class="mb-4 text-center" style="color: var(--text-secondary);"></p>
-            <input type="text" id="modal-input" class="hidden w-full p-2 rounded-lg mb-4 text-center" style="background-color: var(--bg-primary); border: 1px solid var(--bg-accent); color: var(--text-primary);">
-            <div class="flex justify-center gap-4">
-                <button id="modal-cancel-btn" class="btn font-bold py-2 px-5 rounded-lg" style="background-color: var(--bg-tertiary); color: var(--text-primary);">Cancel</button>
-                <button id="modal-confirm-btn" class="btn font-bold py-2 px-5 rounded-lg" style="background-color: var(--btn-primary); color: var(--text-primary);">Confirm</button>
-            </div>
-        </div>
-    </div>
+                <div id="themes-panel" class="rounded-2xl shadow-2xl p-6 hidden panel" style="background-color: var(--bg-secondary);">
+            <h3 class="text-2xl font-bold mb-6 text-center">Select a Theme</h3>
+            <div id="theme-buttons-container" class="grid grid-cols-2 gap-4"></div>
+            <button id="back-to-settings-from-themes-btn" class="mt-6 w-full text-white font-bold py-3 px-4 rounded-lg text-lg btn" style="background-color: var(--btn-primary);">Back</button>
+        </div>
+        
+                <div id="exercise-settings-panel" class="rounded-2xl shadow-2xl p-6 hidden panel" style="background-color: var(--bg-secondary);">
+            <h3 class="text-2xl font-bold mb-6 text-center">Exercise List</h3>
+            <div id="exercise-inputs-container" class="space-y-4 max-h-96 overflow-y-auto pr-2"></div>
+            <button id="back-to-settings-from-exercises-btn" class="mt-6 w-full text-white font-bold py-3 px-4 rounded-lg text-lg btn" style="background-color: var(--btn-primary);">Back</button>
+        </div>
+    </div>
+
+        <div id="modal-overlay" class="fixed inset-0 bg-black bg-opacity-75 hidden items-center justify-center p-4 z-50">
+        <div id="modal-box" class="w-full max-w-sm rounded-2xl shadow-2xl p-6" style="background-color: var(--bg-secondary);">
+            <h3 id="modal-title" class="text-xl font-bold mb-4 text-center" style="color: var(--text-primary);"></h3>
+            <p id="modal-text" class="mb-4 text-center" style="color: var(--text-secondary);"></p>
+            <input type="text" id="modal-input" class="hidden w-full p-2 rounded-lg mb-4 text-center" style="background-color: var(--bg-primary); border: 1px solid var(--bg-accent); color: var(--text-primary);">
+            <div class="flex justify-center gap-4">
+                <button id="modal-cancel-btn" class="btn font-bold py-2 px-5 rounded-lg" style="background-color: var(--bg-tertiary); color: var(--text-primary);">Cancel</button>
+                <button id="modal-confirm-btn" class="btn font-bold py-2 px-5 rounded-lg" style="background-color: var(--btn-primary); color: var(--text-primary);">Confirm</button>
+            </div>
+        </div>
+    </div>
 
 <script>
 document.addEventListener('DOMContentLoaded', () => {
-    // --- DOM ELEMENT REFERENCES ---
-    const getElem = (id) => document.getElementById(id);
-    const elements = {
-        timerContainer: getElem('timer-container'),
-        settingsPanel: getElem('settings-panel'),
-        mainSettingsContent: getElem('main-settings-content'),
-        managePresetsContent: getElem('manage-presets-content'),
-        presetManagementList: getElem('preset-management-list'),
-        backToSettingsFromManageBtn: getElem('back-to-settings-from-manage-btn'),
-        themesPanel: getElem('themes-panel'),
-        exerciseSettingsPanel: getElem('exercise-settings-panel'),
-        timerDisplayContent: getElem('timer-display-content'),
-        completionMessage: getElem('completion-message'),
-        currentRoundDisplay: getElem('current-round'),
-        totalRoundsDisplay: getElem('total-rounds'),
-        currentSetDisplay: getElem('current-set'),
-        totalSetsDisplay: getElem('total-sets'),
-        exerciseDisplay: getElem('exercise-display'),
-        nextExerciseContainer: getElem('next-exercise-container'),
-        nextExerciseDisplay: getElem('next-exercise-display'),
-        timerDisplay: getElem('timer-display'),
-        phaseDisplay: getElem('phase-display'),
-        controlsContainer: getElem('controls-container'),
-        startPauseBtn: getElem('start-pause-btn'),
-        resetBtn: getElem('reset-btn'),
-        settingsBtn: getElem('settings-btn'),
-        skipForwardSubtleBtn: getElem('skip-forward-subtle-btn'),
-        skipBackSubtleBtn: getElem('skip-back-subtle-btn'),
-        closeSettingsBtn: getElem('close-settings-btn'),
-        themesSettingsBtn: getElem('themes-settings-btn'),
-        exerciseSettingsBtn: getElem('exercise-settings-btn'),
-        backToSettingsFromThemesBtn: getElem('back-to-settings-from-themes-btn'),
-        backToSettingsFromExercisesBtn: getElem('back-to-settings-from-exercises-btn'),
-        setDurationDisplay: getElem('set-duration-display'),
-        totalDurationDisplay: getElem('total-duration-display'),
-        timerInputsContainer: getElem('timer-inputs-container'),
-        settingsTogglesContainer: getElem('settings-toggles-container'),
-        presetSelect: getElem('preset-select'),
-        presetSuccessMessage: getElem('preset-success-message'),
-        updatePresetBtn: getElem('update-preset-btn'),
-        saveAsNewPresetBtn: getElem('save-as-new-preset-btn'),
-        managePresetsBtn: getElem('manage-presets-btn'),
-        themeButtonsContainer: getElem('theme-buttons-container'),
-        exerciseInputsContainer: getElem('exercise-inputs-container'),
-        modalOverlay: getElem('modal-overlay'),
-        modalBox: getElem('modal-box'),
-        modalTitle: getElem('modal-title'),
-        modalText: getElem('modal-text'),
-        modalInput: getElem('modal-input'),
-        modalCancelBtn: getElem('modal-cancel-btn'),
-        modalConfirmBtn: getElem('modal-confirm-btn'),
-    };
+    // --- DOM ELEMENT REFERENCES ---
+    const getElem = (id) => document.getElementById(id);
+    const elements = {
+        timerContainer: getElem('timer-container'),
+        settingsPanel: getElem('settings-panel'),
+        mainSettingsContent: getElem('main-settings-content'),
+        managePresetsContent: getElem('manage-presets-content'),
+        presetManagementList: getElem('preset-management-list'),
+        backToSettingsFromManageBtn: getElem('back-to-settings-from-manage-btn'),
+        themesPanel: getElem('themes-panel'),
+        exerciseSettingsPanel: getElem('exercise-settings-panel'),
+        timerDisplayContent: getElem('timer-display-content'),
+        completionMessage: getElem('completion-message'),
+        currentRoundDisplay: getElem('current-round'),
+        totalRoundsDisplay: getElem('total-rounds'),
+        currentSetDisplay: getElem('current-set'),
+        totalSetsDisplay: getElem('total-sets'),
+        exerciseDisplay: getElem('exercise-display'),
+        nextExerciseContainer: getElem('next-exercise-container'),
+        nextExerciseDisplay: getElem('next-exercise-display'),
+        timerDisplay: getElem('timer-display'),
+        phaseDisplay: getElem('phase-display'),
+        controlsContainer: getElem('controls-container'),
+        startPauseBtn: getElem('start-pause-btn'),
+        resetBtn: getElem('reset-btn'),
+        settingsBtn: getElem('settings-btn'),
+        skipForwardSubtleBtn: getElem('skip-forward-subtle-btn'),
+        skipBackSubtleBtn: getElem('skip-back-subtle-btn'),
+        closeSettingsBtn: getElem('close-settings-btn'),
+        themesSettingsBtn: getElem('themes-settings-btn'),
+        exerciseSettingsBtn: getElem('exercise-settings-btn'),
+        backToSettingsFromThemesBtn: getElem('back-to-settings-from-themes-btn'),
+        backToSettingsFromExercisesBtn: getElem('back-to-settings-from-exercises-btn'),
+        setDurationDisplay: getElem('set-duration-display'),
+        totalDurationDisplay: getElem('total-duration-display'),
+        timerInputsContainer: getElem('timer-inputs-container'),
+        settingsTogglesContainer: getElem('settings-toggles-container'),
+        // NEW: References for main screen preset dropdown
+        mainPresetContainer: getElem('main-preset-container'),
+        mainPresetSelect: getElem('main-preset-select'),
+        presetSelect: getElem('preset-select'),
+        presetSuccessMessage: getElem('preset-success-message'),
+        updatePresetBtn: getElem('update-preset-btn'),
+        saveAsNewPresetBtn: getElem('save-as-new-preset-btn'),
+        managePresetsBtn: getElem('manage-presets-btn'),
+        themeButtonsContainer: getElem('theme-buttons-container'),
+        exerciseInputsContainer: getElem('exercise-inputs-container'),
+        modalOverlay: getElem('modal-overlay'),
+        modalBox: getElem('modal-box'),
+        modalTitle: getElem('modal-title'),
+        modalText: getElem('modal-text'),
+        modalInput: getElem('modal-input'),
+        modalCancelBtn: getElem('modal-cancel-btn'),
+        modalConfirmBtn: getElem('modal-confirm-btn'),
+    };
 
-    // --- STATE MANAGEMENT ---
-    let state = {};
-    let modalResolve = null;
+    // --- STATE MANAGEMENT ---
+    let state = {};
+    let modalResolve = null;
 
-    const themes = [
-        { id: 'default', name: 'Default Dark' }, { id: 'forest', name: 'Forest' }, 
-        { id: 'spring', name: 'Spring' }, { id: 'winter', name: 'Winter' }, 
-        { id: 'sakura', name: 'Sakura' }, { id: 'stormy', name: 'Stormy Morning' }, 
-        { id: 'mossy', name: 'Mossy Hollow' }, { id: 'lush', name: 'Lush Forest' }, 
-        { id: 'chili', name: 'Chili Spice' }, { id: 'hydrangea', name: 'Hydrangea' },
-    ];
+    const themes = [
+        { id: 'default', name: 'Default Dark' }, { id: 'forest', name: 'Forest' }, 
+        { id: 'spring', name: 'Spring' }, { id: 'winter', name: 'Winter' }, 
+        { id: 'sakura', name: 'Sakura' }, { id: 'stormy', name: 'Stormy Morning' }, 
+        { id: 'mossy', name: 'Mossy Hollow' }, { id: 'lush', name: 'Lush Forest' }, 
+        { id: 'chili', name: 'Chili Spice' }, { id: 'hydrangea', name: 'Hydrangea' },
+    ];
 
-    const soundFiles = {
-        work: 'sound/work.mp3', rest: 'sound/rest.mp3', countdown: 'sound/countdown.mp3',
-        setEnd: 'sound/set_end.mp3', finish: 'sound/finish.mp3',
-        countdownBeep: 'sound/countdown_beep.mp3'
-    };
-    let audioPlayers = {};
-    let audioInitialized = false;
+    const soundFiles = {
+        work: 'sound/work.mp3', rest: 'sound/rest.mp3', countdown: 'sound/countdown.mp3',
+        setEnd: 'sound/set_end.mp3', finish: 'sound/finish.mp3',
+        countdownBeep: 'sound/countdown_beep.mp3'
+    };
+    let audioPlayers = {};
+    let audioInitialized = false;
 
-    const motivationalQuotes = [
-        'MQ/quote1.mp3', 'MQ/quote2.mp3', 'MQ/quote3.mp3', 'MQ/quote4.mp3', 'MQ/quote5.mp3',
-        'MQ/quote6.mp3', 'MQ/quote7.mp3', 'MQ/quote8.mp3', 'MQ/quote9.mp3', 'MQ/quote10.mp3',
-        'MQ/quote11.mp3', 'MQ/quote12.mp3', 'MQ/quote13.mp3', 'MQ/quote14.mp3', 'MQ/quote15.mp3',
-        'MQ/quote16.mp3', 'MQ/quote17.mp3', 'MQ/quote18.mp3', 'MQ/quote19.mp3', 'MQ/quote20.mp3',
-        'MQ/quote21.mp3'
-    ];
-    let quotePlayers = [];
-    let lastQuotePlayedTime = 0;
-    let quoteTimer = null;
+    const motivationalQuotes = [
+        'MQ/quote1.mp3', 'MQ/quote2.mp3', 'MQ/quote3.mp3', 'MQ/quote4.mp3', 'MQ/quote5.mp3',
+        'MQ/quote6.mp3', 'MQ/quote7.mp3', 'MQ/quote8.mp3', 'MQ/quote9.mp3', 'MQ/quote10.mp3',
+        'MQ/quote11.mp3', 'MQ/quote12.mp3', 'MQ/quote13.mp3', 'MQ/quote14.mp3', 'MQ/quote15.mp3',
+        'MQ/quote16.mp3', 'MQ/quote17.mp3', 'MQ/quote18.mp3', 'MQ/quote19.mp3', 'MQ/quote20.mp3',
+        'MQ/quote21.mp3'
+    ];
+    let quotePlayers = [];
+    let lastQuotePlayedTime = 0;
+    let quoteTimer = null;
 
-    const defaultState = {
-        timer: null, status: 'idle', phase: 'prepare', currentTime: 0, currentRound: 0, currentSet: 0,
-        settings: {
-            workTime: 35, restTime: 35, roundsPerSet: 6, numSets: 4, restBetweenSets: 75, preStartDelay: 3,
-            warmUpDuration: 300,
-            exercises: ["Landmine row", "Landmine press", "Landmine squat", "Kettlebell swings"]
-        },
-        sounds: { preStart: 'countdown', workStart: 'work', restStart: 'rest', setEnd: 'setEnd', workoutComplete: 'finish' },
-        presets: {
-    "Barbell Strength": {
-        workTime: 35,
-        restTime: 35,
-        roundsPerSet: 4,
-        numSets: 5,
-        restBetweenSets: 75,
-        exercises: ["Barbell Cleans", "Deadlift", "Zercher Squat", "Hip Thrust", "Barbell Row"]
-    },
-    "Landmine Focus": {
-        workTime: 35,
-        restTime: 35,
-        roundsPerSet: 4,
-        numSets: 5,
-        restBetweenSets: 75,
-        exercises: ["Landmine Press", "Landmine hinge", "Landmine Row", "Landmine Squat", "Landmine rotations"]
-    },
-    "Unilateral Stability": {
-        workTime: 32,
-        restTime: 32,
-        roundsPerSet: 4,
-        numSets: 5,
-        restBetweenSets: 60,
-        exercises: ["SL Squat", "S-Dumbell OHP", "SL Hip Thrust", "S-Dumbell Row", "SL Deadlift"]
-    },
-    "Athletic Power": {
-        workTime: 30,
-        restTime: 30,
-        roundsPerSet: 4,
-        numSets: 5,
-        restBetweenSets: 60,
-        exercises: ["Single Arm Row", "S-Dumbell OHP", "Hip marches", "Pallof Press", "Woodchoppers"]
-    },
-    "Kettlebell": {
-        workTime: 40,
-        restTime: 20,
-        roundsPerSet: 3,
-        numSets: 5,
-        restBetweenSets: 75,
-        exercises: ["Kettlebell Cleans", "Kettlebell row", "Kettlebell Windmill", "Kettlebell Swings", "Suitcase Carry"]
-    },
-    "Functional Core & Carry": {
-        workTime: 35,
-        restTime: 25,
-        roundsPerSet: 3,
-        numSets: 5,
-        restBetweenSets: 60,
-        exercises: ["Glute medius plate", "Farmer's Walk", "Monster Walk", "Hamstring Slides", "Copenhagen Plank"]
-    },
-    "Accessoires": {
-        workTime: 30,
-        restTime: 15,
-        roundsPerSet: 2,
-        numSets: 9,
-        restBetweenSets: 60,
-        exercises: ["Split squat", "Back Extension", "Reverse Hyper", "Side plank thruster", "Good Morning", "Jefferson Curl", "QL Side Bend", "Crunches"]
-    },
-    "A. Recovery day": {
-        workTime: 45,
-        restTime: 15,
-        roundsPerSet: 3,
-        numSets: 7,
-        restBetweenSets: 45,
-        exercises: ["Face pull", "Lu raises/shoulder 30s", "Shrugs", "Biceps", "Triceps", "Neck", "Forearms" ]
-    },
-    "Thasmin": {
-        workTime: 35,
-        restTime: 35,
-        roundsPerSet: 3,
-        numSets: 7,
-        restBetweenSets: 75,
-        exercises: ["Kettlebell power cleans", "kettlebell swings", "split squat", "squat", "Hip thrust", "monster walk", "banded row"]
-    }
+    const defaultState = {
+        timer: null, status: 'idle', phase: 'prepare', currentTime: 0, currentRound: 0, currentSet: 0,
+        settings: {
+            workTime: 35, restTime: 35, roundsPerSet: 6, numSets: 4, restBetweenSets: 75, preStartDelay: 3,
+            warmUpDuration: 300,
+            exercises: ["Landmine row", "Landmine press", "Landmine squat", "Kettlebell swings"]
+        },
+        sounds: { preStart: 'countdown', workStart: 'work', restStart: 'rest', setEnd: 'setEnd', workoutComplete: 'finish' },
+        presets: {
+    "Barbell Strength": {
+        workTime: 35,
+        restTime: 35,
+        roundsPerSet: 4,
+        numSets: 5,
+        restBetweenSets: 75,
+        exercises: ["Barbell Cleans", "Deadlift", "Zercher Squat", "Hip Thrust", "Barbell Row"]
+    },
+    "Landmine Focus": {
+        workTime: 35,
+        restTime: 35,
+        roundsPerSet: 4,
+        numSets: 5,
+        restBetweenSets: 75,
+        exercises: ["Landmine Press", "Landmine hinge", "Landmine Row", "Landmine Squat", "Landmine rotations"]
+    },
+    "Unilateral Stability": {
+        workTime: 32,
+        restTime: 32,
+        roundsPerSet: 4,
+        numSets: 5,
+        restBetweenSets: 60,
+        exercises: ["SL Squat", "S-Dumbell OHP", "SL Hip Thrust", "S-Dumbell Row", "SL Deadlift"]
+    },
+    "Athletic Power": {
+        workTime: 30,
+        restTime: 30,
+        roundsPerSet: 4,
+        numSets: 5,
+        restBetweenSets: 60,
+        exercises: ["Single Arm Row", "S-Dumbell OHP", "Hip marches", "Pallof Press", "Woodchoppers"]
+    },
+    "Kettlebell": {
+        workTime: 40,
+        restTime: 20,
+        roundsPerSet: 3,
+        numSets: 5,
+        restBetweenSets: 75,
+        exercises: ["Kettlebell Cleans", "Kettlebell row", "Kettlebell Windmill", "Kettlebell Swings", "Suitcase Carry"]
+    },
+    "Functional Core & Carry": {
+        workTime: 35,
+        restTime: 25,
+        roundsPerSet: 3,
+        numSets: 5,
+        restBetweenSets: 60,
+        exercises: ["Glute medius plate", "Farmer's Walk", "Monster Walk", "Hamstring Slides", "Copenhagen Plank"]
+    },
+    "Accessoires": {
+        workTime: 30,
+        restTime: 15,
+        roundsPerSet: 2,
+        numSets: 9,
+        restBetweenSets: 60,
+        exercises: ["Split squat", "Back Extension", "Reverse Hyper", "Side plank thruster", "Good Morning", "Jefferson Curl", "QL Side Bend", "Crunches"]
+    },
+    "A. Recovery day": {
+        workTime: 45,
+        restTime: 15,
+        roundsPerSet: 3,
+        numSets: 7,
+        restBetweenSets: 45,
+        exercises: ["Face pull", "Lu raises/shoulder 30s", "Shrugs", "Biceps", "Triceps", "Neck", "Forearms" ]
+    },
+    "Thasmin": {
+        workTime: 35,
+        restTime: 35,
+        roundsPerSet: 3,
+        numSets: 7,
+        restBetweenSets: 75,
+        exercises: ["Kettlebell power cleans", "kettlebell swings", "split squat", "squat", "Hip thrust", "monster walk", "banded row"]
+    }
 },
-        theme: 'default',
-        motivationalQuotesEnabled: false,
-        warmUpEnabled: false,
-        volume: 0.8,
-        lastPreset: "Landmine"
-    };
-    
-    // --- DATA PERSISTENCE ---
-    const saveState = () => {
-        try {
-            const stateToSave = { 
-                settings: state.settings, 
-                presets: state.presets, 
-                theme: state.theme, 
-                motivationalQuotesEnabled: state.motivationalQuotesEnabled,
-                warmUpEnabled: state.warmUpEnabled,
-                volume: state.volume,
-                lastPreset: state.lastPreset
-            };
-            localStorage.setItem('tabataTimerState', JSON.stringify(stateToSave));
-        } catch (e) { console.error("Could not save state", e); }
-    };
+        theme: 'default',
+        motivationalQuotesEnabled: false,
+        warmUpEnabled: false,
+        volume: 0.8,
+        lastPreset: "Landmine"
+    };
+    
+    // --- DATA PERSISTENCE ---
+    const saveState = () => {
+        try {
+            const stateToSave = { 
+                settings: state.settings, 
+                presets: state.presets, 
+                theme: state.theme, 
+                motivationalQuotesEnabled: state.motivationalQuotesEnabled,
+                warmUpEnabled: state.warmUpEnabled,
+                volume: state.volume,
+                lastPreset: state.lastPreset
+            };
+            localStorage.setItem('tabataTimerState', JSON.stringify(stateToSave));
+        } catch (e) { console.error("Could not save state", e); }
+    };
 
-    const loadState = () => {
-        try {
-            const savedStateJSON = localStorage.getItem('tabataTimerState');
-            state = JSON.parse(JSON.stringify(defaultState));
-            if (savedStateJSON) {
-                const savedState = JSON.parse(savedStateJSON);
-                if (savedState.settings) state.settings = { ...state.settings, ...savedState.settings };
-                if (savedState.presets) state.presets = savedState.presets;
-                if (savedState.theme) state.theme = savedState.theme;
-                if (typeof savedState.motivationalQuotesEnabled === 'boolean') {
-                    state.motivationalQuotesEnabled = savedState.motivationalQuotesEnabled;
-                }
-                if (typeof savedState.warmUpEnabled === 'boolean') {
-                    state.warmUpEnabled = savedState.warmUpEnabled;
-                }
-                if (typeof savedState.volume === 'number') {
-                    state.volume = savedState.volume;
-                }
-                if (savedState.lastPreset) state.lastPreset = savedState.lastPreset;
-            }
-        } catch (e) {
-            console.error("Could not load state", e);
-            state = JSON.parse(JSON.stringify(defaultState));
-        }
-        applyTheme(state.theme);
-    };
-    
-    // --- DYNAMIC UI & THEME ---
-    const applyTheme = (themeId) => {
-        document.body.className = `theme-${themeId} bg-gray-900 text-white flex items-center justify-center min-h-screen p-4`;
-        state.theme = themeId;
-        saveState();
-    };
+    const loadState = () => {
+        try {
+            const savedStateJSON = localStorage.getItem('tabataTimerState');
+            state = JSON.parse(JSON.stringify(defaultState));
+            if (savedStateJSON) {
+                const savedState = JSON.parse(savedStateJSON);
+                if (savedState.settings) state.settings = { ...state.settings, ...savedState.settings };
+                if (savedState.presets) state.presets = savedState.presets;
+                if (savedState.theme) state.theme = savedState.theme;
+                if (typeof savedState.motivationalQuotesEnabled === 'boolean') {
+                    state.motivationalQuotesEnabled = savedState.motivationalQuotesEnabled;
+                }
+                if (typeof savedState.warmUpEnabled === 'boolean') {
+                    state.warmUpEnabled = savedState.warmUpEnabled;
+                }
+                if (typeof savedState.volume === 'number') {
+                    state.volume = savedState.volume;
+                }
+                if (savedState.lastPreset) state.lastPreset = savedState.lastPreset;
+            }
+        } catch (e) {
+            console.error("Could not load state", e);
+            state = JSON.parse(JSON.stringify(defaultState));
+        }
+        applyTheme(state.theme);
+    };
+    
+    // --- DYNAMIC UI & THEME ---
+    const applyTheme = (themeId) => {
+        document.body.className = `theme-${themeId} bg-gray-900 text-white flex items-center justify-center min-h-screen p-4`;
+        state.theme = themeId;
+        saveState();
+    };
 
-    const generateThemeButtons = () => {
-        const container = elements.themeButtonsContainer;
-        container.innerHTML = '';
-        themes.forEach(theme => {
-            const button = document.createElement('button');
-            button.dataset.themeId = theme.id;
-            button.className = 'theme-btn w-full text-white font-bold py-3 px-4 rounded-lg text-lg btn';
-            button.textContent = theme.name;
-            button.style.backgroundColor = 'var(--bg-accent)';
-            container.appendChild(button);
-        });
-    };
+    const generateThemeButtons = () => {
+        const container = elements.themeButtonsContainer;
+        container.innerHTML = '';
+        themes.forEach(theme => {
+            const button = document.createElement('button');
+            button.dataset.themeId = theme.id;
+            button.className = 'theme-btn w-full text-white font-bold py-3 px-4 rounded-lg text-lg btn';
+            button.textContent = theme.name;
+            button.style.backgroundColor = 'var(--bg-accent)';
+            container.appendChild(button);
+        });
+    };
 
-    const generateSettingsToggles = () => {
-        const container = elements.settingsTogglesContainer;
-        container.innerHTML = '';
-        const quotesChecked = state.motivationalQuotesEnabled ? 'checked' : '';
-        const warmUpChecked = state.warmUpEnabled ? 'checked' : '';
-        container.innerHTML = `
-            <div class="grid grid-cols-2 gap-4">
-                <label class="toggle-label">
-                    <span class="font-medium" style="color: var(--text-primary);">Quotes</span>
-                    <div class="toggle-switch">
-                        <input type="checkbox" id="mq-toggle" ${quotesChecked}>
-                        <span class="slider"></span>
-                    </div>
-                </label>
-                <label class="toggle-label">
-                    <span class="font-medium" style="color: var(--text-primary);">Warm up</span>
-                    <div class="toggle-switch">
-                        <input type="checkbox" id="warm-up-toggle" ${warmUpChecked}>
-                        <span class="slider"></span>
-                    </div>
-                </label>
-            </div>
-            <div class="volume-control-container">
-                <label for="volume-slider" class="block text-sm font-bold text-center mb-2" style="color: var(--text-secondary);">Volume</label>
-                <input type="range" id="volume-slider" min="0" max="1" step="0.05" value="${state.volume}" class="w-full">
-            </div>
-        `;
-    };
-
-    const createStepperInput = (id, label, value) => {
-        const container = document.createElement('div');
-        container.id = `${id}-wrapper`;
-        container.className = `form-group`;
-        container.innerHTML = `
-            <label for="${id}" class="block text-sm font-bold text-center" style="color: var(--text-secondary);">${label}</label>
-            <div class="flex items-center gap-2 mt-1">
-                <button data-action="decrement" data-target="${id}" class="stepper-btn w-10 h-10 text-xl font-bold rounded-md btn" style="background-color: var(--bg-tertiary); color: var(--text-primary);">-</button>
-                <input type="number" id="${id}" value="${value}" class="timer-setting-input text-center block w-full border rounded-md shadow-sm py-2 px-3 focus:outline-none" style="background-color: var(--bg-primary); border-color: var(--bg-accent); color: var(--text-primary);">
-                <button data-action="increment" data-target="${id}" class="stepper-btn w-10 h-10 text-xl font-bold rounded-md btn" style="background-color: var(--bg-tertiary); color: var(--text-primary);">+</button>
-            </div>
-        `;
-        return container;
-    };
-
-    const generateTimerInputs = () => {
-        const container = elements.timerInputsContainer;
-        container.innerHTML = '';
-        const s = state.settings;
-        container.appendChild(createStepperInput('work-time', 'Work', s.workTime));
-        container.appendChild(createStepperInput('rest-time', 'Rest', s.restTime));
-        container.appendChild(createStepperInput('rounds-per-set', 'Rounds', s.roundsPerSet));
-        container.appendChild(createStepperInput('num-sets', 'Sets', s.numSets));
-        container.appendChild(createStepperInput('rest-between-sets', 'Rest Between Sets', s.restBetweenSets));
-        container.appendChild(createStepperInput('warm-up-duration', 'Warm up duration', s.warmUpDuration));
-        updateInputLayout();
-    };
-    
-    const updateInputLayout = () => {
-        const restWrapper = getElem('rest-between-sets-wrapper');
-        const warmUpWrapper = getElem('warm-up-duration-wrapper');
-        if (state.warmUpEnabled) {
-            restWrapper.classList.remove('col-span-2');
-            warmUpWrapper.classList.remove('hidden');
-        } else {
-            restWrapper.classList.add('col-span-2');
-            warmUpWrapper.classList.add('hidden');
-        }
-    };
-
-    const generatePresetDropdown = () => {
-        const select = elements.presetSelect;
-        select.innerHTML = '';
-        Object.keys(state.presets).forEach(name => {
-            const option = document.createElement('option');
-            option.value = name;
-            option.textContent = name;
-            select.appendChild(option);
-        });
-        if (state.lastPreset && state.presets[state.lastPreset]) {
-            select.value = state.lastPreset;
-        }
-    };
-
-    const generateExerciseInputs = () => {
-        const container = elements.exerciseInputsContainer;
-        container.innerHTML = '';
-        const numSets = state.settings.numSets;
-        adjustExerciseArray(numSets); 
-        for (let i = 0; i < numSets; i++) {
-            const exerciseName = state.settings.exercises[i] || '';
-            const inputGroup = document.createElement('div');
-            inputGroup.innerHTML = `
-                <label for="exercise-set-${i+1}" class="block text-sm font-medium" style="color: var(--text-secondary);">Set ${i+1}</label>
-                <input type="text" id="exercise-set-${i+1}" data-set-index="${i}" value="${exerciseName}" class="exercise-input mt-1 block w-full border rounded-md shadow-sm py-2 px-3 focus:outline-none" style="background-color: var(--bg-tertiary); border-color: var(--bg-accent); color: var(--text-primary);">
-            `;
-            container.appendChild(inputGroup);
-        }
-    };
-
-    // --- CORE TIMER FUNCTIONS ---
-    const playSound = (soundType) => {
-        if (soundType === 'countdown') {
-            const countdownAudio = new Audio(soundFiles.countdown);
-            countdownAudio.volume = state.volume;
-            countdownAudio.play().catch(e => console.error("Error playing countdown sound:", e));
-            return;
-        }
-        const player = audioPlayers[soundType];
-        if (player) {
-            player.currentTime = 0;
-            player.volume = state.volume;
-            player.play().catch(e => console.error(`Error playing sound: ${soundType}`, e));
-        }
-    };
-
-    const playRandomQuote = () => {
-        if (quotePlayers.length === 0) return;
-        const randomIndex = Math.floor(Math.random() * quotePlayers.length);
-        const player = quotePlayers[randomIndex];
-        if (player) {
-            player.currentTime = 0;
-            player.volume = state.volume;
-            player.play().catch(e => console.error(`Error playing quote`, e));
-            lastQuotePlayedTime = Date.now();
-        }
-    };
-    
-    const formatTime = (seconds) => {
-        const mins = Math.floor(seconds / 60).toString().padStart(2, '0');
-        const secs = (seconds % 60).toString().padStart(2, '0');
-        return `${mins}:${secs}`;
-    };
-
-    const tick = () => {
-        state.currentTime--;
-        updateDisplay();
-
-        if ((state.phase === 'rest' || state.phase === 'setRest') && state.currentTime <= 3 && state.currentTime > 0) {
-            playSound('countdownBeep');
-        }
-
-        if (state.currentTime > 0) {
-            if (state.phase === 'prepare') playSound(state.sounds.preStart);
-            return;
-        }
-        
-        if (state.phase === 'warmUp') {
-            state.phase = 'prepare';
-            state.currentTime = state.settings.preStartDelay;
-            playSound(state.sounds.preStart);
-        } else if (state.phase === 'prepare') {
-            state.phase = 'work'; state.currentRound = 1; state.currentSet = 1;
-            state.currentTime = state.settings.workTime;
-            playSound(state.sounds.workStart);
-        } else if (state.phase === 'work') {
-            if (state.currentRound >= state.settings.roundsPerSet) { 
-                if (state.currentSet >= state.settings.numSets) { 
-                    workoutComplete(); return;
-                }
-                if (state.settings.restBetweenSets > 0) {
-                    state.phase = 'setRest';
-                    state.currentTime = state.settings.restBetweenSets;
-                    playSound(state.sounds.setEnd);
-                } else {
-                    state.currentSet++; state.currentRound = 1; state.phase = 'work';
-                    state.currentTime = state.settings.workTime;
-                    playSound(state.sounds.workStart);
-                }
-            } else { 
-                state.phase = 'rest';
-                state.currentTime = state.settings.restTime;
-                playSound(state.sounds.restStart);
-            }
-        } else if (state.phase === 'rest') {
-            state.currentRound++; state.phase = 'work';
-            state.currentTime = state.settings.workTime;
-            playSound(state.sounds.workStart);
-        } else if (state.phase === 'setRest') {
-            state.currentSet++; state.currentRound = 1; state.phase = 'work';
-            state.currentTime = state.settings.workTime;
-            playSound(state.sounds.workStart);
-        }
-        updateDisplay();
-    };
-    
-    const workoutComplete = () => {
-        clearInterval(state.timer);
-        clearInterval(quoteTimer);
-        state.status = 'idle'; state.phase = 'complete';
-        playSound(state.sounds.workoutComplete);
-        elements.timerDisplayContent.classList.add('hidden');
-        elements.completionMessage.classList.remove('hidden');
-        elements.nextExerciseContainer.classList.add('hidden');
-        updateButtonState();
-        setTimeout(() => reset(true), 5000);
-    };
-
-    const start = () => {
-        if (state.status === 'running') return;
-        if (!audioInitialized) {
-            const allAudioFiles = { ...soundFiles };
-            motivationalQuotes.forEach((path, index) => {
-                allAudioFiles[`quote${index}`] = path;
-            });
-
-            for (const key in allAudioFiles) {
-                const player = new Audio(allAudioFiles[key]);
-                player.volume = 0;
-                player.play().catch(()=>{});
-                setTimeout(() => {
-                    player.pause();
-                    player.currentTime = 0;
-                    player.volume = state.volume;
-                }, 10);
-                if (key.startsWith('quote')) {
-                    quotePlayers.push(player);
-                } else {
-                    audioPlayers[key] = player;
-                }
-            }
-            audioInitialized = true;
-        }
-        if (state.status === 'idle' || state.phase === 'complete') {
-            reset(false);
-            if (state.warmUpEnabled) {
-                state.phase = 'warmUp';
-                state.currentTime = state.settings.warmUpDuration;
-            } else {
-                state.phase = 'prepare';
-                state.currentTime = state.settings.preStartDelay;
-                if(state.settings.preStartDelay > 0) playSound(state.sounds.preStart);
-            }
-        }
-        state.status = 'running';
-        lastQuotePlayedTime = Date.now();
-        if (state.motivationalQuotesEnabled) {
-            quoteTimer = setInterval(() => {
-                if (state.status === 'running' && Date.now() - lastQuotePlayedTime > 180000) {
-                    if (Math.random() < 0.1) {
-                        playRandomQuote();
-                    }
-                }
-            }, 5000);
-        }
-        elements.timerDisplay.style.color = 'var(--color-prepare)';
-        if (state.currentTime > 0) {
-            state.timer = setInterval(tick, 1000);
-        } else {
-            tick(); state.timer = setInterval(tick, 1000);
-        }
-        updateButtonState();
-        updateDisplay();
-    };
-
-    const pause = () => {
-        if (state.status !== 'running') return;
-        clearInterval(state.timer);
-        clearInterval(quoteTimer);
-        state.status = 'paused';
-        updateButtonState();
-    };
-
-    const reset = (fullReset = true) => {
-        clearInterval(state.timer);
-        clearInterval(quoteTimer);
-        state.status = 'idle';
-        state.phase = 'prepare';
-        state.currentRound = 0;
-        state.currentSet = 0;
-        state.currentTime = 0;
-        if (fullReset) {
-            elements.timerDisplayContent.classList.remove('hidden');
-            elements.completionMessage.classList.add('hidden');
-            elements.nextExerciseContainer.classList.add('hidden');
-            updateButtonState();
-            updateDisplay(true);
-        }
-    };
-
-    // --- UI UPDATE FUNCTIONS ---
-    const updateDurations = () => {
-        const s = state.settings;
-        const work = s.workTime || 0, rest = s.restTime || 0, rounds = s.roundsPerSet || 0,
-              sets = s.numSets || 0, setRest = s.restBetweenSets || 0;
-        const setDuration = (work * rounds) + (rest * (rounds > 1 ? rounds - 1 : 0));
-        let totalDuration = (setDuration * sets) + (setRest * (sets > 1 ? sets - 1 : 0));
-        if(state.warmUpEnabled) {
-            totalDuration += state.settings.warmUpDuration || 0;
-        }
-        elements.setDurationDisplay.textContent = formatTime(setDuration);
-        elements.totalDurationDisplay.textContent = formatTime(totalDuration);
-    };
-
-    const updateDisplay = (isInitialReset = false) => {
-        if (isInitialReset) {
-            elements.phaseDisplay.textContent = "GET READY!";
-            elements.timerDisplay.textContent = "--:--";
-        } else {
-            elements.timerDisplay.textContent = formatTime(state.currentTime);
-            elements.phaseDisplay.textContent = state.phase.replace('setRest', 'SET REST').replace('warmUp', 'WARM UP');
-        }
-        
-        elements.currentRoundDisplay.textContent = state.currentRound;
-        elements.totalRoundsDisplay.textContent = state.settings.roundsPerSet;
-        elements.currentSetDisplay.textContent = state.currentSet;
-        elements.totalSetsDisplay.textContent = state.settings.numSets;
-        elements.exerciseDisplay.textContent = (state.currentSet > 0 && state.settings.exercises[state.currentSet - 1]) ? state.settings.exercises[state.currentSet - 1] : '---';
-
-        if (state.phase === 'setRest' && state.currentSet < state.settings.numSets) {
-            elements.nextExerciseDisplay.textContent = state.settings.exercises[state.currentSet] || '---';
-            elements.nextExerciseContainer.classList.remove('hidden');
-        } else {
-            elements.nextExerciseContainer.classList.add('hidden');
-        }
-
-        const phaseColorMap = {
-            warmUp: 'var(--color-warm-up)', prepare: 'var(--color-prepare)', work: 'var(--color-work)',
-            rest: 'var(--color-rest)', setRest: 'var(--color-set-rest)', complete: 'var(--text-primary)'
-        };
-        const color = phaseColorMap[state.phase] || 'var(--text-primary)';
-        elements.timerDisplay.style.color = color;
-        elements.phaseDisplay.style.color = color;
-    };
-    
-    const updateButtonState = () => {
-        const startBtn = elements.startPauseBtn;
-        const isTimerActive = state.status === 'running' || state.status === 'paused';
-        
-        elements.skipForwardSubtleBtn.classList.toggle('hidden', !isTimerActive);
-        elements.skipBackSubtleBtn.classList.toggle('hidden', !isTimerActive);
-        
-        if (state.status === 'running') {
-            elements.controlsContainer.className = 'flex justify-center';
-            elements.resetBtn.classList.add('hidden');
-            elements.settingsBtn.classList.add('hidden');
-            startBtn.textContent = 'Pause';
-            startBtn.style.backgroundColor = 'var(--bg-accent)';
-        } else if (state.status === 'paused') {
-            elements.controlsContainer.className = 'grid grid-cols-3 gap-4';
-            elements.resetBtn.classList.remove('hidden');
-            elements.settingsBtn.classList.remove('hidden');
-            startBtn.textContent = 'Resume';
-            startBtn.style.backgroundColor = 'var(--btn-main-start)';
-        } else { // idle
-            elements.controlsContainer.className = 'grid grid-cols-3 gap-4';
-            elements.resetBtn.classList.remove('hidden');
-            elements.settingsBtn.classList.remove('hidden');
-            startBtn.textContent = 'Start';
-            startBtn.style.backgroundColor = 'var(--btn-main-start)';
-        }
-    };
-
-    const updateUIFromState = () => {
-        generateTimerInputs();
-        generatePresetDropdown();
-        generateExerciseInputs();
-        generateThemeButtons();
-        generateSettingsToggles();
-        updateDurations();
-        reset(true);
-    };
-
-    // --- MODAL & SUCCESS MESSAGE FUNCTIONS ---
-    const showModal = (type, title, text, placeholder = '') => {
-        return new Promise(resolve => {
-            modalResolve = resolve;
-            elements.modalTitle.textContent = title;
-            elements.modalText.textContent = text;
-            
-            if (type === 'prompt') {
-                elements.modalInput.classList.remove('hidden');
-                elements.modalInput.value = '';
-                elements.modalInput.placeholder = placeholder;
-            } else {
-                elements.modalInput.classList.add('hidden');
-            }
-            
-            elements.modalOverlay.classList.remove('hidden');
-            elements.modalOverlay.classList.add('flex');
-        });
-    };
-
-    const hideModal = (value) => {
-        elements.modalOverlay.classList.add('hidden');
-        elements.modalOverlay.classList.remove('flex');
-        if (modalResolve) {
-            modalResolve(value);
-            modalResolve = null;
-        }
-    };
-
-    const showSuccessMessage = (message) => {
-        elements.presetSuccessMessage.textContent = message;
-        elements.presetSuccessMessage.classList.remove('hidden');
-        setTimeout(() => {
-            elements.presetSuccessMessage.classList.add('hidden');
-        }, 2500);
-    };
-
-    // --- EVENT HANDLERS ---
-    const handleStartPause = () => { (state.status === 'running') ? pause() : start(); };
-    
-    const handleSkipForward = () => {
-        if (state.status === 'idle') return;
-        clearInterval(state.timer);
-
-        if (state.currentRound >= state.settings.roundsPerSet) {
-            if (state.currentSet >= state.settings.numSets) {
-                workoutComplete();
-                return;
-            }
-            state.currentSet++;
-            state.currentRound = 1;
-        } else {
-            state.currentRound++;
-        }
-
-        state.phase = 'work';
-        state.currentTime = state.settings.workTime;
-        playSound(state.sounds.workStart);
-        updateDisplay();
-        
-        if (state.status === 'running') {
-            state.timer = setInterval(tick, 1000);
-        }
-    };
-
-    const handleSkipBack = () => {
-        if (state.status === 'idle' || (state.currentSet <= 1 && state.currentRound <= 1)) return;
-        clearInterval(state.timer);
-
-        state.currentRound--;
-
-        if (state.currentRound < 1) {
-            state.currentSet--;
-            state.currentRound = state.settings.roundsPerSet;
-        }
-
-        state.phase = 'work';
-        state.currentTime = state.settings.workTime;
-        playSound(state.sounds.workStart);
-        updateDisplay();
-        
-        if (state.status === 'running') {
-            state.timer = setInterval(tick, 1000);
-        }
-    };
-
-    const adjustExerciseArray = (newSize) => {
-        const currentExercises = state.settings.exercises;
-        if (!Array.isArray(currentExercises)) state.settings.exercises = [];
-        while (newSize > state.settings.exercises.length) state.settings.exercises.push('');
-        state.settings.exercises.length = newSize;
-    };
-
-    const handleSettingsChange = (e) => {
-        const oldNumSets = state.settings.numSets;
-        const currentExercises = [...state.settings.exercises];
-        state.settings = {
-            workTime: parseInt(getElem('work-time').value, 10) || 0,
-            restTime: parseInt(getElem('rest-time').value, 10) || 0,
-            roundsPerSet: parseInt(getElem('rounds-per-set').value, 10) || 0,
-            numSets: parseInt(getElem('num-sets').value, 10) || 0,
-            restBetweenSets: parseInt(getElem('rest-between-sets').value, 10) || 0,
-            warmUpDuration: parseInt(getElem('warm-up-duration').value, 10) || 0,
-            preStartDelay: state.settings.preStartDelay,
-            exercises: currentExercises
-        };
-        if (state.settings.numSets !== oldNumSets) {
-            adjustExerciseArray(state.settings.numSets);
-            generateExerciseInputs();
-        }
-        updateDurations();
-        saveState();
-    };
-    
-    const handleExerciseInputChange = (e) => {
-        state.settings.exercises[parseInt(e.target.dataset.setIndex, 10)] = e.target.value;
-        saveState();
-    };
-
-    const applyPreset = (presetName) => {
-        const presetSettings = state.presets[presetName];
-        if (!presetSettings) return;
-        state.lastPreset = presetName;
-        const cleanPresetSettings = {
-            workTime: presetSettings.workTime, restTime: presetSettings.restTime, roundsPerSet: presetSettings.roundsPerSet,
-            numSets: presetSettings.numSets, restBetweenSets: presetSettings.restBetweenSets,
-            exercises: presetSettings.exercises || [],
-            warmUpDuration: presetSettings.warmUpDuration || 300
-        };
-        state.settings = { ...defaultState.settings, ...cleanPresetSettings };
-        updateUIFromState();
-        saveState();
-    };
-
-    const showPanel = (panelToShow) => {
-        [elements.timerContainer, elements.settingsPanel, elements.themesPanel, elements.exerciseSettingsPanel].forEach(panel => {
-            panel.classList.toggle('hidden', panel !== panelToShow);
-        });
-    };
-    
-    const handleStepper = (event) => {
-        const button = event.target.closest('[data-action]');
-        if (!button) return;
-        const input = getElem(button.dataset.target);
-        if (!input) return;
-        let value = parseInt(input.value, 10);
-        input.value = Math.max(0, button.dataset.action === 'increment' ? value + 1 : value - 1);
-        input.dispatchEvent(new Event('input', { bubbles: true }));
-    };
-    
-    // --- EVENT LISTENERS BINDING---
-    const addEventListeners = () => {
-        elements.startPauseBtn.addEventListener('click', handleStartPause);
-        elements.resetBtn.addEventListener('click', () => reset(true));
-        elements.settingsBtn.addEventListener('click', () => showPanel(elements.settingsPanel));
-        
-        elements.closeSettingsBtn.addEventListener('click', () => {
-            showPanel(elements.timerContainer);
-            reset(true);
-        });
-
-        elements.skipForwardSubtleBtn.addEventListener('click', handleSkipForward);
-        elements.skipBackSubtleBtn.addEventListener('click', handleSkipBack);
-        
-        elements.themesSettingsBtn.addEventListener('click', () => showPanel(elements.themesPanel));
-        elements.exerciseSettingsBtn.addEventListener('click', () => showPanel(elements.exerciseSettingsPanel));
-        elements.backToSettingsFromThemesBtn.addEventListener('click', () => showPanel(elements.settingsPanel));
-        elements.backToSettingsFromExercisesBtn.addEventListener('click', () => showPanel(elements.settingsPanel));
-        elements.timerInputsContainer.addEventListener('input', e => { if (e.target.matches('.timer-setting-input')) handleSettingsChange(e); });
-        elements.timerInputsContainer.addEventListener('click', e => { if (e.target.closest('[data-action]')) handleStepper(e); });
-        elements.exerciseInputsContainer.addEventListener('input', e => { if (e.target.matches('.exercise-input')) handleExerciseInputChange(e); });
-        elements.themeButtonsContainer.addEventListener('click', e => {
-            const themeBtn = e.target.closest('.theme-btn');
-            if (themeBtn) applyTheme(themeBtn.dataset.themeId);
-        });
-        elements.settingsTogglesContainer.addEventListener('input', e => {
-            if (e.target.id === 'mq-toggle') {
-                state.motivationalQuotesEnabled = e.target.checked;
-                if (!state.motivationalQuotesEnabled) {
-                    clearInterval(quoteTimer);
-                }
-                saveState();
-            } else if (e.target.id === 'warm-up-toggle') {
-                state.warmUpEnabled = e.target.checked;
-                updateInputLayout();
-                updateDurations();
-                saveState();
-            } else if (e.target.id === 'volume-slider') {
-                const newVolume = parseFloat(e.target.value);
-                state.volume = newVolume;
-                Object.values(audioPlayers).forEach(player => player.volume = newVolume);
-                quotePlayers.forEach(player => player.volume = newVolume);
-                saveState();
-            }
-        });
-        
-        elements.presetSelect.addEventListener('change', (e) => applyPreset(e.target.value));
-        
-        elements.saveAsNewPresetBtn.addEventListener('click', async () => {
-            const newName = await showModal('prompt', 'Save as New Preset', 'Enter a name for your new preset.');
-            if (newName && newName.trim() !== '') {
-                if (state.presets[newName]) {
-                    const overwrite = await showModal('confirm', 'Preset Exists', `A preset named "${newName}" already exists. Overwrite it?`);
-                    if (!overwrite) return;
-                }
-                const { workTime, restTime, roundsPerSet, numSets, restBetweenSets, exercises, warmUpDuration } = state.settings;
-                const presetToSave = { workTime, restTime, roundsPerSet, numSets, restBetweenSets, exercises, warmUpDuration };
-                state.presets[newName] = JSON.parse(JSON.stringify(presetToSave));
-                state.lastPreset = newName;
-                saveState();
-                generatePresetDropdown();
-                showSuccessMessage(`Preset "${newName}" saved!`);
-            }
-        });
-
-        elements.updatePresetBtn.addEventListener('click', async () => {
-            const presetToUpdate = elements.presetSelect.value;
-            const confirmed = await showModal('confirm', 'Update Preset', `This will overwrite "${presetToUpdate}" with the current settings. Continue?`);
-            if (confirmed) {
-                const { workTime, restTime, roundsPerSet, numSets, restBetweenSets, exercises, warmUpDuration } = state.settings;
-                const presetToSave = { workTime, restTime, roundsPerSet, numSets, restBetweenSets, exercises, warmUpDuration };
-                state.presets[presetToUpdate] = JSON.parse(JSON.stringify(presetToSave));
-                saveState();
-                showSuccessMessage(`Preset "${presetToUpdate}" updated!`);
-            }
-        });
-
-        elements.managePresetsBtn.addEventListener('click', () => {
-            elements.mainSettingsContent.classList.add('hidden');
-            elements.managePresetsContent.classList.remove('hidden');
-            generatePresetManagementList();
-        });
-
-        elements.backToSettingsFromManageBtn.addEventListener('click', () => {
-            elements.managePresetsContent.classList.add('hidden');
-            elements.mainSettingsContent.classList.remove('hidden');
-        });
-
-        elements.presetManagementList.addEventListener('click', async (e) => {
-            const renameBtn = e.target.closest('.rename-preset-item-btn');
-            const deleteBtn = e.target.closest('.delete-preset-item-btn');
-
-            if (renameBtn) {
-                const oldName = renameBtn.dataset.presetName;
-                const newName = await showModal('prompt', 'Rename Preset', `Enter new name for "${oldName}":`, oldName);
-                if (newName && newName.trim() !== '' && newName !== oldName) {
-                    if (state.presets[newName]) {
-                        await showModal('alert', 'Error', 'A preset with this name already exists.');
-                        return;
-                    }
-                    state.presets[newName] = state.presets[oldName];
-                    delete state.presets[oldName];
-                    if (state.lastPreset === oldName) {
-                        state.lastPreset = newName;
-                    }
-                    saveState();
-                    generatePresetDropdown();
-                    generatePresetManagementList();
-                }
-            }
-
-            if (deleteBtn) {
-                const presetToDelete = deleteBtn.dataset.presetName;
-                if (Object.keys(state.presets).length <= 1) {
-                    await showModal('alert', 'Cannot Delete', 'You cannot delete the last preset.');
-                    return;
-                }
-                const confirmed = await showModal('confirm', 'Delete Preset', `Are you sure you want to delete "${presetToDelete}"?`);
-                if (confirmed) {
-                    delete state.presets[presetToDelete];
-                    if (state.lastPreset === presetToDelete) {
-                        state.lastPreset = Object.keys(state.presets)[0];
-                        applyPreset(state.lastPreset);
-                    }
-                    saveState();
-                    generatePresetDropdown();
-                    generatePresetManagementList();
-                }
-            }
-        });
-        
-        elements.modalConfirmBtn.addEventListener('click', () => {
-            const inputValue = elements.modalInput.value;
-            hideModal(elements.modalInput.classList.contains('hidden') ? true : inputValue);
-        });
-        elements.modalCancelBtn.addEventListener('click', () => hideModal(null));
-    };
-
-    const generatePresetManagementList = () => {
-        const container = elements.presetManagementList;
-        container.innerHTML = '';
-        Object.keys(state.presets).forEach(name => {
-            const item = document.createElement('div');
-            item.className = 'flex items-center justify-between p-3 rounded-lg'
-            item.style.backgroundColor = 'var(--bg-tertiary)';
-            item.innerHTML = `
-                <span class="font-medium truncate pr-2">${name}</span>
-                <div class="flex-shrink-0 flex gap-2">
-                    <button data-preset-name="${name}" class="rename-preset-item-btn btn text-sm py-1 px-3 rounded-md" style="background-color: var(--btn-rename);">Rename</button>
-                    <button data-preset-name="${name}" class="delete-preset-item-btn btn text-sm py-1 px-3 rounded-md" style="background-color: var(--btn-secondary);">Delete</button>
-                </div>
-            `;
-            container.appendChild(item);
-        });
-    };
-
-    // --- INITIALIZATION ---
-    loadState();
-    updateUIFromState();
-    addEventListeners();
-    showPanel(elements.timerContainer);
-});
-</script>
-</body>
-</html>
-
-
-
-
-
-
-
-
+    const generateSettingsToggles = () => {
+        const container = elements.settingsTogglesContainer;
+        container.innerHTML = '';
+        const quotesChecked = state.motivationalQuotesEnabled ? 'checked' : '';
+        const warmUpChecked = state.warmUpEnabled ? 'checked' : '';
+        container.innerHTML = `
+            <div class="grid grid-cols-2 gap-4">
+                <label class="toggle-label">
+                    <span class="font-medium" style="color: var(--text-primary);">Quotes</span>
+                    <div class="toggle-switch">
+                        <input type="checkbox" id="mq-toggle" ${quotesChecked}>
+                        <span class="slider"></span>
+                    </div>
+    _message_truncated_

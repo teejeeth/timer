@@ -35,7 +35,7 @@
             --btn-rename: #8b5cf6; /* violet-500 */
             --btn-rename-hover: #7c3aed; /* violet-600 */
             --color-next-exercise-border: var(--color-set-rest); 
-            /* NEW: Static button colors */
+            /* MODIFIED: Static button colors for better theme consistency */
             --btn-main-start: #22c55e;
             --btn-main-reset: #ef4444;
             --btn-main-settings: #3b82f6;
@@ -262,6 +262,12 @@
                 <p id="exercise-display" class="text-xl font-bold truncate" style="color: var(--text-primary);">---</p>
             </div>
             
+            <!-- NEW: Preset dropdown on main screen -->
+            <div id="main-preset-container" class="mb-4">
+                <label for="main-preset-select" class="block text-center font-semibold uppercase text-sm mb-2" style="color: var(--text-secondary);">Workout Preset</label>
+                <select id="main-preset-select" class="custom-select w-full text-white font-bold py-3 px-4 rounded-lg text-lg btn" style="background-color: var(--bg-tertiary); border: none;"></select>
+            </div>
+
             <div id="next-exercise-container" class="text-center mb-4 p-3 rounded-lg hidden" style="background-color: var(--bg-tertiary); border: 2px dashed var(--color-next-exercise-border);">
                 <h4 class="text-sm font-semibold uppercase" style="color: var(--text-secondary);">Next Exercise</h4>
                 <p id="next-exercise-display" class="text-xl font-bold truncate" style="color: var(--text-primary);">---</p>
@@ -388,6 +394,9 @@ document.addEventListener('DOMContentLoaded', () => {
         totalDurationDisplay: getElem('total-duration-display'),
         timerInputsContainer: getElem('timer-inputs-container'),
         settingsTogglesContainer: getElem('settings-toggles-container'),
+        // NEW: References for both preset dropdowns
+        mainPresetContainer: getElem('main-preset-container'),
+        mainPresetSelect: getElem('main-preset-select'),
         presetSelect: getElem('preset-select'),
         presetSuccessMessage: getElem('preset-success-message'),
         updatePresetBtn: getElem('update-preset-btn'),
@@ -521,7 +530,7 @@ document.addEventListener('DOMContentLoaded', () => {
         motivationalQuotesEnabled: false,
         warmUpEnabled: false,
         volume: 0.8,
-        lastPreset: "Landmine"
+        lastPreset: "Landmine Focus"
     };
     
     // --- DATA PERSISTENCE ---
@@ -656,19 +665,29 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     };
 
+    /* MODIFIED: This function now populates and syncs both dropdowns */
     const generatePresetDropdown = () => {
-        const select = elements.presetSelect;
-        select.innerHTML = '';
-        Object.keys(state.presets).forEach(name => {
-            const option = document.createElement('option');
-            option.value = name;
-            option.textContent = name;
-            select.appendChild(option);
+        const selects = [elements.presetSelect, elements.mainPresetSelect];
+        const currentSelectedValue = state.lastPreset;
+
+        selects.forEach(select => {
+            if (!select) return;
+            const fragment = document.createDocumentFragment();
+            Object.keys(state.presets).forEach(name => {
+                const option = document.createElement('option');
+                option.value = name;
+                option.textContent = name;
+                fragment.appendChild(option);
+            });
+            select.innerHTML = ''; // Clear previous options
+            select.appendChild(fragment);
+
+            if (currentSelectedValue && state.presets[currentSelectedValue]) {
+                select.value = currentSelectedValue;
+            }
         });
-        if (state.lastPreset && state.presets[state.lastPreset]) {
-            select.value = state.lastPreset;
-        }
     };
+
 
     const generateExerciseInputs = () => {
         const container = elements.exerciseInputsContainer;
@@ -688,6 +707,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // --- CORE TIMER FUNCTIONS ---
     const playSound = (soundType) => {
+        if (!audioInitialized) return;
         if (soundType === 'countdown') {
             const countdownAudio = new Audio(soundFiles.countdown);
             countdownAudio.volume = state.volume;
@@ -703,7 +723,7 @@ document.addEventListener('DOMContentLoaded', () => {
     };
 
     const playRandomQuote = () => {
-        if (quotePlayers.length === 0) return;
+        if (quotePlayers.length === 0 || !audioInitialized) return;
         const randomIndex = Math.floor(Math.random() * quotePlayers.length);
         const player = quotePlayers[randomIndex];
         if (player) {
@@ -724,19 +744,16 @@ document.addEventListener('DOMContentLoaded', () => {
         state.currentTime--;
         updateDisplay();
 
-        if ((state.phase === 'rest' || state.phase === 'setRest') && state.currentTime <= 3 && state.currentTime > 0) {
+        if ((state.phase === 'prepare' || state.phase === 'rest' || state.phase === 'setRest') && state.currentTime <= 3 && state.currentTime > 0) {
             playSound('countdownBeep');
         }
 
-        if (state.currentTime > 0) {
-            if (state.phase === 'prepare') playSound(state.sounds.preStart);
-            return;
-        }
+        if (state.currentTime > 0) return;
         
         if (state.phase === 'warmUp') {
             state.phase = 'prepare';
             state.currentTime = state.settings.preStartDelay;
-            playSound(state.sounds.preStart);
+            if(state.settings.preStartDelay > 0) playSound(state.sounds.preStart);
         } else if (state.phase === 'prepare') {
             state.phase = 'work'; state.currentRound = 1; state.currentSet = 1;
             state.currentTime = state.settings.workTime;
@@ -786,12 +803,17 @@ document.addEventListener('DOMContentLoaded', () => {
 
     const start = () => {
         if (state.status === 'running') return;
+
+        // NEW: Hide the main screen preset dropdown when starting
+        elements.mainPresetContainer.classList.add('hidden');
+
         if (!audioInitialized) {
             const allAudioFiles = { ...soundFiles };
             motivationalQuotes.forEach((path, index) => {
                 allAudioFiles[`quote${index}`] = path;
             });
 
+            // Pre-load audio on user interaction
             for (const key in allAudioFiles) {
                 const player = new Audio(allAudioFiles[key]);
                 player.volume = 0;
@@ -835,7 +857,8 @@ document.addEventListener('DOMContentLoaded', () => {
         if (state.currentTime > 0) {
             state.timer = setInterval(tick, 1000);
         } else {
-            tick(); state.timer = setInterval(tick, 1000);
+            tick(); // Run first tick immediately if delay is 0
+            state.timer = setInterval(tick, 1000);
         }
         updateButtonState();
         updateDisplay();
@@ -861,6 +884,8 @@ document.addEventListener('DOMContentLoaded', () => {
             elements.timerDisplayContent.classList.remove('hidden');
             elements.completionMessage.classList.add('hidden');
             elements.nextExerciseContainer.classList.add('hidden');
+            // NEW: Show the main screen preset dropdown on reset
+            elements.mainPresetContainer.classList.remove('hidden');
             updateButtonState();
             updateDisplay(true);
         }
@@ -993,20 +1018,26 @@ document.addEventListener('DOMContentLoaded', () => {
         if (state.status === 'idle') return;
         clearInterval(state.timer);
 
-        if (state.currentRound >= state.settings.roundsPerSet) {
-            if (state.currentSet >= state.settings.numSets) {
-                workoutComplete();
-                return;
-            }
-            state.currentSet++;
-            state.currentRound = 1;
+        if (state.phase === 'work' && state.currentRound < state.settings.roundsPerSet) {
+             state.phase = 'rest';
+             state.currentTime = state.settings.restTime;
+             playSound(state.sounds.restStart);
         } else {
-            state.currentRound++;
+            if (state.currentRound >= state.settings.roundsPerSet) {
+                if (state.currentSet >= state.settings.numSets) {
+                    workoutComplete();
+                    return;
+                }
+                state.currentSet++;
+                state.currentRound = 1;
+            } else {
+                state.currentRound++;
+            }
+            state.phase = 'work';
+            state.currentTime = state.settings.workTime;
+            playSound(state.sounds.workStart);
         }
 
-        state.phase = 'work';
-        state.currentTime = state.settings.workTime;
-        playSound(state.sounds.workStart);
         updateDisplay();
         
         if (state.status === 'running') {
@@ -1015,17 +1046,20 @@ document.addEventListener('DOMContentLoaded', () => {
     };
 
     const handleSkipBack = () => {
-        if (state.status === 'idle' || (state.currentSet <= 1 && state.currentRound <= 1)) return;
+        if (state.status === 'idle' || (state.currentSet <= 1 && state.currentRound <= 1 && state.phase !== 'rest')) return;
         clearInterval(state.timer);
 
-        state.currentRound--;
-
-        if (state.currentRound < 1) {
-            state.currentSet--;
-            state.currentRound = state.settings.roundsPerSet;
+        if(state.phase === 'rest'){
+            state.phase = 'work';
+        } else {
+             state.currentRound--;
+            if (state.currentRound < 1) {
+                state.currentSet--;
+                state.currentRound = state.settings.roundsPerSet;
+            }
+             state.phase = 'work';
         }
 
-        state.phase = 'work';
         state.currentTime = state.settings.workTime;
         playSound(state.sounds.workStart);
         updateDisplay();
@@ -1072,14 +1106,21 @@ document.addEventListener('DOMContentLoaded', () => {
         const presetSettings = state.presets[presetName];
         if (!presetSettings) return;
         state.lastPreset = presetName;
+        // Ensure all potential properties from a preset are handled
         const cleanPresetSettings = {
-            workTime: presetSettings.workTime, restTime: presetSettings.restTime, roundsPerSet: presetSettings.roundsPerSet,
-            numSets: presetSettings.numSets, restBetweenSets: presetSettings.restBetweenSets,
+            workTime: presetSettings.workTime,
+            restTime: presetSettings.restTime,
+            roundsPerSet: presetSettings.roundsPerSet,
+            numSets: presetSettings.numSets,
+            restBetweenSets: presetSettings.restBetweenSets,
             exercises: presetSettings.exercises || [],
-            warmUpDuration: presetSettings.warmUpDuration || 300
+            warmUpDuration: presetSettings.warmUpDuration || 300 // default warmup if not in preset
         };
+
+        // Important: merge preset settings with default settings to avoid missing properties
         state.settings = { ...defaultState.settings, ...cleanPresetSettings };
-        updateUIFromState();
+        
+        updateUIFromState(); //This will regenerate all inputs and dropdowns based on new state
         saveState();
     };
 
@@ -1095,7 +1136,8 @@ document.addEventListener('DOMContentLoaded', () => {
         const input = getElem(button.dataset.target);
         if (!input) return;
         let value = parseInt(input.value, 10);
-        input.value = Math.max(0, button.dataset.action === 'increment' ? value + 1 : value - 1);
+        const step = (input.id === 'work-time' || input.id === 'rest-time' || input.id === 'rest-between-sets' || input.id === 'warm-up-duration') ? 5 : 1;
+        input.value = Math.max(0, button.dataset.action === 'increment' ? value + step : value - step);
         input.dispatchEvent(new Event('input', { bubbles: true }));
     };
     
@@ -1145,8 +1187,10 @@ document.addEventListener('DOMContentLoaded', () => {
             }
         });
         
+        // NEW: Event listener for both dropdowns
         elements.presetSelect.addEventListener('change', (e) => applyPreset(e.target.value));
-        
+        elements.mainPresetSelect.addEventListener('change', (e) => applyPreset(e.target.value));
+
         elements.saveAsNewPresetBtn.addEventListener('click', async () => {
             const newName = await showModal('prompt', 'Save as New Preset', 'Enter a name for your new preset.');
             if (newName && newName.trim() !== '') {
@@ -1159,7 +1203,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 state.presets[newName] = JSON.parse(JSON.stringify(presetToSave));
                 state.lastPreset = newName;
                 saveState();
-                generatePresetDropdown();
+                generatePresetDropdown(); // Regenerate both dropdowns
                 showSuccessMessage(`Preset "${newName}" saved!`);
             }
         });
@@ -1257,17 +1301,19 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // --- INITIALIZATION ---
     loadState();
-    updateUIFromState();
+    // This needs to happen after state is loaded but before the full UI update
+    if (state.lastPreset && state.presets[state.lastPreset]) {
+        applyPreset(state.lastPreset);
+    } else if (Object.keys(state.presets).length > 0) {
+        // Fallback to the first preset if the last saved one doesn't exist
+        applyPreset(Object.keys(state.presets)[0]);
+    } else {
+        updateUIFromState(); // First time run with no presets
+    }
+    
     addEventListeners();
     showPanel(elements.timerContainer);
 });
 </script>
 </body>
 </html>
-
-
-
-
-
-
-

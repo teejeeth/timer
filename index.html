@@ -744,16 +744,23 @@ document.addEventListener('DOMContentLoaded', () => {
         state.currentTime--;
         updateDisplay();
 
-        if ((state.phase === 'prepare' || state.phase === 'rest' || state.phase === 'setRest') && state.currentTime <= 3 && state.currentTime > 0) {
-            playSound('countdownBeep');
+        // NEW BEEP LOGIC: Play beep for last 3 seconds of rest, but every second of prepare
+        if (state.currentTime > 0) {
+            if (state.phase === 'prepare') {
+                playSound('countdownBeep');
+            } else if ((state.phase === 'rest' || state.phase === 'setRest') && state.currentTime <= 3) {
+                playSound('countdownBeep');
+            }
         }
-
-        if (state.currentTime > 0) return;
+        
+        if (state.currentTime > 0) {
+             return;
+        }
         
         if (state.phase === 'warmUp') {
             state.phase = 'prepare';
             state.currentTime = state.settings.preStartDelay;
-            if(state.settings.preStartDelay > 0) playSound(state.sounds.preStart);
+            // The first beep will be played on the next tick, so no sound here.
         } else if (state.phase === 'prepare') {
             state.phase = 'work'; state.currentRound = 1; state.currentSet = 1;
             state.currentTime = state.settings.workTime;
@@ -839,7 +846,6 @@ document.addEventListener('DOMContentLoaded', () => {
             } else {
                 state.phase = 'prepare';
                 state.currentTime = state.settings.preStartDelay;
-                if(state.settings.preStartDelay > 0) playSound(state.sounds.preStart);
             }
         }
         state.status = 'running';
@@ -1317,3 +1323,4 @@ document.addEventListener('DOMContentLoaded', () => {
 </script>
 </body>
 </html>
+

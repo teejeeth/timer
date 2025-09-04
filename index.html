@@ -743,7 +743,8 @@ document.addEventListener('DOMContentLoaded', () => {
     const tick = () => {
         // MODIFIED: Sound logic is now handled before decrementing time to ensure it plays for every second.
         if (state.currentTime > 0) {
-            if (state.phase === 'prepare') {
+            // MODIFIED: Added check to prevent sound on the "phantom" first second.
+            if (state.phase === 'prepare' && state.currentTime <= state.settings.preStartDelay) {
                 // MODIFIED: Use the correct 'countdown.mp3' sound for the initial prep phase.
                 playSound(state.sounds.preStart);
             } else if ((state.phase === 'rest' || state.phase === 'setRest') && state.currentTime <= 3) {
@@ -846,8 +847,8 @@ document.addEventListener('DOMContentLoaded', () => {
                 state.currentTime = state.settings.warmUpDuration;
             } else {
                 state.phase = 'prepare';
-                state.currentTime = state.settings.preStartDelay;
-                // MODIFIED: The single sound play was removed from here, as the tick() function now handles each beep.
+                // MODIFIED: Add the "phantom" second to allow the last beep to play fully before phase transition.
+                state.currentTime = state.settings.preStartDelay + 1;
             }
         }
         state.status = 'running';
@@ -1325,5 +1326,6 @@ document.addEventListener('DOMContentLoaded', () => {
 </script>
 </body>
 </html>
+
 
 

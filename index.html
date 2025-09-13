@@ -454,68 +454,68 @@ document.addEventListener('DOMContentLoaded', () => {
         sounds: { preStart: 'countdown', workStart: 'work', restStart: 'rest', setEnd: 'setEnd', workoutComplete: 'finish' },
         presets: {
     "Barbell Strength": {
-        workTime: 35,
-        restTime: 35,
-        roundsPerSet: 4,
+        workTime: 500,
+        restTime: 30,
+        roundsPerSet: 1,
         numSets: 5,
         restBetweenSets: 75,
-        exercises: ["Barbell Cleans", "Deadlift", "Zercher Squat", "Hip Thrust", "Barbell Row"]
+        exercises: ["Barbell Cleans", "Barbell Row", "Zercher Squat", "Barbell Row", "Hip thrust"]
     },
     "Landmine Focus": {
-        workTime: 35,
-        restTime: 35,
-        roundsPerSet: 4,
+        workTime: 500,
+        restTime: 30,
+        roundsPerSet: 1,
         numSets: 5,
         restBetweenSets: 75,
-        exercises: ["Landmine Press", "Landmine hinge", "Landmine Row", "Landmine Squat", "Landmine rotations"]
+        exercises: ["Landmine T-row", "Landmine press", "Landmine squat", "Landmine hinge", "Landmine rotations"]
     },
-    "Unilateral Stability": {
-        workTime: 32,
-        restTime: 32,
-        roundsPerSet: 4,
-        numSets: 5,
-        restBetweenSets: 60,
-        exercises: ["SL Squat", "S-Dumbell OHP", "SL Hip Thrust", "S-Dumbell Row", "SL Deadlift"]
-    },
-    "Athletic Power": {
-        workTime: 30,
+    "Unilateral": {
+        workTime: 500,
         restTime: 30,
-        roundsPerSet: 4,
+        roundsPerSet: 1,
         numSets: 5,
-        restBetweenSets: 60,
-        exercises: ["Single Arm Row", "S-Dumbell OHP", "Hip marches", "Pallof Press", "Woodchoppers"]
+        restBetweenSets: 75,
+        exercises: ["SL Squat", "S-dumbell row", "S-Dumbell OHP", "SL Deadlift", "SL Hip thrust]
     },
     "Kettlebell": {
-        workTime: 40,
-        restTime: 20,
-        roundsPerSet: 3,
+        workTime: 500,
+        restTime: 30,
+        roundsPerSet: 1,
+        numSets: 5,
+        restBetweenSets: 75,
+        exercises: ["Kettlebell cleans", "S-Dumbell row", "Kettlebell swings", "Kettlebell lateral swing", "Kettlebell windmill"]
+    },
+    "Kettlebell": {
+        workTime: 500,
+        restTime: 30,
+        roundsPerSet: 1,
         numSets: 5,
         restBetweenSets: 75,
         exercises: ["Kettlebell Cleans", "Kettlebell row", "Kettlebell Windmill", "Kettlebell Swings", "Suitcase Carry"]
     },
-    "Functional Core & Carry": {
-        workTime: 35,
-        restTime: 25,
-        roundsPerSet: 3,
-        numSets: 5,
-        restBetweenSets: 60,
-        exercises: ["Glute medius plate", "Farmer's Walk", "Monster Walk", "Hamstring Slides", "Copenhagen Plank"]
+    "Acc1": {
+        workTime: 500,
+        restTime: 30,
+        roundsPerSet: 1,
+        numSets: 6,
+        restBetweenSets: 75,
+        exercises: ["Medius plate/Monster walk", "Hip marches", "Pallof press", "Split squat", "Hamstring Slides", "Back extension/Reverse hyper"]
     },
-    "Accessoires": {
-        workTime: 30,
-        restTime: 15,
-        roundsPerSet: 2,
-        numSets: 9,
-        restBetweenSets: 60,
-        exercises: ["Split squat", "Back Extension", "Reverse Hyper", "Side plank thruster", "Good Morning", "Jefferson Curl", "QL Side Bend", "Crunches"]
+    "Acc2": {
+        workTime: 500,
+        restTime: 30,
+        roundsPerSet: 1,
+        numSets: 6,
+        restBetweenSets: 75,
+        exercises: ["Good morning/Jefferson curl", "Split squat", "Woodchoppers", "Side plank", "Copenhagen plank", "Hip marches"]
     },
-    "A. Recovery day": {
-        workTime: 45,
-        restTime: 15,
-        roundsPerSet: 3,
-        numSets: 7,
-        restBetweenSets: 45,
-        exercises: ["Lu raises/shoulder 30s", "Upright row", "Shrugs", "Biceps", "Triceps", "Neck", "Forearms" ]
+    "Recovery": {
+        workTime: 500,
+        restTime: 30,
+        roundsPerSet: 1,
+        numSets: 6,
+        restBetweenSets: 75,
+        exercises: ["Shoulder 360's/lu raises", "Upright row", "Shrugs", "Biceps/Triceps", "Neck", "Forearms"]
     },
     "Thasmin": {
         workTime: 35,
@@ -1326,6 +1326,7 @@ document.addEventListener('DOMContentLoaded', () => {
 </script>
 </body>
 </html>
+
 
 
 

@@ -105,11 +105,9 @@
         <div id="timer-container" class="rounded-2xl shadow-2xl p-6 relative panel" style="background-color: var(--bg-secondary);">
             
             <!-- Display Area -->
-            <!-- Removing fixed bg color here to let it blend with main container during color phases -->
             <div id="display-area" class="text-center mb-4 relative h-auto py-8 flex flex-col items-center justify-center rounded-xl">
                 <div id="timer-display-content" class="z-0 w-full px-4">
                     <div id="phase-display" class="text-3xl font-bold uppercase mb-2">Prepare</div>
-                    <!-- CHANGED: Reverted font size to 8xl/9xl, removed padding (pr-8) to center perfectly, kept whitespace-nowrap to prevent wrapping -->
                     <div id="timer-display" class="text-8xl md:text-9xl timer-display tracking-tight tabular-nums whitespace-nowrap">--:--</div>
                     
                     <!-- Progress Bar -->
@@ -170,6 +168,7 @@
                 <div id="timer-inputs-container" class="grid grid-cols-2 gap-x-6 gap-y-4 mb-6"></div>
 
                 <div class="mb-6 p-4 rounded-lg" style="background-color: var(--bg-tertiary);">
+                    <!-- Warm Up Toggle -->
                     <div class="flex items-center justify-between">
                         <span class="font-bold">Warm up</span>
                         <label class="toggle-switch">
@@ -296,18 +295,13 @@ document.addEventListener('DOMContentLoaded', () => {
     let state = {};
     let modalResolve = null;
     let wakeLock = null;
-
-    // Standard "Electronic Beep"
-    const beepSound = new Audio("data:audio/mp3;base64,//uQxAAAAANIAAAAAExBTUUzLjEwMKqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqq//uQxAAAAANIAAAAAExBTUUzLjEwMKqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqq//uQxAAAAANIAAAAAExBTUUzLjEwMKqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqq//uQxAAAAANIAAAAAExBTUUzLjEwMKqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqq//uQxAAAAANIAAAAAExBTUUzLjEwMKqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqq");
-    // Set End "Chime" (Pitched up)
-    const setEndSound = new Audio("data:audio/mp3;base64,//uQxAAAAANIAAAAAExBTUUzLjEwMKqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqq//uQxAAAAANIAAAAAExBTUUzLjEwMKqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqq//uQxAAAAANIAAAAAExBTUUzLjEwMKqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqq//uQxAAAAANIAAAAAExBTUUzLjEwMKqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqq//uQxAAAAANIAAAAAExBTUUzLjEwMKqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqq");
-    setEndSound.playbackRate = 1.5; 
+    let audioCtx = null;
 
     const createExercise = (name, rounds) => ({ name: name, rounds: rounds });
 
     const defaultState = {
         timer: null, status: 'idle', phase: 'prepare', currentTime: 0, 
-        totalPhaseTime: 0, // NEW: Track total time of current phase for progress bar
+        totalPhaseTime: 0, 
         currentRound: 0, currentSet: 0,
         settings: {
             workTime: 35, restTime: 35, numSets: 4, restBetweenSets: 75, preStartDelay: 5,
@@ -347,17 +341,13 @@ document.addEventListener('DOMContentLoaded', () => {
         try {
             if ('wakeLock' in navigator) {
                 wakeLock = await navigator.wakeLock.request('screen');
-                wakeLock.addEventListener('release', () => {
-                    // console.log('Wake Lock was released');
-                });
-                // console.log('Wake Lock is active');
+                wakeLock.addEventListener('release', () => {});
             }
         } catch (err) {
             console.error(`${err.name}, ${err.message}`);
         }
     };
 
-    // Re-request wake lock when visibility changes (app comes back to foreground)
     document.addEventListener('visibilitychange', async () => {
         if (wakeLock !== null && document.visibilityState === 'visible' && state.status === 'running') {
             await requestWakeLock();
@@ -392,10 +382,9 @@ document.addEventListener('DOMContentLoaded', () => {
                 if(state.settings.exercises.length > 0 && typeof state.settings.exercises[0] === 'string'){
                      state.settings.exercises = state.settings.exercises.map(name => createExercise(name, 6)); 
                 }
-                
                 if (saved.presets) state.presets = saved.presets;
                 if (typeof saved.warmUpEnabled === 'boolean') state.warmUpEnabled = saved.warmUpEnabled;
-                if (typeof saved.volume === 'number') state.volume = saved.volume;
+                state.volume = 1.0; 
                 if (saved.lastPreset) state.lastPreset = saved.lastPreset;
             }
         } catch (e) {
@@ -404,7 +393,7 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     };
     
-    // --- UI GENERATORS ---
+    // --- UI GENERATORS (Stepper, Inputs, etc) ---
     const createStepperInput = (id, label, value) => {
         const container = document.createElement('div');
         container.id = `${id}-wrapper`;
@@ -481,13 +470,47 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     };
 
-    // --- TIMER LOGIC ---
+    // --- WEB AUDIO API (Fix for sound) ---
+    const initAudio = () => {
+        if (!audioCtx) {
+            audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+        }
+        if (audioCtx.state === 'suspended') {
+            audioCtx.resume();
+        }
+    };
+
+    const playTone = (freq, duration, type = 'sine') => {
+        if (!audioCtx) return;
+        const osc = audioCtx.createOscillator();
+        const gain = audioCtx.createGain();
+        osc.type = type;
+        osc.frequency.value = freq;
+        osc.connect(gain);
+        gain.connect(audioCtx.destination);
+        osc.start();
+        gain.gain.exponentialRampToValueAtTime(0.00001, audioCtx.currentTime + duration);
+        osc.stop(audioCtx.currentTime + duration);
+    };
+
     const playSound = (type) => {
-        if (state.volume > 0) {
-            let sound = (type === 'setEnd') ? setEndSound : beepSound;
-            sound.volume = state.volume;
-            sound.currentTime = 0;
-            sound.play().catch(e => console.log("Audio play failed (interaction required first)"));
+        initAudio(); // Ensure context is ready
+        if (type === 'setEnd') {
+            // Ding-Dong Chime for set end
+            playTone(600, 0.1); 
+            setTimeout(() => playTone(800, 0.6), 100);
+        } else if (type === 'beep') {
+            // Arcade Jump Logic (Replacing standard beep)
+            const osc = audioCtx.createOscillator();
+            const gain = audioCtx.createGain();
+            osc.connect(gain);
+            gain.connect(audioCtx.destination);
+            osc.frequency.setValueAtTime(400, audioCtx.currentTime);
+            osc.frequency.exponentialRampToValueAtTime(1200, audioCtx.currentTime + 0.1);
+            gain.gain.setValueAtTime(0.5, audioCtx.currentTime);
+            gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.1);
+            osc.start();
+            osc.stop(audioCtx.currentTime + 0.1);
         }
     };
 
@@ -553,7 +576,7 @@ document.addEventListener('DOMContentLoaded', () => {
     
     const skipForward = () => {
         if (state.phase === 'complete') return;
-        beepSound.load(); setEndSound.load();
+        initAudio();
         const roundLimit = getCurrentRoundLimit();
 
         if (state.phase === 'warmUp' || state.phase === 'prepare') {
@@ -608,7 +631,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const start = () => {
         if (state.status === 'running') return;
         elements.mainPresetContainer.classList.add('hidden');
-        beepSound.load(); setEndSound.load();
+        initAudio(); // Initialize audio on first click
         requestWakeLock();
 
         if (state.status === 'idle' || state.phase === 'complete') {
@@ -655,23 +678,23 @@ document.addEventListener('DOMContentLoaded', () => {
         switch(phase) {
             case 'warmUp':
                 bgColor = 'var(--color-warm-up)';
-                textColor = 'black'; // Amber -> Black Text
+                textColor = 'black'; 
                 break;
             case 'prepare':
                 bgColor = 'var(--color-prepare)';
-                textColor = 'black'; // Yellow -> Black Text
+                textColor = 'black'; 
                 break;
             case 'work':
                 bgColor = 'var(--color-work)';
-                textColor = 'white'; // Intense Cherry Red -> White Text
+                textColor = 'white'; 
                 break;
             case 'rest':
                 bgColor = 'var(--color-rest)';
-                textColor = 'black'; // Green -> Black Text
+                textColor = 'black'; 
                 break;
             case 'setRest':
                 bgColor = 'var(--color-set-rest)';
-                textColor = 'black'; // Teal -> Black Text
+                textColor = 'black'; 
                 break;
             default: // idle, complete
                 bgColor = 'var(--bg-primary)';
@@ -679,8 +702,8 @@ document.addEventListener('DOMContentLoaded', () => {
         }
 
         if (phase === 'idle' || phase === 'complete') {
-            document.body.style.backgroundColor = ''; // Revert to CSS default
-            elements.timerContainer.style.backgroundColor = ''; // Revert to CSS default
+            document.body.style.backgroundColor = ''; 
+            elements.timerContainer.style.backgroundColor = ''; 
             document.body.style.color = ''; 
             elements.timerContainer.style.color = '';
         } else {

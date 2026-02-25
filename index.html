@@ -304,37 +304,70 @@ document.addEventListener('DOMContentLoaded', () => {
         totalPhaseTime: 0, 
         currentRound: 0, currentSet: 0,
         settings: {
-            workTime: 35, restTime: 35, numSets: 4, restBetweenSets: 75, preStartDelay: 5,
+            workTime: 50, restTime: 30, numSets: 4, restBetweenSets: 140, preStartDelay: 5,
             warmUpDuration: 300,
             exercises: [
-                createExercise("Landmine row", 6),
-                createExercise("Landmine press", 6),
-                createExercise("Landmine squat", 6),
-                createExercise("Kettlebell swings", 6)
+                createExercise("Landmine row", 1),
+                createExercise("Landmine press", 1),
+                createExercise("Landmine squat", 1),
+                createExercise("Kettlebell swings", 1)
             ]
         },
-        presets: {
-            "Barbell Strength": {
-                workTime: 420, restTime: 30, numSets: 11, restBetweenSets: 75,
-                exercises: [
-                    createExercise("Barbell Cleans", 1), createExercise("Barbell Row", 1), createExercise("Zercher Squat", 1),
-                    createExercise("Barbell Row", 1), createExercise("Hip thrust", 1), createExercise("Split squat", 1),
-                    createExercise("Pallof press", 1), createExercise("Medius plate", 1), createExercise("Reverse hyper", 1),
-                    createExercise("Hamstring slides", 1), createExercise("Crunches/Ab roller", 1)
-                ]
-            },
-            "Thasmin": {
-                workTime: 35, restTime: 35, numSets: 7, restBetweenSets: 75,
-                exercises: [
-                    createExercise("Kettlebell power cleans", 3), createExercise("Kettlebell swings", 3), createExercise("Split squat", 3),
-                    createExercise("Squat", 3), createExercise("Hip thrust", 3), createExercise("Monster walk", 3), createExercise("Resistance band row", 3)
-                ]
-            }
-        },
-        warmUpEnabled: false,
-        volume: 1.0, 
-        lastPreset: "Thasmin"
-    };
+        const presets = {
+    "Athletic": {
+        workTime: 35, restTime: 35, numSets: 6, restBetweenSets: 75,
+        exercises: [
+            createExercise("Kettlebell OHP", 6),
+            createExercise("Kettlebell row", 6),
+            createExercise("Woodchoppers", 6),
+            createExercise("SL squat", 4),
+            createExercise("SL Deadlift", 6),
+            createExercise("Kettlebell swing", 4)
+        ]
+    },
+    "Sturdy": {
+        workTime: 35, restTime: 35, numSets: 6, restBetweenSets: 75,
+        exercises: [
+            createExercise("Dumbell rows", 4),
+            createExercise("Dumbell OHP", 4),
+            createExercise("Kettlebell squat", 3),
+            createExercise("Kettlebell lateral squat", 6),
+            createExercise("Split squat", 6),
+            createExercise("Kettlebell windmill", 3),
+            createExercise("Hip flexors", 4)
+        ]
+    },
+    "Access": {
+        workTime: 35, restTime: 35, numSets: 1, restBetweenSets: 75,
+        exercises: [
+            createExercise("Glute medius plate", 1),
+            createExercise("Kettlebell halos", 1),
+            createExercise("Power twister", 1),
+            createExercise("Forearms", 1),
+            createExercise("Neck", 1),
+            createExercise("Abs", 1),
+            createExercise("Running man + hammer curls", 1)
+        ]
+    },
+    "Thasmin": {
+        workTime: 35, restTime: 35, numSets: 7, restBetweenSets: 75,
+        exercises: [
+            createExercise("Kettlebell power cleans", 3), 
+            createExercise("Kettlebell swings", 3), 
+            createExercise("Split squat", 3),
+            createExercise("Squat", 3), 
+            createExercise("Hip thrust", 3), 
+            createExercise("Monster walk", 3), 
+            createExercise("Resistance band row", 3)
+        ]
+    }
+};
+
+const settings = {
+    warmUpEnabled: false,
+    volume: 1.0,
+    lastPreset: "Athletic"
+};
     
     // --- WAKE LOCK ---
     const requestWakeLock = async () => {
@@ -1005,3 +1038,4 @@ document.addEventListener('DOMContentLoaded', () => {
 </script>
 </body>
 </html>
+

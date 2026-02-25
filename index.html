@@ -20,9 +20,9 @@
             
             --color-warm-up: #f59e0b;
             --color-prepare: #facc15;
-            --color-work: #C51E3A;    
-            --color-rest: #4ade80;    
-            --color-set-rest: #2dd4bf;
+            --color-work: #C51E3A;    /* Intense Cherry Red */
+            --color-rest: #4ade80;    /* Green */
+            --color-set-rest: #2dd4bf;/* Teal */
             
             --btn-primary: #3b82f6; 
             --btn-secondary: #ef4444; 
@@ -39,7 +39,7 @@
         }
         
         #timer-container {
-            transition: background-color 0.5s ease, color 0.3s ease;
+            transition: background-color 0.5s ease, color 0.3s ease, border-color 0.3s ease;
             border: 4px solid rgba(255, 255, 255, 0.1); 
         }
 
@@ -77,11 +77,16 @@
 
     <div class="w-full max-w-md mx-auto">
         <div id="timer-container" class="rounded-2xl shadow-2xl p-6 relative panel" style="background-color: var(--bg-secondary);">
+            
             <div id="display-area" class="text-center mb-4 relative h-auto py-8 flex flex-col items-center justify-center rounded-xl">
                 <div id="timer-display-content" class="z-0 w-full px-4">
                     <div id="phase-display" class="text-3xl font-bold uppercase mb-2">Prepare</div>
-                    <div id="timer-display" class="text-8xl md:text-9xl timer-display tracking-tight tabular-nums">--:--</div>
-                    <div id="progress-bar-container"><div id="progress-bar"></div></div>
+                    <div id="timer-display" class="text-8xl md:text-9xl timer-display tracking-tight tabular-nums whitespace-nowrap">--:--</div>
+                    
+                    <div id="progress-bar-container">
+                        <div id="progress-bar"></div>
+                    </div>
+
                     <div id="progress-display" class="text-xl mt-6 flex items-center justify-center gap-6">
                         <button id="skip-back-btn" class="p-2 rounded-full hover:bg-white hover:bg-opacity-20 btn">
                             <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m15 18-6-6 6-6"/></svg>
@@ -95,45 +100,54 @@
                         </button>
                     </div>
                 </div>
-                <div id="completion-message" class="hidden"><h2 class="text-4xl font-extrabold">Done!</h2></div>
+                <div id="completion-message" class="hidden">
+                    <h2 class="text-4xl font-extrabold">Workout Completed!</h2>
+                </div>
             </div>
             
             <div id="exercise-display-container" class="text-center mb-4 p-3 rounded-lg" style="background-color: rgba(0,0,0,0.2);">
-                <h4 class="text-sm font-semibold uppercase opacity-75">Current</h4>
+                <h4 class="text-sm font-semibold uppercase opacity-75">Current Exercise</h4>
                 <p id="exercise-display" class="text-2xl font-bold truncate">---</p>
             </div>
             
-            <div class="mb-4">
-                <select id="main-preset-select" class="custom-select w-full font-bold py-3 px-4 rounded-lg text-lg" style="background-color: rgba(0,0,0,0.2); color: inherit; border:none;"></select>
+            <div id="main-preset-container" class="mb-4">
+                <label class="block text-center font-semibold uppercase text-sm mb-2 opacity-75">Workout Preset</label>
+                <select id="main-preset-select" class="custom-select w-full font-bold py-3 px-4 rounded-lg text-lg" style="background-color: rgba(0,0,0,0.2); border: none; color: inherit;"></select>
             </div>
 
             <div id="controls-container" class="grid grid-cols-3 gap-4">
-                <button id="start-pause-btn" class="font-bold py-3 rounded-lg text-lg btn" style="background-color: var(--btn-start);">Start</button>
-                <button id="reset-btn" class="font-bold py-3 rounded-lg text-lg btn" style="background-color: var(--btn-secondary);">Reset</button>
-                <button id="settings-btn" class="font-bold py-3 rounded-lg text-lg btn" style="background-color: var(--btn-primary);">Settings</button>
+                <button id="start-pause-btn" class="font-bold py-3 rounded-lg text-lg btn" style="background-color: var(--btn-start); color: white;">Start</button>
+                <button id="reset-btn" class="font-bold py-3 rounded-lg text-lg btn" style="background-color: var(--btn-secondary); color: white;">Reset</button>
+                <button id="settings-btn" class="font-bold py-3 rounded-lg text-lg btn" style="background-color: var(--btn-primary); color: white;">Settings</button>
             </div>
         </div>
 
-        <div id="settings-panel" class="rounded-2xl shadow-2xl p-6 hidden panel" style="background-color: var(--bg-secondary);">
+        <div id="settings-panel" class="rounded-2xl shadow-2xl p-6 hidden panel fixed inset-4 z-40 max-w-md mx-auto" style="background-color: var(--bg-secondary);">
             <div id="main-settings-content">
                 <h3 class="text-2xl font-bold mb-6 text-center">Settings</h3>
-                <div id="timer-inputs-container" class="grid grid-cols-2 gap-4 mb-6"></div>
-                <div class="mb-6 p-4 rounded-lg flex justify-between items-center" style="background-color: var(--bg-tertiary);">
+                <div id="timer-inputs-container" class="grid grid-cols-2 gap-x-6 gap-y-4 mb-6"></div>
+                <div class="mb-6 p-4 rounded-lg flex items-center justify-between" style="background-color: var(--bg-tertiary);">
                     <span class="font-bold">Warm up</span>
-                    <label class="toggle-switch"><input type="checkbox" id="warm-up-toggle"><span class="slider"></span></label>
+                    <label class="toggle-switch">
+                        <input type="checkbox" id="warm-up-toggle">
+                        <span class="slider"></span>
+                    </label>
                 </div>
-                <select id="preset-select" class="custom-select w-full py-3 px-4 rounded-lg mb-4" style="background-color: var(--bg-tertiary); border:none;"></select>
+                <div class="mb-4">
+                    <label class="block text-center font-semibold uppercase text-sm mb-2">Presets</label>
+                    <select id="preset-select" class="custom-select w-full font-bold py-3 px-4 rounded-lg text-lg" style="background-color: var(--bg-tertiary); border: none; color: white;"></select>
+                </div>
                 <div class="grid grid-cols-2 gap-2 mb-4">
-                    <button id="exercise-settings-btn" class="py-3 rounded-lg btn" style="background-color: var(--bg-accent);">Exercises</button>
-                    <button id="update-preset-btn" class="py-3 rounded-lg btn" style="background-color: var(--btn-save);">Save Current</button>
+                    <button id="exercise-settings-btn" class="w-full py-3 rounded-lg btn" style="background-color: var(--bg-accent);">Exercises</button>
+                    <button id="update-preset-btn" class="w-full py-3 rounded-lg btn" style="background-color: var(--btn-save);">Update</button>
                 </div>
                 <button id="close-settings-btn" class="w-full py-3 rounded-lg btn" style="background-color: var(--btn-start);">Done</button>
             </div>
         </div>
 
-        <div id="exercise-settings-panel" class="rounded-2xl shadow-2xl p-6 hidden panel" style="background-color: var(--bg-secondary);">
+        <div id="exercise-settings-panel" class="rounded-2xl shadow-2xl p-6 hidden panel fixed inset-4 z-50 max-w-md mx-auto" style="background-color: var(--bg-secondary);">
             <h3 class="text-xl font-bold mb-4 text-center">Exercises & Rounds</h3>
-            <div id="exercise-inputs-container" class="space-y-3 max-h-96 overflow-y-auto pr-2"></div>
+            <div id="exercise-inputs-container" class="space-y-3 max-h-[70vh] overflow-y-auto pr-2"></div>
             <button id="back-to-settings-from-exercises-btn" class="mt-6 w-full py-3 rounded-lg btn" style="background-color: var(--btn-primary);">Back</button>
         </div>
     </div>
@@ -143,7 +157,6 @@ document.addEventListener('DOMContentLoaded', () => {
     const getElem = (id) => document.getElementById(id);
     const createExercise = (name, rounds) => ({ name, rounds });
 
-    // --- INITIAL DATA ---
     const defaultPresets = {
         "Athletic": {
             workTime: 35, restTime: 35, numSets: 6, restBetweenSets: 75, warmUpDuration: 300,
@@ -183,33 +196,23 @@ document.addEventListener('DOMContentLoaded', () => {
     };
 
     let state = {
-        status: 'idle',
-        phase: 'prepare',
-        currentTime: 0,
-        currentRound: 0,
-        currentSet: 0,
-        warmUpEnabled: false,
-        lastPreset: "Athletic",
+        status: 'idle', phase: 'prepare', currentTime: 0, currentRound: 0, currentSet: 0,
+        warmUpEnabled: false, lastPreset: "Athletic",
         presets: JSON.parse(JSON.stringify(defaultPresets)),
         settings: JSON.parse(JSON.stringify(defaultPresets["Athletic"]))
     };
 
     let timerInterval = null;
-    let audioCtx = null;
 
-    // --- CORE LOGIC ---
     const saveState = () => {
-        const data = {
-            presets: state.presets,
-            settings: state.settings,
-            warmUpEnabled: state.warmUpEnabled,
-            lastPreset: state.lastPreset
-        };
-        localStorage.setItem('workoutTimer_v4', JSON.stringify(data));
+        localStorage.setItem('workoutTimer_v5', JSON.stringify({
+            presets: state.presets, settings: state.settings,
+            warmUpEnabled: state.warmUpEnabled, lastPreset: state.lastPreset
+        }));
     };
 
     const loadState = () => {
-        const saved = localStorage.getItem('workoutTimer_v4');
+        const saved = localStorage.getItem('workoutTimer_v5');
         if (saved) {
             const parsed = JSON.parse(saved);
             state.presets = parsed.presets;
@@ -217,50 +220,40 @@ document.addEventListener('DOMContentLoaded', () => {
             state.warmUpEnabled = parsed.warmUpEnabled;
             state.lastPreset = parsed.lastPreset;
         }
-        applySettingsToUI();
+        syncUI();
     };
 
-    const applySettingsToUI = () => {
+    const syncUI = () => {
         getElem('warm-up-toggle').checked = state.warmUpEnabled;
-        generatePresetDropdowns();
-        generateTimerInputs();
+        generateDropdowns();
+        generateSettingsInputs();
         updateDisplay();
     };
 
-    const generatePresetDropdowns = () => {
-        [getElem('main-preset-select'), getElem('preset-select')].forEach(sel => {
+    const generateDropdowns = () => {
+        const selects = [getElem('main-preset-select'), getElem('preset-select')];
+        selects.forEach(sel => {
             sel.innerHTML = '';
-            Object.keys(state.presets).forEach(p => {
+            Object.keys(state.presets).forEach(name => {
                 const opt = document.createElement('option');
-                opt.value = p; opt.textContent = p;
+                opt.value = name; opt.textContent = name;
                 sel.appendChild(opt);
             });
             sel.value = state.lastPreset;
         });
     };
 
-    const handlePresetChange = (name) => {
-        state.lastPreset = name;
-        // DEEP CLONE FIX: Break the reference link
-        state.settings = JSON.parse(JSON.stringify(state.presets[name]));
-        applySettingsToUI();
-        saveState();
-    };
-
-    // --- UI GENERATION ---
-    const generateTimerInputs = () => {
+    const generateSettingsInputs = () => {
         const container = getElem('timer-inputs-container');
         container.innerHTML = '';
         const fields = [
-            { id: 'workTime', label: 'Work (s)' },
-            { id: 'restTime', label: 'Rest (s)' },
-            { id: 'numSets', label: 'Sets' },
-            { id: 'restBetweenSets', label: 'Set Rest (s)' }
+            { id: 'workTime', label: 'Work (s)' }, { id: 'restTime', label: 'Rest (s)' },
+            { id: 'numSets', label: 'Sets' }, { id: 'restBetweenSets', label: 'Set Rest (s)' }
         ];
         fields.forEach(f => {
             const div = document.createElement('div');
             div.innerHTML = `<label class="block text-xs font-bold opacity-70">${f.label}</label>
-                <input type="number" data-id="${f.id}" value="${state.settings[f.id]}" class="w-full bg-gray-900 p-2 rounded border border-gray-700">`;
+                <input type="number" value="${state.settings[f.id]}" class="w-full bg-gray-900 p-2 rounded border border-gray-700 mt-1">`;
             div.querySelector('input').addEventListener('input', (e) => {
                 state.settings[f.id] = parseInt(e.target.value) || 0;
                 saveState();
@@ -278,28 +271,21 @@ document.addEventListener('DOMContentLoaded', () => {
             div.innerHTML = `
                 <span class="col-span-1 text-xs opacity-50">${i+1}</span>
                 <input type="text" value="${ex.name}" class="col-span-8 bg-gray-800 p-2 rounded text-sm">
-                <input type="number" value="${ex.rounds}" class="col-span-3 bg-gray-800 p-2 rounded text-center text-sm">
-            `;
+                <input type="number" value="${ex.rounds}" class="col-span-3 bg-gray-800 p-2 rounded text-center text-sm">`;
             const inputs = div.querySelectorAll('input');
-            inputs[0].addEventListener('input', (e) => { state.settings.exercises[i].name = e.target.value; saveState(); });
-            inputs[1].addEventListener('input', (e) => { state.settings.exercises[i].rounds = parseInt(e.target.value) || 1; saveState(); });
+            inputs[0].oninput = (e) => state.settings.exercises[i].name = e.target.value;
+            inputs[1].oninput = (e) => state.settings.exercises[i].rounds = parseInt(e.target.value) || 1;
             container.appendChild(div);
         });
     };
 
-    // --- TIMER ENGINE ---
     const updateDisplay = () => {
-        const phaseColors = {
-            prepare: 'var(--color-prepare)',
-            work: 'var(--color-work)',
-            rest: 'var(--color-rest)',
-            setRest: 'var(--color-set-rest)',
-            warmUp: 'var(--color-warm-up)'
-        };
-        
-        getElem('timer-container').style.borderColor = phaseColors[state.phase] || 'transparent';
+        const colors = { prepare: 'var(--color-prepare)', work: 'var(--color-work)', rest: 'var(--color-rest)', setRest: 'var(--color-set-rest)', warmUp: 'var(--color-warm-up)' };
+        const phaseColor = colors[state.phase];
+        getElem('timer-container').style.borderColor = phaseColor;
+        getElem('phase-display').style.color = phaseColor;
         getElem('phase-display').textContent = state.phase;
-        getElem('timer-display').textContent = formatTime(state.currentTime);
+        getElem('timer-display').textContent = `${Math.floor(state.currentTime/60).toString().padStart(2,'0')}:${(state.currentTime%60).toString().padStart(2,'0')}`;
         
         const currentEx = state.settings.exercises[state.currentSet - 1] || { name: "---", rounds: 0 };
         getElem('exercise-display').textContent = currentEx.name;
@@ -309,87 +295,68 @@ document.addEventListener('DOMContentLoaded', () => {
         getElem('total-sets').textContent = state.settings.numSets;
     };
 
-    const formatTime = (s) => `${Math.floor(s/60).toString().padStart(2,'0')}:${(s%60).toString().padStart(2,'0')}`;
-
-    const startTimer = () => {
-        if (state.status === 'running') {
-            clearInterval(timerInterval);
-            state.status = 'paused';
-            getElem('start-pause-btn').textContent = 'Resume';
-        } else {
-            if (state.status === 'idle') {
-                state.phase = state.warmUpEnabled ? 'warmUp' : 'prepare';
-                state.currentTime = state.warmUpEnabled ? state.settings.warmUpDuration : 5;
-                state.currentSet = 1;
-                state.currentRound = 1;
-            }
-            state.status = 'running';
-            getElem('start-pause-btn').textContent = 'Pause';
-            timerInterval = setInterval(tick, 1000);
-        }
-    };
-
     const tick = () => {
         if (state.currentTime > 0) {
             state.currentTime--;
         } else {
-            // Transitions
             const currentEx = state.settings.exercises[state.currentSet - 1];
-            if (state.phase === 'warmUp') {
-                state.phase = 'prepare'; state.currentTime = 5;
-            } else if (state.phase === 'prepare' || state.phase === 'setRest') {
-                state.phase = 'work'; state.currentTime = state.settings.workTime;
-            } else if (state.phase === 'work') {
-                if (state.currentRound < currentEx.rounds) {
-                    state.phase = 'rest'; state.currentTime = state.settings.restTime;
-                } else if (state.currentSet < state.settings.numSets) {
-                    state.phase = 'setRest'; state.currentTime = state.settings.restBetweenSets;
-                    state.currentSet++; state.currentRound = 1;
+            if (state.phase === 'warmUp') { state.phase = 'prepare'; state.currentTime = 5; }
+            else if (state.phase === 'prepare' || state.phase === 'setRest') { state.phase = 'work'; state.currentTime = state.settings.workTime; }
+            else if (state.phase === 'work') {
+                if (state.currentRound < currentEx.rounds) { state.phase = 'rest'; state.currentTime = state.settings.restTime; }
+                else if (state.currentSet < state.settings.numSets) { 
+                    state.phase = 'setRest'; state.currentTime = state.settings.restBetweenSets; 
+                    state.currentSet++; state.currentRound = 1; 
                 } else {
-                    clearInterval(timerInterval);
-                    state.status = 'complete';
+                    clearInterval(timerInterval); state.status = 'complete';
                     getElem('timer-display-content').classList.add('hidden');
                     getElem('completion-message').classList.remove('hidden');
                 }
-            } else if (state.phase === 'rest') {
-                state.currentRound++;
-                state.phase = 'work'; state.currentTime = state.settings.workTime;
-            }
+            } else if (state.phase === 'rest') { state.currentRound++; state.phase = 'work'; state.currentTime = state.settings.workTime; }
         }
         updateDisplay();
     };
 
-    // --- EVENT LISTENERS ---
-    getElem('start-pause-btn').addEventListener('click', startTimer);
-    getElem('reset-btn').addEventListener('click', () => {
-        clearInterval(timerInterval);
-        state.status = 'idle';
-        state.phase = 'prepare';
+    getElem('start-pause-btn').onclick = () => {
+        if (state.status === 'running') { clearInterval(timerInterval); state.status = 'paused'; getElem('start-pause-btn').textContent = 'Resume'; }
+        else {
+            if (state.status === 'idle') {
+                state.phase = state.warmUpEnabled ? 'warmUp' : 'prepare';
+                state.currentTime = state.warmUpEnabled ? state.settings.warmUpDuration : 5;
+                state.currentSet = 1; state.currentRound = 1;
+            }
+            state.status = 'running'; getElem('start-pause-btn').textContent = 'Pause';
+            timerInterval = setInterval(tick, 1000);
+        }
+    };
+
+    getElem('reset-btn').onclick = () => {
+        clearInterval(timerInterval); state.status = 'idle';
         getElem('timer-display-content').classList.remove('hidden');
         getElem('completion-message').classList.add('hidden');
         getElem('start-pause-btn').textContent = 'Start';
-        applySettingsToUI();
-    });
+        syncUI();
+    };
 
-    getElem('main-preset-select').addEventListener('change', (e) => handlePresetChange(e.target.value));
-    getElem('settings-btn').addEventListener('click', () => getElem('settings-panel').classList.remove('hidden'));
-    getElem('close-settings-btn').addEventListener('click', () => getElem('settings-panel').classList.add('hidden'));
-    getElem('exercise-settings-btn').addEventListener('click', () => {
-        generateExerciseInputs();
-        getElem('exercise-settings-panel').classList.remove('hidden');
-    });
-    getElem('back-to-settings-from-exercises-btn').addEventListener('click', () => getElem('exercise-settings-panel').classList.add('hidden'));
+    getElem('main-preset-select').onchange = (e) => {
+        state.lastPreset = e.target.value;
+        state.settings = JSON.parse(JSON.stringify(state.presets[e.target.value]));
+        syncUI();
+        saveState();
+    };
+
+    getElem('settings-btn').onclick = () => getElem('settings-panel').classList.remove('hidden');
+    getElem('close-settings-btn').onclick = () => getElem('settings-panel').classList.add('hidden');
+    getElem('exercise-settings-btn').onclick = () => { generateExerciseInputs(); getElem('exercise-settings-panel').classList.remove('hidden'); };
+    getElem('back-to-settings-from-exercises-btn').onclick = () => getElem('exercise-settings-panel').classList.add('hidden');
     
-    getElem('update-preset-btn').addEventListener('click', () => {
+    getElem('update-preset-btn').onclick = () => {
         state.presets[state.lastPreset] = JSON.parse(JSON.stringify(state.settings));
         saveState();
         alert('Preset Updated!');
-    });
+    };
 
-    getElem('warm-up-toggle').addEventListener('change', (e) => {
-        state.warmUpEnabled = e.target.checked;
-        saveState();
-    });
+    getElem('warm-up-toggle').onchange = (e) => { state.warmUpEnabled = e.target.checked; saveState(); };
 
     loadState();
 });

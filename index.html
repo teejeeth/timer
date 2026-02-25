@@ -20,9 +20,9 @@
             
             --color-warm-up: #f59e0b;
             --color-prepare: #facc15;
-            --color-work: #C51E3A;    /* Intense Cherry Red */
-            --color-rest: #4ade80;    /* Green */
-            --color-set-rest: #2dd4bf;/* Teal */
+            --color-work: #C51E3A;    
+            --color-rest: #4ade80;    
+            --color-set-rest: #2dd4bf;
             
             --btn-primary: #3b82f6; 
             --btn-secondary: #ef4444; 
@@ -39,8 +39,25 @@
         }
         
         #timer-container {
-            transition: background-color 0.5s ease, color 0.3s ease, border-color 0.3s ease;
+            transition: background-color 0.5s ease, color 0.3s ease;
             border: 4px solid rgba(255, 255, 255, 0.1); 
+        }
+
+        /* High contrast for Prepare Phase */
+        #timer-container.prepare-mode {
+            color: #000000 !important;
+        }
+        .prepare-mode #exercise-display, 
+        .prepare-mode #phase-display,
+        .prepare-mode #timer-display,
+        .prepare-mode label,
+        .prepare-mode #main-preset-select {
+            color: #000000 !important;
+        }
+        
+        /* Better dropdown appearance in Prepare mode */
+        .prepare-mode .custom-select {
+            background-image: url('data:image/svg+xml;utf8,<svg fill="black" height="24" viewBox="0 0 24 24" width="24" xmlns="http://www.w3.org/2000/svg"><path d="M7 10l5 5 5-5z"/></svg>');
         }
 
         .timer-display { font-weight: 900; line-height: 1; }
@@ -60,6 +77,13 @@
             background-position: right 0.7rem center;
             background-size: 1.2em;
             padding-right: 2.5rem;
+            cursor: pointer;
+        }
+
+        /* Ensure options are always readable regardless of parent color */
+        .custom-select option {
+            background-color: #1f2937;
+            color: white;
         }
 
         .toggle-switch { position: relative; display: inline-block; width: 50px; height: 28px; }
@@ -69,86 +93,100 @@
         input:checked + .slider { background-color: var(--btn-start); }
         input:checked + .slider:before { transform: translateX(22px); }
 
-        #progress-bar-container { width: 100%; height: 12px; background-color: rgba(255, 255, 255, 0.2); border-radius: 6px; overflow: hidden; margin-top: 1rem; }
+        #progress-bar-container { width: 100%; height: 12px; background-color: rgba(0, 0, 0, 0.15); border-radius: 6px; overflow: hidden; margin-top: 1rem; }
         #progress-bar { height: 100%; background-color: currentColor; width: 100%; transition: width 1s linear; }
     </style>
 </head>
 <body class="flex items-center justify-center min-h-screen p-4">
 
     <div class="w-full max-w-md mx-auto">
-        <div id="timer-container" class="rounded-2xl shadow-2xl p-6 relative panel" style="background-color: var(--bg-secondary);">
+        <!-- Main Timer View -->
+        <div id="timer-container" class="rounded-2xl shadow-2xl p-6 relative" style="background-color: var(--bg-secondary);">
             
-            <div id="display-area" class="text-center mb-4 relative h-auto py-8 flex flex-col items-center justify-center rounded-xl">
-                <div id="timer-display-content" class="z-0 w-full px-4">
-                    <div id="phase-display" class="text-3xl font-bold uppercase mb-2">Prepare</div>
-                    <div id="timer-display" class="text-8xl md:text-9xl timer-display tracking-tight tabular-nums whitespace-nowrap">--:--</div>
-                    
-                    <div id="progress-bar-container">
-                        <div id="progress-bar"></div>
-                    </div>
+            <!-- View 1: Active Timer -->
+            <div id="main-timer-view">
+                <div id="display-area" class="text-center mb-4 relative h-auto py-8 flex flex-col items-center justify-center rounded-xl">
+                    <div id="timer-display-content" class="z-0 w-full px-4">
+                        <div id="phase-display" class="text-3xl font-bold uppercase mb-2">Prepare</div>
+                        <div id="timer-display" class="text-8xl md:text-9xl timer-display tracking-tight tabular-nums whitespace-nowrap">--:--</div>
+                        <div id="progress-bar-container"><div id="progress-bar"></div></div>
 
-                    <div id="progress-display" class="text-xl mt-6 flex items-center justify-center gap-6">
-                        <button id="skip-back-btn" class="p-2 rounded-full hover:bg-white hover:bg-opacity-20 btn">
-                            <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m15 18-6-6 6-6"/></svg>
-                        </button>
-                        <div class="flex flex-col items-center leading-tight">
-                            <span>Round <span id="current-round" class="font-bold">0</span>/<span id="total-rounds">0</span></span>
-                            <span class="text-xl opacity-80">Set <span id="current-set">0</span>/<span id="total-sets">0</span></span>
+                        <div id="progress-display" class="text-xl mt-6 flex items-center justify-center gap-6">
+                            <button id="skip-back-btn" class="p-2 rounded-full hover:bg-black hover:bg-opacity-10 btn"><svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="m15 18-6-6 6-6"/></svg></button>
+                            <div class="flex flex-col items-center leading-tight">
+                                <span>Round <span id="current-round">0</span>/<span id="total-rounds">0</span></span>
+                                <span class="text-xl opacity-80">Set <span id="current-set">0</span>/<span id="total-sets">0</span></span>
+                            </div>
+                            <button id="skip-forward-btn" class="p-2 rounded-full hover:bg-black hover:bg-opacity-10 btn"><svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="m9 18 6-6-6-6"/></svg></button>
                         </div>
-                        <button id="skip-forward-btn" class="p-2 rounded-full hover:bg-white hover:bg-opacity-20 btn">
-                            <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m9 18 6-6-6-6"/></svg>
-                        </button>
+                    </div>
+                    <div id="completion-message" class="hidden"><h2 class="text-4xl font-extrabold">Workout Done!</h2></div>
+                </div>
+                
+                <div id="exercise-display-container" class="text-center mb-4 p-3 rounded-lg" style="background-color: rgba(0,0,0,0.15);">
+                    <h4 class="text-sm font-semibold uppercase opacity-75">Current Exercise</h4>
+                    <p id="exercise-display" class="text-2xl font-bold truncate">---</p>
+                </div>
+                
+                <div id="main-preset-container" class="mb-4">
+                    <label class="block text-center font-semibold uppercase text-sm mb-2 opacity-75">Workout Preset</label>
+                    <select id="main-preset-select" class="custom-select w-full font-extrabold py-3 px-4 rounded-lg text-lg transition-colors shadow-inner" style="background-color: rgba(0,0,0,0.25); border: 1px solid rgba(255,255,255,0.1); color: inherit;"></select>
+                </div>
+
+                <div class="grid grid-cols-3 gap-4">
+                    <button id="start-pause-btn" class="font-bold py-3 rounded-lg text-lg btn text-white shadow-lg" style="background-color: var(--btn-start);">Start</button>
+                    <button id="reset-btn" class="font-bold py-3 rounded-lg text-lg btn text-white shadow-lg" style="background-color: var(--btn-secondary);">Reset</button>
+                    <button id="settings-btn" class="font-bold py-3 rounded-lg text-lg btn text-white shadow-lg" style="background-color: var(--btn-primary);">Settings</button>
+                </div>
+            </div>
+
+            <!-- View 2: Settings Panel -->
+            <div id="settings-panel" class="hidden">
+                <h3 class="text-2xl font-bold mb-6 text-center">Settings</h3>
+                <div id="timer-inputs-container" class="grid grid-cols-2 gap-4 mb-6"></div>
+                
+                <div class="mb-4 p-4 rounded-lg space-y-3" style="background-color: var(--bg-tertiary);">
+                    <div class="flex items-center justify-between">
+                        <span class="font-bold">Warm up</span>
+                        <label class="toggle-switch"><input type="checkbox" id="warm-up-toggle"><span class="slider"></span></label>
+                    </div>
+                    <div id="warm-up-duration-container" class="hidden">
+                        <label class="block text-xs font-bold opacity-70 mb-1">Warm up Duration (s)</label>
+                        <input type="number" id="warm-up-duration-input" class="w-full bg-gray-900 p-2 rounded border border-gray-700">
                     </div>
                 </div>
-                <div id="completion-message" class="hidden">
-                    <h2 class="text-4xl font-extrabold">Workout Completed!</h2>
-                </div>
-            </div>
-            
-            <div id="exercise-display-container" class="text-center mb-4 p-3 rounded-lg" style="background-color: rgba(0,0,0,0.2);">
-                <h4 class="text-sm font-semibold uppercase opacity-75">Current Exercise</h4>
-                <p id="exercise-display" class="text-2xl font-bold truncate">---</p>
-            </div>
-            
-            <div id="main-preset-container" class="mb-4">
-                <label class="block text-center font-semibold uppercase text-sm mb-2 opacity-75">Workout Preset</label>
-                <select id="main-preset-select" class="custom-select w-full font-bold py-3 px-4 rounded-lg text-lg" style="background-color: rgba(0,0,0,0.2); border: none; color: inherit;"></select>
-            </div>
 
-            <div id="controls-container" class="grid grid-cols-3 gap-4">
-                <button id="start-pause-btn" class="font-bold py-3 rounded-lg text-lg btn" style="background-color: var(--btn-start); color: white;">Start</button>
-                <button id="reset-btn" class="font-bold py-3 rounded-lg text-lg btn" style="background-color: var(--btn-secondary); color: white;">Reset</button>
-                <button id="settings-btn" class="font-bold py-3 rounded-lg text-lg btn" style="background-color: var(--btn-primary); color: white;">Settings</button>
-            </div>
-        </div>
-
-        <div id="settings-panel" class="rounded-2xl shadow-2xl p-6 hidden panel fixed inset-4 z-40 max-w-md mx-auto" style="background-color: var(--bg-secondary);">
-            <div id="main-settings-content">
-                <h3 class="text-2xl font-bold mb-6 text-center">Settings</h3>
-                <div id="timer-inputs-container" class="grid grid-cols-2 gap-x-6 gap-y-4 mb-6"></div>
-                <div class="mb-6 p-4 rounded-lg flex items-center justify-between" style="background-color: var(--bg-tertiary);">
-                    <span class="font-bold">Warm up</span>
-                    <label class="toggle-switch">
-                        <input type="checkbox" id="warm-up-toggle">
-                        <span class="slider"></span>
-                    </label>
-                </div>
                 <div class="mb-4">
-                    <label class="block text-center font-semibold uppercase text-sm mb-2">Presets</label>
-                    <select id="preset-select" class="custom-select w-full font-bold py-3 px-4 rounded-lg text-lg" style="background-color: var(--bg-tertiary); border: none; color: white;"></select>
+                    <select id="preset-select" class="custom-select w-full font-bold py-3 px-4 rounded-lg" style="background-color: var(--bg-tertiary); border: 1px solid rgba(255,255,255,0.1);"></select>
                 </div>
-                <div class="grid grid-cols-2 gap-2 mb-4">
-                    <button id="exercise-settings-btn" class="w-full py-3 rounded-lg btn" style="background-color: var(--bg-accent);">Exercises</button>
-                    <button id="update-preset-btn" class="w-full py-3 rounded-lg btn" style="background-color: var(--btn-save);">Update</button>
-                </div>
-                <button id="close-settings-btn" class="w-full py-3 rounded-lg btn" style="background-color: var(--btn-start);">Done</button>
-            </div>
-        </div>
 
-        <div id="exercise-settings-panel" class="rounded-2xl shadow-2xl p-6 hidden panel fixed inset-4 z-50 max-w-md mx-auto" style="background-color: var(--bg-secondary);">
-            <h3 class="text-xl font-bold mb-4 text-center">Exercises & Rounds</h3>
-            <div id="exercise-inputs-container" class="space-y-3 max-h-[70vh] overflow-y-auto pr-2"></div>
-            <button id="back-to-settings-from-exercises-btn" class="mt-6 w-full py-3 rounded-lg btn" style="background-color: var(--btn-primary);">Back</button>
+                <div class="grid grid-cols-3 gap-2 mb-4">
+                    <button id="update-preset-btn" class="py-2 rounded-lg btn text-sm text-white" style="background-color: var(--btn-save);">Save</button>
+                    <button id="manage-presets-btn" class="py-2 rounded-lg btn text-sm text-white" style="background-color: var(--btn-rename);">Manage</button>
+                    <button id="exercise-settings-btn" class="py-2 rounded-lg btn text-sm text-white" style="background-color: var(--bg-accent);">Exercises</button>
+                </div>
+                <button id="close-settings-btn" class="w-full py-3 rounded-lg btn text-white" style="background-color: var(--btn-start);">Done</button>
+            </div>
+
+            <!-- View 3: Manage Presets -->
+            <div id="manage-presets-content" class="hidden">
+                <h3 class="text-2xl font-bold mb-4 text-center">Manage Presets</h3>
+                
+                <div class="mb-4 flex gap-2">
+                    <input type="text" id="new-preset-name" placeholder="New preset name..." class="flex-1 bg-gray-900 p-2 rounded border border-gray-700">
+                    <button id="add-preset-btn" class="px-4 rounded-lg btn font-bold text-white" style="background-color: var(--btn-start);">Add</button>
+                </div>
+
+                <div id="preset-management-list" class="space-y-2 max-h-64 overflow-y-auto mb-6 pr-2"></div>
+                <button id="back-to-settings-btn" class="w-full py-3 rounded-lg btn text-white" style="background-color: var(--btn-primary);">Back</button>
+            </div>
+
+            <!-- View 4: Exercise Configuration -->
+            <div id="exercise-settings-panel" class="hidden">
+                <h3 class="text-xl font-bold mb-4 text-center">Exercises</h3>
+                <div id="exercise-inputs-container" class="space-y-3 max-h-80 overflow-y-auto mb-6 pr-2"></div>
+                <button id="back-to-settings-from-ex-btn" class="w-full py-3 rounded-lg btn text-white" style="background-color: var(--btn-primary);">Back</button>
+            </div>
         </div>
     </div>
 
@@ -158,33 +196,10 @@ document.addEventListener('DOMContentLoaded', () => {
     const createExercise = (name, rounds) => ({ name, rounds });
 
     const defaultPresets = {
-        "Athletic": {
-            workTime: 35, restTime: 35, numSets: 6, restBetweenSets: 75, warmUpDuration: 300,
-            exercises: [
-                createExercise("Kettlebell OHP", 6), createExercise("Kettlebell row", 6),
-                createExercise("Woodchoppers", 6), createExercise("SL squat", 4),
-                createExercise("SL Deadlift", 6), createExercise("Kettlebell swing", 4)
-            ]
-        },
-        "Sturdy": {
-            workTime: 35, restTime: 35, numSets: 7, restBetweenSets: 75, warmUpDuration: 300,
-            exercises: [
-                createExercise("Dumbell rows", 4), createExercise("Dumbell OHP", 4),
-                createExercise("Kettlebell squat", 3), createExercise("Kettlebell lateral squat", 6),
-                createExercise("Split squat", 6), createExercise("Kettlebell windmill", 3),
-                createExercise("Hip flexors", 4)
-            ]
-        },
-        "Access": {
-            workTime: 35, restTime: 35, numSets: 7, restBetweenSets: 75, warmUpDuration: 300,
-            exercises: [
-                createExercise("Glute medius plate", 1), createExercise("Kettlebell halos", 1),
-                createExercise("Power twister", 1), createExercise("Forearms", 1),
-                createExercise("Neck", 1), createExercise("Abs", 1),
-                createExercise("Running man + hammer curls", 1)
-            ]
-        },
-        "Thasmin": {
+        "Athletic": { workTime: 35, restTime: 35, numSets: 6, restBetweenSets: 75, warmUpDuration: 300, exercises: [createExercise("Kettlebell OHP", 6), createExercise("Kettlebell row", 6), createExercise("Woodchoppers", 6), createExercise("SL squat", 4), createExercise("SL Deadlift", 6), createExercise("Kettlebell swing", 4)] },
+        "Sturdy": { workTime: 35, restTime: 35, numSets: 7, restBetweenSets: 75, warmUpDuration: 300, exercises: [createExercise("Dumbell rows", 4), createExercise("Dumbell OHP", 4), createExercise("Kettlebell squat", 3), createExercise("Kettlebell lateral squat", 6), createExercise("Split squat", 6), createExercise("Kettlebell windmill", 3), createExercise("Hip flexors", 4)] },
+        "Access": { workTime: 35, restTime: 35, numSets: 7, restBetweenSets: 75, warmUpDuration: 300, exercises: [createExercise("Glute medius plate", 1), createExercise("Kettlebell halos", 1), createExercise("Power twister", 1), createExercise("Forearms", 1), createExercise("Neck", 1), createExercise("Abs", 1), createExercise("Running man + hammer curls", 1)] },
+        "Thasmin": { 
             workTime: 35, restTime: 35, numSets: 7, restBetweenSets: 75, warmUpDuration: 300,
             exercises: [
                 createExercise("Kettlebell power cleans", 3), createExercise("Kettlebell swings", 3), 
@@ -204,15 +219,10 @@ document.addEventListener('DOMContentLoaded', () => {
 
     let timerInterval = null;
 
-    const saveState = () => {
-        localStorage.setItem('workoutTimer_v5', JSON.stringify({
-            presets: state.presets, settings: state.settings,
-            warmUpEnabled: state.warmUpEnabled, lastPreset: state.lastPreset
-        }));
-    };
+    const saveState = () => localStorage.setItem('workoutTimer_v8', JSON.stringify({ presets: state.presets, settings: state.settings, warmUpEnabled: state.warmUpEnabled, lastPreset: state.lastPreset }));
 
     const loadState = () => {
-        const saved = localStorage.getItem('workoutTimer_v5');
+        const saved = localStorage.getItem('workoutTimer_v8');
         if (saved) {
             const parsed = JSON.parse(saved);
             state.presets = parsed.presets;
@@ -225,12 +235,9 @@ document.addEventListener('DOMContentLoaded', () => {
 
     const syncUI = () => {
         getElem('warm-up-toggle').checked = state.warmUpEnabled;
-        generateDropdowns();
-        generateSettingsInputs();
-        updateDisplay();
-    };
+        getElem('warm-up-duration-input').value = state.settings.warmUpDuration;
+        getElem('warm-up-duration-container').classList.toggle('hidden', !state.warmUpEnabled);
 
-    const generateDropdowns = () => {
         const selects = [getElem('main-preset-select'), getElem('preset-select')];
         selects.forEach(sel => {
             sel.innerHTML = '';
@@ -241,50 +248,49 @@ document.addEventListener('DOMContentLoaded', () => {
             });
             sel.value = state.lastPreset;
         });
+        generateSettingsInputs();
+        updateDisplay();
     };
 
     const generateSettingsInputs = () => {
         const container = getElem('timer-inputs-container');
         container.innerHTML = '';
-        const fields = [
-            { id: 'workTime', label: 'Work (s)' }, { id: 'restTime', label: 'Rest (s)' },
-            { id: 'numSets', label: 'Sets' }, { id: 'restBetweenSets', label: 'Set Rest (s)' }
-        ];
+        const fields = [{id:'workTime', l:'Work (s)'}, {id:'restTime', l:'Rest (s)'}, {id:'numSets', l:'Sets'}, {id:'restBetweenSets', l:'Set Rest (s)'}];
         fields.forEach(f => {
             const div = document.createElement('div');
-            div.innerHTML = `<label class="block text-xs font-bold opacity-70">${f.label}</label>
-                <input type="number" value="${state.settings[f.id]}" class="w-full bg-gray-900 p-2 rounded border border-gray-700 mt-1">`;
-            div.querySelector('input').addEventListener('input', (e) => {
-                state.settings[f.id] = parseInt(e.target.value) || 0;
-                saveState();
-            });
-            container.appendChild(div);
-        });
-    };
-
-    const generateExerciseInputs = () => {
-        const container = getElem('exercise-inputs-container');
-        container.innerHTML = '';
-        state.settings.exercises.forEach((ex, i) => {
-            const div = document.createElement('div');
-            div.className = "grid grid-cols-12 gap-2 items-center";
-            div.innerHTML = `
-                <span class="col-span-1 text-xs opacity-50">${i+1}</span>
-                <input type="text" value="${ex.name}" class="col-span-8 bg-gray-800 p-2 rounded text-sm">
-                <input type="number" value="${ex.rounds}" class="col-span-3 bg-gray-800 p-2 rounded text-center text-sm">`;
-            const inputs = div.querySelectorAll('input');
-            inputs[0].oninput = (e) => state.settings.exercises[i].name = e.target.value;
-            inputs[1].oninput = (e) => state.settings.exercises[i].rounds = parseInt(e.target.value) || 1;
+            div.innerHTML = `<label class="block text-xs font-bold opacity-70">${f.l}</label><input type="number" value="${state.settings[f.id]}" class="w-full bg-gray-900 p-2 rounded border border-gray-700 mt-1">`;
+            div.querySelector('input').oninput = (e) => { state.settings[f.id] = parseInt(e.target.value) || 0; saveState(); };
             container.appendChild(div);
         });
     };
 
     const updateDisplay = () => {
-        const colors = { prepare: 'var(--color-prepare)', work: 'var(--color-work)', rest: 'var(--color-rest)', setRest: 'var(--color-set-rest)', warmUp: 'var(--color-warm-up)' };
-        const phaseColor = colors[state.phase];
-        getElem('timer-container').style.borderColor = phaseColor;
-        getElem('phase-display').style.color = phaseColor;
-        getElem('phase-display').textContent = state.phase;
+        const container = getElem('timer-container');
+        const colors = { prepare: 'var(--color-prepare)', work: 'var(--color-work)', rest: 'var(--color-rest)', setRest: 'var(--color-set-rest)', warmUp: 'var(--color-warm-up)', idle: 'var(--bg-secondary)' };
+        
+        const phaseColor = state.status === 'idle' ? colors.idle : colors[state.phase];
+        container.style.backgroundColor = phaseColor;
+
+        // Hide preset select if workout is running or paused (not idle)
+        const presetContainer = getElem('main-preset-container');
+        if (state.status !== 'idle') {
+            presetContainer.classList.add('hidden');
+        } else {
+            presetContainer.classList.remove('hidden');
+        }
+
+        // Contrast Logic for Prepare Phase
+        if (state.phase === 'prepare' && state.status !== 'idle') {
+            container.classList.add('prepare-mode');
+        } else {
+            container.classList.remove('prepare-mode');
+        }
+
+        // Space bar for set rest display
+        let displayPhase = state.phase;
+        if (displayPhase === 'setRest') displayPhase = 'Set Rest';
+        
+        getElem('phase-display').textContent = state.status === 'idle' ? 'Ready' : displayPhase;
         getElem('timer-display').textContent = `${Math.floor(state.currentTime/60).toString().padStart(2,'0')}:${(state.currentTime%60).toString().padStart(2,'0')}`;
         
         const currentEx = state.settings.exercises[state.currentSet - 1] || { name: "---", rounds: 0 };
@@ -293,45 +299,184 @@ document.addEventListener('DOMContentLoaded', () => {
         getElem('total-rounds').textContent = currentEx.rounds;
         getElem('current-set').textContent = state.currentSet;
         getElem('total-sets').textContent = state.settings.numSets;
+
+        // Progress bar logic
+        let totalTimeForPhase = 1;
+        if (state.phase === 'work') totalTimeForPhase = state.settings.workTime;
+        else if (state.phase === 'rest') totalTimeForPhase = state.settings.restTime;
+        else if (state.phase === 'setRest') totalTimeForPhase = state.settings.restBetweenSets;
+        else if (state.phase === 'warmUp') totalTimeForPhase = state.settings.warmUpDuration;
+        else if (state.phase === 'prepare') totalTimeForPhase = 5;
+
+        const progressPercent = (state.currentTime / (totalTimeForPhase || 1)) * 100;
+        getElem('progress-bar').style.width = `${progressPercent}%`;
+    };
+
+    const setPhaseTime = (phase) => {
+        if (phase === 'warmUp') return state.settings.warmUpDuration;
+        if (phase === 'prepare') return 5;
+        if (phase === 'work') return state.settings.workTime;
+        if (phase === 'rest') return state.settings.restTime;
+        if (phase === 'setRest') return state.settings.restBetweenSets;
+        return 0;
+    };
+
+    const nextPhase = () => {
+        const currentEx = state.settings.exercises[state.currentSet - 1];
+        if (state.phase === 'warmUp') { 
+            state.phase = 'prepare'; state.currentTime = setPhaseTime('prepare'); 
+        } else if (state.phase === 'prepare' || state.phase === 'setRest' || state.phase === 'rest') { 
+            state.phase = 'work'; state.currentTime = setPhaseTime('work'); 
+        } else if (state.phase === 'work') {
+            if (state.currentRound < currentEx.rounds) { 
+                state.phase = 'rest'; state.currentTime = setPhaseTime('rest'); 
+            } else if (state.currentSet < state.settings.numSets) { 
+                state.phase = 'setRest'; state.currentTime = setPhaseTime('setRest'); 
+                state.currentSet++; state.currentRound = 1; 
+            } else { 
+                stopTimer(); state.status = 'complete'; 
+                getElem('timer-display-content').classList.add('hidden'); 
+                getElem('completion-message').classList.remove('hidden'); 
+            }
+        }
+        updateDisplay();
+    };
+
+    const skipForward = () => {
+        if (state.status === 'idle') return;
+        const currentEx = state.settings.exercises[state.currentSet - 1];
+        
+        if (state.currentRound < currentEx.rounds) {
+            state.currentRound++;
+            state.phase = 'work';
+            state.currentTime = setPhaseTime('work');
+        } else if (state.currentSet < state.settings.numSets) {
+            state.currentSet++;
+            state.currentRound = 1;
+            state.phase = 'work';
+            state.currentTime = setPhaseTime('work');
+        } else {
+            stopTimer(); state.status = 'complete';
+            getElem('timer-display-content').classList.add('hidden');
+            getElem('completion-message').classList.remove('hidden');
+        }
+        updateDisplay();
+    };
+
+    const skipBack = () => {
+        if (state.status === 'idle') return;
+
+        if (state.currentRound > 1) {
+            state.currentRound--;
+            state.phase = 'work';
+            state.currentTime = setPhaseTime('work');
+        } else if (state.currentSet > 1) {
+            state.currentSet--;
+            const prevEx = state.settings.exercises[state.currentSet - 1];
+            state.currentRound = prevEx.rounds;
+            state.phase = 'work';
+            state.currentTime = setPhaseTime('work');
+        } else {
+            state.phase = state.warmUpEnabled ? 'warmUp' : 'prepare';
+            state.currentTime = setPhaseTime(state.phase);
+            state.currentRound = 1;
+            state.currentSet = 1;
+        }
+        updateDisplay();
+    };
+
+    const stopTimer = () => {
+        clearInterval(timerInterval);
+        timerInterval = null;
     };
 
     const tick = () => {
         if (state.currentTime > 0) {
             state.currentTime--;
+            updateDisplay();
         } else {
-            const currentEx = state.settings.exercises[state.currentSet - 1];
-            if (state.phase === 'warmUp') { state.phase = 'prepare'; state.currentTime = 5; }
-            else if (state.phase === 'prepare' || state.phase === 'setRest') { state.phase = 'work'; state.currentTime = state.settings.workTime; }
-            else if (state.phase === 'work') {
-                if (state.currentRound < currentEx.rounds) { state.phase = 'rest'; state.currentTime = state.settings.restTime; }
-                else if (state.currentSet < state.settings.numSets) { 
-                    state.phase = 'setRest'; state.currentTime = state.settings.restBetweenSets; 
-                    state.currentSet++; state.currentRound = 1; 
-                } else {
-                    clearInterval(timerInterval); state.status = 'complete';
-                    getElem('timer-display-content').classList.add('hidden');
-                    getElem('completion-message').classList.remove('hidden');
-                }
-            } else if (state.phase === 'rest') { state.currentRound++; state.phase = 'work'; state.currentTime = state.settings.workTime; }
+            nextPhase();
         }
-        updateDisplay();
+    };
+
+    const showPanel = (id) => {
+        ['main-timer-view', 'settings-panel', 'manage-presets-content', 'exercise-settings-panel'].forEach(p => getElem(p).classList.add('hidden'));
+        getElem(id).classList.remove('hidden');
+    };
+
+    getElem('skip-forward-btn').onclick = skipForward;
+    getElem('skip-back-btn').onclick = skipBack;
+
+    getElem('settings-btn').onclick = () => showPanel('settings-panel');
+    getElem('close-settings-btn').onclick = () => showPanel('main-timer-view');
+    getElem('back-to-settings-btn').onclick = () => showPanel('settings-panel');
+    getElem('back-to-settings-from-ex-btn').onclick = () => showPanel('settings-panel');
+
+    getElem('add-preset-btn').onclick = () => {
+        const nameInput = getElem('new-preset-name');
+        const name = nameInput.value.trim();
+        if (name && !state.presets[name]) {
+            state.presets[name] = JSON.parse(JSON.stringify(state.settings));
+            state.lastPreset = name;
+            nameInput.value = '';
+            saveState(); syncUI(); getElem('manage-presets-btn').click();
+        } else alert("Please enter a unique name.");
+    };
+
+    getElem('manage-presets-btn').onclick = () => {
+        const list = getElem('preset-management-list');
+        list.innerHTML = '';
+        Object.keys(state.presets).forEach(name => {
+            const div = document.createElement('div');
+            div.className = "flex items-center justify-between bg-gray-700 p-2 rounded mb-2";
+            div.innerHTML = `<span class="font-bold">${name}</span><button class="bg-red-600 px-3 py-1 rounded text-xs btn text-white">Delete</button>`;
+            div.querySelector('button').onclick = () => {
+                if (Object.keys(state.presets).length > 1) {
+                    delete state.presets[name];
+                    if (state.lastPreset === name) state.lastPreset = Object.keys(state.presets)[0];
+                    saveState(); syncUI(); getElem('manage-presets-btn').click();
+                } else alert("Must keep at least one preset.");
+            };
+            list.appendChild(div);
+        });
+        showPanel('manage-presets-content');
+    };
+
+    getElem('exercise-settings-btn').onclick = () => {
+        const container = getElem('exercise-inputs-container');
+        container.innerHTML = '';
+        state.settings.exercises.forEach((ex, i) => {
+            const div = document.createElement('div');
+            div.className = "grid grid-cols-12 gap-2 items-center";
+            div.innerHTML = `<span class="col-span-1 text-xs opacity-50">${i+1}</span><input type="text" value="${ex.name}" class="col-span-8 bg-gray-800 p-2 rounded text-sm"><input type="number" value="${ex.rounds}" class="col-span-3 bg-gray-800 p-2 rounded text-center text-sm">`;
+            div.querySelectorAll('input')[0].oninput = (e) => { state.settings.exercises[i].name = e.target.value; saveState(); };
+            div.querySelectorAll('input')[1].oninput = (e) => { state.settings.exercises[i].rounds = parseInt(e.target.value) || 1; saveState(); };
+            container.appendChild(div);
+        });
+        showPanel('exercise-settings-panel');
     };
 
     getElem('start-pause-btn').onclick = () => {
-        if (state.status === 'running') { clearInterval(timerInterval); state.status = 'paused'; getElem('start-pause-btn').textContent = 'Resume'; }
-        else {
-            if (state.status === 'idle') {
-                state.phase = state.warmUpEnabled ? 'warmUp' : 'prepare';
-                state.currentTime = state.warmUpEnabled ? state.settings.warmUpDuration : 5;
-                state.currentSet = 1; state.currentRound = 1;
+        if (state.status === 'running') { 
+            stopTimer(); state.status = 'paused'; 
+            getElem('start-pause-btn').textContent = 'Resume'; 
+        } else {
+            if (state.status === 'idle') { 
+                state.phase = state.warmUpEnabled ? 'warmUp' : 'prepare'; 
+                state.currentTime = setPhaseTime(state.phase);
+                state.currentSet = 1; state.currentRound = 1; 
             }
             state.status = 'running'; getElem('start-pause-btn').textContent = 'Pause';
             timerInterval = setInterval(tick, 1000);
+            updateDisplay(); // Ensure preset container hides immediately
         }
     };
 
     getElem('reset-btn').onclick = () => {
-        clearInterval(timerInterval); state.status = 'idle';
+        stopTimer();
+        state.status = 'idle';
+        state.phase = 'prepare';
+        state.currentTime = 0;
         getElem('timer-display-content').classList.remove('hidden');
         getElem('completion-message').classList.add('hidden');
         getElem('start-pause-btn').textContent = 'Start';
@@ -341,22 +486,33 @@ document.addEventListener('DOMContentLoaded', () => {
     getElem('main-preset-select').onchange = (e) => {
         state.lastPreset = e.target.value;
         state.settings = JSON.parse(JSON.stringify(state.presets[e.target.value]));
-        syncUI();
-        saveState();
+        syncUI(); saveState();
     };
 
-    getElem('settings-btn').onclick = () => getElem('settings-panel').classList.remove('hidden');
-    getElem('close-settings-btn').onclick = () => getElem('settings-panel').classList.add('hidden');
-    getElem('exercise-settings-btn').onclick = () => { generateExerciseInputs(); getElem('exercise-settings-panel').classList.remove('hidden'); };
-    getElem('back-to-settings-from-exercises-btn').onclick = () => getElem('exercise-settings-panel').classList.add('hidden');
-    
+    getElem('preset-select').onchange = (e) => {
+        state.lastPreset = e.target.value;
+        state.settings = JSON.parse(JSON.stringify(state.presets[e.target.value]));
+        syncUI(); saveState();
+    };
+
     getElem('update-preset-btn').onclick = () => {
         state.presets[state.lastPreset] = JSON.parse(JSON.stringify(state.settings));
-        saveState();
-        alert('Preset Updated!');
+        saveState(); 
+        const btn = getElem('update-preset-btn');
+        btn.textContent = "Saved!";
+        setTimeout(() => btn.textContent = "Save", 1500);
     };
 
-    getElem('warm-up-toggle').onchange = (e) => { state.warmUpEnabled = e.target.checked; saveState(); };
+    getElem('warm-up-toggle').onchange = (e) => { 
+        state.warmUpEnabled = e.target.checked; 
+        getElem('warm-up-duration-container').classList.toggle('hidden', !state.warmUpEnabled);
+        saveState(); 
+    };
+
+    getElem('warm-up-duration-input').oninput = (e) => {
+        state.settings.warmUpDuration = parseInt(e.target.value) || 0;
+        saveState();
+    };
 
     loadState();
 });

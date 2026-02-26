@@ -227,29 +227,42 @@ document.addEventListener('DOMContentLoaded', () => {
     const getElem = (id) => document.getElementById(id);
     const createExercise = (name, rounds) => ({ name: name || "New Exercise", rounds: rounds || 1 });
 
-    // Audio Context for Beeps
+    // Audio Context Logic
     let audioCtx = null;
-    const playBeep = (freq = 440, duration = 0.1, count = 1) => {
+    const playSound = (type) => {
         if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
         
-        for (let i = 0; i < count; i++) {
-            setTimeout(() => {
-                const osc = audioCtx.createOscillator();
-                const gain = audioCtx.createGain();
-                
-                osc.type = 'sine';
-                osc.frequency.setValueAtTime(freq, audioCtx.currentTime);
-                
-                gain.gain.setValueAtTime(0, audioCtx.currentTime);
-                gain.gain.linearRampToValueAtTime(0.1, audioCtx.currentTime + 0.01);
-                gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + duration);
-                
-                osc.connect(gain);
-                gain.connect(audioCtx.destination);
-                
-                osc.start();
-                osc.stop(audioCtx.currentTime + duration);
-            }, i * 200);
+        const playTone = (freq, duration, startOffset = 0, volume = 0.1) => {
+            const osc = audioCtx.createOscillator();
+            const gain = audioCtx.createGain();
+            osc.type = 'sine';
+            osc.frequency.setValueAtTime(freq, audioCtx.currentTime + startOffset);
+            gain.gain.setValueAtTime(0, audioCtx.currentTime + startOffset);
+            gain.gain.linearRampToValueAtTime(volume, audioCtx.currentTime + startOffset + 0.01);
+            gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + startOffset + duration);
+            osc.connect(gain);
+            gain.connect(audioCtx.destination);
+            osc.start(audioCtx.currentTime + startOffset);
+            osc.stop(audioCtx.currentTime + startOffset + duration);
+        };
+
+        switch(type) {
+            case 'work_start': // Single high beep
+                playTone(880, 0.15);
+                break;
+            case 'rest_start': // Double low beep
+                playTone(440, 0.1);
+                playTone(440, 0.1, 0.2);
+                break;
+            case 'set_rest_start': // Triple ascending chime
+                playTone(523.25, 0.15, 0); // C5
+                playTone(659.25, 0.15, 0.15); // E5
+                playTone(783.99, 0.2, 0.3); // G5
+                break;
+            case 'celebration': // Fun little melody
+                const notes = [523.25, 659.25, 783.99, 1046.50];
+                notes.forEach((n, i) => playTone(n, 0.25, i * 0.15));
+                break;
         }
     };
 
@@ -358,11 +371,7 @@ document.addEventListener('DOMContentLoaded', () => {
         getElem('total-sets').textContent = state.settings.exercises.length;
 
         const presetContainer = getElem('main-preset-container');
-        if (state.status !== 'idle') {
-            presetContainer.classList.add('hidden');
-        } else {
-            presetContainer.classList.remove('hidden');
-        }
+        presetContainer.classList.toggle('hidden', state.status !== 'idle');
 
         const nextExContainer = getElem('next-exercise-container');
         const showNext = (state.phase === 'setRest') && state.status === 'running';
@@ -407,44 +416,50 @@ document.addEventListener('DOMContentLoaded', () => {
             state.currentTime = setPhaseTime('prepare'); 
         } else if (state.phase === 'prepare') { 
             state.phase = 'work'; 
-            state.currentTime = setPhaseTime('work'); 
+            state.currentTime = setPhaseTime('work');
+            playSound('work_start');
         } else if (state.phase === 'rest') {
             state.currentRound++;
             state.phase = 'work';
             state.currentTime = setPhaseTime('work');
+            playSound('work_start');
         } else if (state.phase === 'setRest') {
             state.currentSet++;
             state.currentRound = 1;
             state.phase = 'work';
             state.currentTime = setPhaseTime('work');
+            playSound('work_start');
         } else if (state.phase === 'work') {
             if (state.currentRound < currentEx.rounds) {
                 const restTime = setPhaseTime('rest');
                 if (restTime > 0) {
                     state.phase = 'rest'; 
                     state.currentTime = restTime;
-                    playBeep(440, 0.15, 1); // Single beep for Rest
+                    playSound('rest_start');
                 } else {
                     state.currentRound++;
                     state.phase = 'work';
                     state.currentTime = setPhaseTime('work');
+                    playSound('work_start');
                 }
             } else if (state.currentSet < state.settings.exercises.length) {
                 const setRestTime = setPhaseTime('setRest');
                 if (setRestTime > 0) {
                     state.phase = 'setRest'; 
                     state.currentTime = setRestTime;
-                    playBeep(880, 0.15, 2); // Double beep for Set Rest
+                    playSound('set_rest_start');
                 } else {
                     state.currentSet++;
                     state.currentRound = 1;
                     state.phase = 'work';
                     state.currentTime = setPhaseTime('work');
+                    playSound('work_start');
                 }
             } else { 
                 stopTimer(); state.status = 'complete'; 
                 getElem('timer-display-content').classList.add('hidden'); 
                 getElem('completion-message').classList.remove('hidden'); 
+                playSound('celebration');
             }
         }
         updateDisplay();
@@ -460,7 +475,7 @@ document.addEventListener('DOMContentLoaded', () => {
     };
 
     getElem('start-pause-btn').onclick = () => {
-        if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)(); // Resume context on user action
+        if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
         if (state.status === 'running') { 
             stopTimer(); state.status = 'paused'; 
             getElem('start-pause-btn').textContent = 'Resume'; 
@@ -496,12 +511,15 @@ document.addEventListener('DOMContentLoaded', () => {
         const currentEx = state.settings.exercises[state.currentSet - 1];
         if (state.currentRound < currentEx.rounds) {
             state.currentRound++; state.phase = 'work'; state.currentTime = setPhaseTime('work');
+            playSound('work_start');
         } else if (state.currentSet < state.settings.exercises.length) {
             state.currentSet++; state.currentRound = 1; state.phase = 'work'; state.currentTime = setPhaseTime('work');
+            playSound('work_start');
         } else {
             stopTimer(); state.status = 'complete';
             getElem('timer-display-content').classList.add('hidden');
             getElem('completion-message').classList.remove('hidden');
+            playSound('celebration');
         }
         updateDisplay();
     };

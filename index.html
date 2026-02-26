@@ -27,6 +27,7 @@
             --btn-start: #22c55e; 
             --btn-save: #f59e0b; 
             --btn-rename: #8b5cf6; 
+            --gold-glow: #fbbf24;
         }
 
         body {
@@ -49,7 +50,8 @@
         .prepare-mode #phase-display,
         .prepare-mode #timer-display,
         .prepare-mode label,
-        .prepare-mode #main-preset-select {
+        .prepare-mode #main-preset-select,
+        .prepare-mode #next-exercise-label {
             color: #000000 !important;
         }
         
@@ -87,6 +89,28 @@
         .custom-scroll::-webkit-scrollbar { width: 6px; }
         .custom-scroll::-webkit-scrollbar-track { background: transparent; }
         .custom-scroll::-webkit-scrollbar-thumb { background: var(--bg-tertiary); border-radius: 10px; }
+
+        /* Gold Thick Pulsing Border for Next Exercise */
+        #next-exercise-container {
+            background-color: rgba(0, 0, 0, 0.3);
+            border: 4px solid var(--gold-glow);
+            box-shadow: 0 0 20px rgba(251, 191, 36, 0.3);
+            animation: gold-pulse 1.5s infinite ease-in-out;
+            color: var(--text-primary);
+        }
+
+        @keyframes gold-pulse {
+            0%, 100% { 
+                border-color: rgba(251, 191, 36, 0.5);
+                box-shadow: 0 0 10px rgba(251, 191, 36, 0.2);
+                transform: scale(1);
+            }
+            50% { 
+                border-color: rgba(251, 191, 36, 1);
+                box-shadow: 0 0 25px rgba(251, 191, 36, 0.6);
+                transform: scale(1.02);
+            }
+        }
     </style>
 </head>
 <body class="flex items-center justify-center min-h-screen p-4">
@@ -120,6 +144,12 @@
                 <div id="exercise-display-container" class="text-center mb-4 p-3 rounded-lg" style="background-color: rgba(0,0,0,0.15);">
                     <h4 class="text-sm font-semibold uppercase opacity-75">Current Exercise</h4>
                     <p id="exercise-display" class="text-2xl font-bold truncate">---</p>
+                </div>
+
+                <!-- Next Exercise Preview (Thick Gold Glow) -->
+                <div id="next-exercise-container" class="hidden mb-4 p-3 rounded-lg text-center transition-all">
+                    <h4 id="next-exercise-label" class="text-xs font-black uppercase opacity-80 tracking-widest">Next Up</h4>
+                    <p id="next-exercise-display" class="text-2xl font-bold truncate">---</p>
                 </div>
                 
                 <div id="main-preset-container" class="mb-4">
@@ -194,11 +224,11 @@ document.addEventListener('DOMContentLoaded', () => {
     const createExercise = (name, rounds) => ({ name: name || "New Exercise", rounds: rounds || 1 });
 
     const defaultPresets = {
-        "Day start": { workTime: 35, restTime: 10, restBetweenSets: 30, warmUpDuration: 0, exercises: [createExercise("Jumping shoulder drops", 1), createExercise("Arm raises", 1), createExercise("Hindu squats", 1), createExercise("Hof stance", 1)] },
-        "Athletic": { workTime: 35, restTime: 35, restBetweenSets: 75, warmUpDuration: 300, exercises: [createExercise("Kettlebell OHP", 6), createExercise("Kettlebell row", 6), createExercise("Woodchoppers", 6), createExercise("SL squat", 4), createExercise("SL Deadlift", 6), createExercise("Kettlebell swing", 4)] },
-        "Sturdy": { workTime: 35, restTime: 35, restBetweenSets: 75, warmUpDuration: 300, exercises: [createExercise("Dumbell rows", 4), createExercise("Dumbell OHP", 4), createExercise("Kettlebell squat", 3), createExercise("Kettlebell lateral squat", 6), createExercise("Split squat", 6), createExercise("Kettlebell windmill", 3), createExercise("Hip flexors", 4)] },
-        "Thasmin": { workTime: 35, restTime: 35, restBetweenSets: 75, warmUpDuration: 300, exercises: [createExercise("Kettlebell power cleans", 3), createExercise("Kettlebell swings", 3), createExercise("Split squat", 3), createExercise("Squat", 3), createExercise("Hip thrust", 3), createExercise("Monster walk", 3), createExercise("Resistance band row", 3)] },
-        "Access": { workTime: 35, restTime: 35, restBetweenSets: 75, warmUpDuration: 300, exercises: [createExercise("Glute medius plate", 1), createExercise("Kettlebell halos", 1), createExercise("Power twister", 1), createExercise("Forearms", 1), createExercise("Neck", 1), createExercise("Abs", 1), createExercise("Running man + hammer curls", 1)] }
+        "Day start": { workTime: 35, restTime: 0, restBetweenSets: 0, warmUpDuration: 0, exercises: [createExercise("Jumping shoulder drops", 1), createExercise("Arm raises", 1), createExercise("Hindu squats", 1), createExercise("Hof stance", 1)] },
+        "Athletic": { workTime: 35, restTime: 25, restBetweenSets: 75, warmUpDuration: 300, exercises: [createExercise("Kettlebell OHP", 6), createExercise("Kettlebell row", 6), createExercise("Woodchoppers", 6), createExercise("SL squat", 4), createExercise("SL Deadlift", 6), createExercise("Kettlebell swing", 4)] },
+        "Sturdy": { workTime: 35, restTime: 25, restBetweenSets: 75, warmUpDuration: 300, exercises: [createExercise("Dumbell rows", 4), createExercise("Dumbell OHP", 4), createExercise("Kettlebell squat", 3), createExercise("Kettlebell lateral squat", 6), createExercise("Split squat", 6), createExercise("Kettlebell windmill", 3), createExercise("Hip flexors", 4)] },
+        "Thasmin": { workTime: 35, restTime: 25, restBetweenSets: 75, warmUpDuration: 300, exercises: [createExercise("Kettlebell power cleans", 3), createExercise("Kettlebell swings", 3), createExercise("Split squat", 3), createExercise("Squat", 3), createExercise("Hip thrust", 3), createExercise("Monster walk", 3), createExercise("Resistance band row", 3)] },
+        "Access": { workTime: 35, restTime: 25, restBetweenSets: 75, warmUpDuration: 300, exercises: [createExercise("Glute medius plate", 1), createExercise("Kettlebell halos", 1), createExercise("Power twister", 1), createExercise("Forearms", 1), createExercise("Neck", 1), createExercise("Abs", 1), createExercise("Running man + hammer curls", 1)] }
     };
 
     let state = {
@@ -210,7 +240,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     let timerInterval = null;
 
-    const saveState = () => localStorage.setItem('workoutTimer_v11', JSON.stringify({ presets: state.presets, settings: state.settings, warmUpEnabled: state.warmUpEnabled, lastPreset: state.lastPreset }));
+    const saveState = () => localStorage.setItem('workoutTimer_v13', JSON.stringify({ presets: state.presets, settings: state.settings, warmUpEnabled: state.warmUpEnabled, lastPreset: state.lastPreset }));
 
     const stopTimer = () => { if(timerInterval) clearInterval(timerInterval); timerInterval = null; };
 
@@ -228,7 +258,7 @@ document.addEventListener('DOMContentLoaded', () => {
     };
 
     const loadState = () => {
-        const saved = localStorage.getItem('workoutTimer_v11');
+        const saved = localStorage.getItem('workoutTimer_v13');
         if (saved) {
             const parsed = JSON.parse(saved);
             state.presets = parsed.presets;
@@ -297,6 +327,43 @@ document.addEventListener('DOMContentLoaded', () => {
         getElem('current-set').textContent = state.currentSet || 0;
         getElem('total-sets').textContent = state.settings.exercises.length;
 
+        // Hide Preset Selector while running/paused
+        const presetContainer = getElem('main-preset-container');
+        if (state.status !== 'idle') {
+            presetContainer.classList.add('hidden');
+        } else {
+            presetContainer.classList.remove('hidden');
+        }
+
+        // Next Exercise Preview logic
+        const nextExContainer = getElem('next-exercise-container');
+        const showNext = (state.phase === 'rest' || state.phase === 'setRest') && state.status === 'running';
+        
+        if (showNext) {
+            let nextExName = "";
+            if (state.phase === 'setRest') {
+                nextExName = state.settings.exercises[state.currentSet]?.name || "";
+            } else if (state.phase === 'rest') {
+                if (state.currentRound < currentEx.rounds) {
+                    nextExName = currentEx.name;
+                } else {
+                    nextExName = state.settings.exercises[state.currentSet]?.name || "";
+                }
+            }
+
+            if (nextExName) {
+                getElem('next-exercise-display').textContent = nextExName;
+                nextExContainer.classList.remove('hidden');
+                // Set font color to same as current exercise (which is text-primary in non-prepare modes)
+                const isPrepare = state.phase === 'prepare' && state.status !== 'idle';
+                getElem('next-exercise-display').style.color = isPrepare ? '#000000' : 'var(--text-primary)';
+            } else {
+                nextExContainer.classList.add('hidden');
+            }
+        } else {
+            nextExContainer.classList.add('hidden');
+        }
+
         let totalTimeForPhase = 1;
         if (state.phase === 'work') totalTimeForPhase = state.settings.workTime;
         else if (state.phase === 'rest') totalTimeForPhase = state.settings.restTime;
@@ -336,12 +403,27 @@ document.addEventListener('DOMContentLoaded', () => {
             state.phase = 'work';
             state.currentTime = setPhaseTime('work');
         } else if (state.phase === 'work') {
-            if (state.currentRound < currentEx.rounds) { 
-                state.phase = 'rest'; 
-                state.currentTime = setPhaseTime('rest'); 
-            } else if (state.currentSet < state.settings.exercises.length) { 
-                state.phase = 'setRest'; 
-                state.currentTime = setPhaseTime('setRest'); 
+            if (state.currentRound < currentEx.rounds) {
+                const restTime = setPhaseTime('rest');
+                if (restTime > 0) {
+                    state.phase = 'rest'; 
+                    state.currentTime = restTime;
+                } else {
+                    state.currentRound++;
+                    state.phase = 'work';
+                    state.currentTime = setPhaseTime('work');
+                }
+            } else if (state.currentSet < state.settings.exercises.length) {
+                const setRestTime = setPhaseTime('setRest');
+                if (setRestTime > 0) {
+                    state.phase = 'setRest'; 
+                    state.currentTime = setRestTime;
+                } else {
+                    state.currentSet++;
+                    state.currentRound = 1;
+                    state.phase = 'work';
+                    state.currentTime = setPhaseTime('work');
+                }
             } else { 
                 stopTimer(); state.status = 'complete'; 
                 getElem('timer-display-content').classList.add('hidden'); 
@@ -364,6 +446,7 @@ document.addEventListener('DOMContentLoaded', () => {
         if (state.status === 'running') { 
             stopTimer(); state.status = 'paused'; 
             getElem('start-pause-btn').textContent = 'Resume'; 
+            updateDisplay();
         } else {
             if (state.status === 'idle') { 
                 state.phase = state.warmUpEnabled ? 'warmUp' : 'prepare'; 

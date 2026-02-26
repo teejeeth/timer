@@ -27,7 +27,7 @@
             --btn-start: #22c55e; 
             --btn-save: #f59e0b; 
             --btn-rename: #8b5cf6; 
-            --gold-glow: #fbbf24;
+            --gold-glow: #fbbf24; 
         }
 
         body {
@@ -90,13 +90,18 @@
         .custom-scroll::-webkit-scrollbar-track { background: transparent; }
         .custom-scroll::-webkit-scrollbar-thumb { background: var(--bg-tertiary); border-radius: 10px; }
 
-        /* Gold Thick Pulsing Border for Next Exercise */
         #next-exercise-container {
             background-color: rgba(0, 0, 0, 0.3);
             border: 4px solid var(--gold-glow);
             box-shadow: 0 0 20px rgba(251, 191, 36, 0.3);
             animation: gold-pulse 1.5s infinite ease-in-out;
             color: var(--text-primary);
+            cursor: pointer;
+            transition: transform 0.1s ease;
+        }
+
+        #next-exercise-container:active {
+            transform: scale(0.98);
         }
 
         @keyframes gold-pulse {
@@ -146,7 +151,6 @@
                     <p id="exercise-display" class="text-2xl font-bold truncate">---</p>
                 </div>
 
-                <!-- Next Exercise Preview (Thick Gold Glow) -->
                 <div id="next-exercise-container" class="hidden mb-4 p-3 rounded-lg text-center transition-all">
                     <h4 id="next-exercise-label" class="text-xs font-black uppercase opacity-80 tracking-widest">Next Up</h4>
                     <p id="next-exercise-display" class="text-2xl font-bold truncate">---</p>
@@ -222,6 +226,32 @@
 document.addEventListener('DOMContentLoaded', () => {
     const getElem = (id) => document.getElementById(id);
     const createExercise = (name, rounds) => ({ name: name || "New Exercise", rounds: rounds || 1 });
+
+    // Audio Context for Beeps
+    let audioCtx = null;
+    const playBeep = (freq = 440, duration = 0.1, count = 1) => {
+        if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+        
+        for (let i = 0; i < count; i++) {
+            setTimeout(() => {
+                const osc = audioCtx.createOscillator();
+                const gain = audioCtx.createGain();
+                
+                osc.type = 'sine';
+                osc.frequency.setValueAtTime(freq, audioCtx.currentTime);
+                
+                gain.gain.setValueAtTime(0, audioCtx.currentTime);
+                gain.gain.linearRampToValueAtTime(0.1, audioCtx.currentTime + 0.01);
+                gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + duration);
+                
+                osc.connect(gain);
+                gain.connect(audioCtx.destination);
+                
+                osc.start();
+                osc.stop(audioCtx.currentTime + duration);
+            }, i * 200);
+        }
+    };
 
     const defaultPresets = {
         "Day start": { workTime: 35, restTime: 0, restBetweenSets: 0, warmUpDuration: 0, exercises: [createExercise("Jumping shoulder drops", 1), createExercise("Arm raises", 1), createExercise("Hindu squats", 1), createExercise("Hof stance", 1)] },
@@ -327,7 +357,6 @@ document.addEventListener('DOMContentLoaded', () => {
         getElem('current-set').textContent = state.currentSet || 0;
         getElem('total-sets').textContent = state.settings.exercises.length;
 
-        // Hide Preset Selector while running/paused
         const presetContainer = getElem('main-preset-container');
         if (state.status !== 'idle') {
             presetContainer.classList.add('hidden');
@@ -335,28 +364,14 @@ document.addEventListener('DOMContentLoaded', () => {
             presetContainer.classList.remove('hidden');
         }
 
-        // Next Exercise Preview logic
         const nextExContainer = getElem('next-exercise-container');
-        const showNext = (state.phase === 'rest' || state.phase === 'setRest') && state.status === 'running';
+        const showNext = (state.phase === 'setRest') && state.status === 'running';
         
         if (showNext) {
-            let nextExName = "";
-            if (state.phase === 'setRest') {
-                nextExName = state.settings.exercises[state.currentSet]?.name || "";
-            } else if (state.phase === 'rest') {
-                if (state.currentRound < currentEx.rounds) {
-                    nextExName = currentEx.name;
-                } else {
-                    nextExName = state.settings.exercises[state.currentSet]?.name || "";
-                }
-            }
-
+            let nextExName = state.settings.exercises[state.currentSet]?.name || "";
             if (nextExName) {
                 getElem('next-exercise-display').textContent = nextExName;
                 nextExContainer.classList.remove('hidden');
-                // Set font color to same as current exercise (which is text-primary in non-prepare modes)
-                const isPrepare = state.phase === 'prepare' && state.status !== 'idle';
-                getElem('next-exercise-display').style.color = isPrepare ? '#000000' : 'var(--text-primary)';
             } else {
                 nextExContainer.classList.add('hidden');
             }
@@ -408,6 +423,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 if (restTime > 0) {
                     state.phase = 'rest'; 
                     state.currentTime = restTime;
+                    playBeep(440, 0.15, 1); // Single beep for Rest
                 } else {
                     state.currentRound++;
                     state.phase = 'work';
@@ -418,6 +434,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 if (setRestTime > 0) {
                     state.phase = 'setRest'; 
                     state.currentTime = setRestTime;
+                    playBeep(880, 0.15, 2); // Double beep for Set Rest
                 } else {
                     state.currentSet++;
                     state.currentRound = 1;
@@ -443,6 +460,7 @@ document.addEventListener('DOMContentLoaded', () => {
     };
 
     getElem('start-pause-btn').onclick = () => {
+        if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)(); // Resume context on user action
         if (state.status === 'running') { 
             stopTimer(); state.status = 'paused'; 
             getElem('start-pause-btn').textContent = 'Resume'; 
@@ -473,7 +491,7 @@ document.addEventListener('DOMContentLoaded', () => {
     getElem('main-preset-select').onchange = (e) => handlePresetChange(e.target.value);
     getElem('preset-select').onchange = (e) => handlePresetChange(e.target.value);
 
-    getElem('skip-forward-btn').onclick = () => {
+    const skipForward = () => {
         if (state.status === 'idle') return;
         const currentEx = state.settings.exercises[state.currentSet - 1];
         if (state.currentRound < currentEx.rounds) {
@@ -487,6 +505,9 @@ document.addEventListener('DOMContentLoaded', () => {
         }
         updateDisplay();
     };
+
+    getElem('skip-forward-btn').onclick = skipForward;
+    getElem('next-exercise-container').onclick = skipForward;
 
     getElem('skip-back-btn').onclick = () => {
         if (state.status === 'idle') return;

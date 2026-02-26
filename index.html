@@ -17,13 +17,11 @@
             --text-primary: #f9fafb; 
             --text-secondary: #d1d5db; 
             --text-accent: #6b7280; 
-            
             --color-warm-up: #f59e0b;
             --color-prepare: #facc15;
             --color-work: #C51E3A;    
             --color-rest: #4ade80;    
             --color-set-rest: #2dd4bf;
-            
             --btn-primary: #3b82f6; 
             --btn-secondary: #ef4444; 
             --btn-start: #22c55e; 
@@ -36,6 +34,7 @@
             touch-action: manipulation;
             background-color: var(--bg-primary);
             color: var(--text-primary);
+            overflow-x: hidden;
         }
         
         #timer-container {
@@ -65,9 +64,6 @@
         input[type="number"]::-webkit-inner-spin-button,
         input[type="number"]::-webkit-outer-spin-button { -webkit-appearance: none; margin: 0; }
         
-        .panel { transition: opacity 0.3s ease, transform 0.3s ease; }
-        .panel.hidden { display: none; }
-        
         .custom-select {
             -webkit-appearance: none;
             background-image: url('data:image/svg+xml;utf8,<svg fill="white" height="24" viewBox="0 0 24 24" width="24" xmlns="http://www.w3.org/2000/svg"><path d="M7 10l5 5 5-5z"/></svg>');
@@ -76,11 +72,6 @@
             background-size: 1.2em;
             padding-right: 2.5rem;
             cursor: pointer;
-        }
-
-        .custom-select option {
-            background-color: #1f2937;
-            color: white;
         }
 
         .toggle-switch { position: relative; display: inline-block; width: 50px; height: 28px; }
@@ -120,7 +111,10 @@
                             <button id="skip-forward-btn" class="p-2 rounded-full hover:bg-black hover:bg-opacity-10 btn"><svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="m9 18 6-6-6-6"/></svg></button>
                         </div>
                     </div>
-                    <div id="completion-message" class="hidden"><h2 class="text-4xl font-extrabold">Workout Done!</h2></div>
+                    <div id="completion-message" class="hidden text-center py-10">
+                        <h2 class="text-4xl font-extrabold mb-4">Workout Done!</h2>
+                        <button id="done-reset-btn" class="bg-blue-600 px-8 py-3 rounded-full font-bold btn mx-auto">Restart</button>
+                    </div>
                 </div>
                 
                 <div id="exercise-display-container" class="text-center mb-4 p-3 rounded-lg" style="background-color: rgba(0,0,0,0.15);">
@@ -183,16 +177,11 @@
 
             <!-- View 4: Exercise Configuration -->
             <div id="exercise-settings-panel" class="hidden">
-                <div class="flex items-center justify-between mb-4">
-                    <h3 class="text-xl font-bold text-center flex-1">Configure Exercises</h3>
-                </div>
-                
+                <h3 class="text-xl font-bold mb-4 text-center">Configure Exercises</h3>
                 <div id="exercise-inputs-container" class="space-y-4 max-h-80 overflow-y-auto custom-scroll mb-4 pr-2"></div>
                 
                 <div class="grid grid-cols-2 gap-3 mb-6">
-                    <button id="add-exercise-btn" class="py-3 rounded-lg btn text-white font-bold bg-green-600 shadow-lg">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" class="mr-2"><path d="M12 5v14M5 12h14"/></svg> Add Exercise
-                    </button>
+                    <button id="add-exercise-btn" class="py-3 rounded-lg btn text-white font-bold bg-green-600 shadow-lg">Add New</button>
                     <button id="back-to-settings-from-ex-btn" class="py-3 rounded-lg btn text-white font-bold bg-blue-600 shadow-lg">Back</button>
                 </div>
             </div>
@@ -202,14 +191,14 @@
 <script>
 document.addEventListener('DOMContentLoaded', () => {
     const getElem = (id) => document.getElementById(id);
-    const createExercise = (name, rounds) => ({ name, rounds });
+    const createExercise = (name, rounds) => ({ name: name || "New Exercise", rounds: rounds || 1 });
 
     const defaultPresets = {
-        "Day start": { workTime: 35, restTime: 10, numSets: 4, restBetweenSets: 30, warmUpDuration: 0, exercises: [createExercise("Jumping shoulder drops", 1), createExercise("Arm raises", 1), createExercise("Hindu squats", 1), createExercise("Hof stance", 1)] },
-        "Athletic": { workTime: 35, restTime: 35, numSets: 6, restBetweenSets: 75, warmUpDuration: 300, exercises: [createExercise("Kettlebell OHP", 6), createExercise("Kettlebell row", 6), createExercise("Woodchoppers", 6), createExercise("SL squat", 4), createExercise("SL Deadlift", 6), createExercise("Kettlebell swing", 4)] },
-        "Sturdy": { workTime: 35, restTime: 35, numSets: 7, restBetweenSets: 75, warmUpDuration: 300, exercises: [createExercise("Dumbell rows", 4), createExercise("Dumbell OHP", 4), createExercise("Kettlebell squat", 3), createExercise("Kettlebell lateral squat", 6), createExercise("Split squat", 6), createExercise("Kettlebell windmill", 3), createExercise("Hip flexors", 4)] },
-        "Thasmin": { workTime: 35, restTime: 35, numSets: 7, restBetweenSets: 75, warmUpDuration: 300, exercises: [createExercise("Kettlebell power cleans", 3), createExercise("Kettlebell swings", 3), createExercise("Split squat", 3), createExercise("Squat", 3), createExercise("Hip thrust", 3), createExercise("Monster walk", 3), createExercise("Resistance band row", 3)] },
-        "Access": { workTime: 35, restTime: 35, numSets: 7, restBetweenSets: 75, warmUpDuration: 300, exercises: [createExercise("Glute medius plate", 1), createExercise("Kettlebell halos", 1), createExercise("Power twister", 1), createExercise("Forearms", 1), createExercise("Neck", 1), createExercise("Abs", 1), createExercise("Running man + hammer curls", 1)] }
+        "Day start": { workTime: 35, restTime: 10, restBetweenSets: 30, warmUpDuration: 0, exercises: [createExercise("Jumping shoulder drops", 1), createExercise("Arm raises", 1), createExercise("Hindu squats", 1), createExercise("Hof stance", 1)] },
+        "Athletic": { workTime: 35, restTime: 35, restBetweenSets: 75, warmUpDuration: 300, exercises: [createExercise("Kettlebell OHP", 6), createExercise("Kettlebell row", 6), createExercise("Woodchoppers", 6), createExercise("SL squat", 4), createExercise("SL Deadlift", 6), createExercise("Kettlebell swing", 4)] },
+        "Sturdy": { workTime: 35, restTime: 35, restBetweenSets: 75, warmUpDuration: 300, exercises: [createExercise("Dumbell rows", 4), createExercise("Dumbell OHP", 4), createExercise("Kettlebell squat", 3), createExercise("Kettlebell lateral squat", 6), createExercise("Split squat", 6), createExercise("Kettlebell windmill", 3), createExercise("Hip flexors", 4)] },
+        "Thasmin": { workTime: 35, restTime: 35, restBetweenSets: 75, warmUpDuration: 300, exercises: [createExercise("Kettlebell power cleans", 3), createExercise("Kettlebell swings", 3), createExercise("Split squat", 3), createExercise("Squat", 3), createExercise("Hip thrust", 3), createExercise("Monster walk", 3), createExercise("Resistance band row", 3)] },
+        "Access": { workTime: 35, restTime: 35, restBetweenSets: 75, warmUpDuration: 300, exercises: [createExercise("Glute medius plate", 1), createExercise("Kettlebell halos", 1), createExercise("Power twister", 1), createExercise("Forearms", 1), createExercise("Neck", 1), createExercise("Abs", 1), createExercise("Running man + hammer curls", 1)] }
     };
 
     let state = {
@@ -221,10 +210,25 @@ document.addEventListener('DOMContentLoaded', () => {
 
     let timerInterval = null;
 
-    const saveState = () => localStorage.setItem('workoutTimer_v10', JSON.stringify({ presets: state.presets, settings: state.settings, warmUpEnabled: state.warmUpEnabled, lastPreset: state.lastPreset }));
+    const saveState = () => localStorage.setItem('workoutTimer_v11', JSON.stringify({ presets: state.presets, settings: state.settings, warmUpEnabled: state.warmUpEnabled, lastPreset: state.lastPreset }));
+
+    const stopTimer = () => { if(timerInterval) clearInterval(timerInterval); timerInterval = null; };
+
+    const resetState = () => {
+        stopTimer();
+        state.status = 'idle';
+        state.phase = 'prepare';
+        state.currentTime = 0;
+        state.currentRound = 0;
+        state.currentSet = 0;
+        getElem('timer-display-content').classList.remove('hidden');
+        getElem('completion-message').classList.add('hidden');
+        getElem('start-pause-btn').textContent = 'Start';
+        updateDisplay();
+    };
 
     const loadState = () => {
-        const saved = localStorage.getItem('workoutTimer_v10');
+        const saved = localStorage.getItem('workoutTimer_v11');
         if (saved) {
             const parsed = JSON.parse(saved);
             state.presets = parsed.presets;
@@ -264,10 +268,8 @@ document.addEventListener('DOMContentLoaded', () => {
             div.querySelector('input').oninput = (e) => { state.settings[f.id] = parseInt(e.target.value) || 0; saveState(); };
             container.appendChild(div);
         });
-        
-        // Static read-only display for exercise count in settings
         const setDiv = document.createElement('div');
-        setDiv.innerHTML = `<label class="block text-xs font-bold opacity-70">Total Exercises</label><div class="w-full bg-gray-800 p-2 rounded border border-gray-700 mt-1 opacity-50 font-bold">${state.settings.exercises.length}</div>`;
+        setDiv.innerHTML = `<label class="block text-xs font-bold opacity-70">Exercise Count</label><div class="w-full bg-gray-800 p-2 rounded border border-gray-700 mt-1 opacity-50 font-bold">${state.settings.exercises.length}</div>`;
         container.appendChild(setDiv);
     };
 
@@ -278,10 +280,6 @@ document.addEventListener('DOMContentLoaded', () => {
         const phaseColor = state.status === 'idle' ? colors.idle : colors[state.phase];
         container.style.backgroundColor = phaseColor;
 
-        const presetContainer = getElem('main-preset-container');
-        if (state.status !== 'idle') presetContainer.classList.add('hidden');
-        else presetContainer.classList.remove('hidden');
-
         if (state.phase === 'prepare' && state.status !== 'idle') container.classList.add('prepare-mode');
         else container.classList.remove('prepare-mode');
 
@@ -291,11 +289,12 @@ document.addEventListener('DOMContentLoaded', () => {
         getElem('phase-display').textContent = state.status === 'idle' ? 'Ready' : displayPhase;
         getElem('timer-display').textContent = `${Math.floor(state.currentTime/60).toString().padStart(2,'0')}:${(state.currentTime%60).toString().padStart(2,'0')}`;
         
-        const currentEx = state.settings.exercises[state.currentSet - 1] || { name: "---", rounds: 0 };
+        const currentExIdx = Math.max(0, state.currentSet - 1);
+        const currentEx = state.settings.exercises[currentExIdx] || { name: "---", rounds: 0 };
         getElem('exercise-display').textContent = currentEx.name;
-        getElem('current-round').textContent = state.currentRound;
-        getElem('total-rounds').textContent = currentEx.rounds;
-        getElem('current-set').textContent = state.currentSet;
+        getElem('current-round').textContent = state.currentRound || 0;
+        getElem('total-rounds').textContent = currentEx.rounds || 0;
+        getElem('current-set').textContent = state.currentSet || 0;
         getElem('total-sets').textContent = state.settings.exercises.length;
 
         let totalTimeForPhase = 1;
@@ -320,16 +319,29 @@ document.addEventListener('DOMContentLoaded', () => {
 
     const nextPhase = () => {
         const currentEx = state.settings.exercises[state.currentSet - 1];
+        
         if (state.phase === 'warmUp') { 
-            state.phase = 'prepare'; state.currentTime = setPhaseTime('prepare'); 
-        } else if (state.phase === 'prepare' || state.phase === 'setRest' || state.phase === 'rest') { 
-            state.phase = 'work'; state.currentTime = setPhaseTime('work'); 
+            state.phase = 'prepare'; 
+            state.currentTime = setPhaseTime('prepare'); 
+        } else if (state.phase === 'prepare') { 
+            state.phase = 'work'; 
+            state.currentTime = setPhaseTime('work'); 
+        } else if (state.phase === 'rest') {
+            state.currentRound++;
+            state.phase = 'work';
+            state.currentTime = setPhaseTime('work');
+        } else if (state.phase === 'setRest') {
+            state.currentSet++;
+            state.currentRound = 1;
+            state.phase = 'work';
+            state.currentTime = setPhaseTime('work');
         } else if (state.phase === 'work') {
             if (state.currentRound < currentEx.rounds) { 
-                state.phase = 'rest'; state.currentTime = setPhaseTime('rest'); 
+                state.phase = 'rest'; 
+                state.currentTime = setPhaseTime('rest'); 
             } else if (state.currentSet < state.settings.exercises.length) { 
-                state.phase = 'setRest'; state.currentTime = setPhaseTime('setRest'); 
-                state.currentSet++; state.currentRound = 1; 
+                state.phase = 'setRest'; 
+                state.currentTime = setPhaseTime('setRest'); 
             } else { 
                 stopTimer(); state.status = 'complete'; 
                 getElem('timer-display-content').classList.add('hidden'); 
@@ -339,75 +351,44 @@ document.addEventListener('DOMContentLoaded', () => {
         updateDisplay();
     };
 
-    const stopTimer = () => { clearInterval(timerInterval); timerInterval = null; };
-
     const tick = () => {
-        if (state.currentTime > 0) { state.currentTime--; updateDisplay(); } 
-        else { nextPhase(); }
+        if (state.currentTime > 0) { 
+            state.currentTime--; 
+            updateDisplay(); 
+        } else { 
+            nextPhase(); 
+        }
     };
 
-    const showPanel = (id) => {
-        ['main-timer-view', 'settings-panel', 'manage-presets-content', 'exercise-settings-panel'].forEach(p => getElem(p).classList.add('hidden'));
-        getElem(id).classList.remove('hidden');
+    getElem('start-pause-btn').onclick = () => {
+        if (state.status === 'running') { 
+            stopTimer(); state.status = 'paused'; 
+            getElem('start-pause-btn').textContent = 'Resume'; 
+        } else {
+            if (state.status === 'idle') { 
+                state.phase = state.warmUpEnabled ? 'warmUp' : 'prepare'; 
+                state.currentTime = setPhaseTime(state.phase);
+                state.currentSet = 1; state.currentRound = 1; 
+            }
+            state.status = 'running'; getElem('start-pause-btn').textContent = 'Pause';
+            timerInterval = setInterval(tick, 1000);
+            updateDisplay();
+        }
     };
 
-    const renderExercises = () => {
-        const container = getElem('exercise-inputs-container');
-        container.innerHTML = '';
-        state.settings.exercises.forEach((ex, i) => {
-            const div = document.createElement('div');
-            div.className = "bg-gray-800 p-3 rounded-lg border border-gray-700 space-y-3 relative";
-            div.innerHTML = `
-                <div class="flex items-center gap-2">
-                    <span class="text-xs font-bold bg-gray-900 w-6 h-6 flex items-center justify-center rounded-full">${i+1}</span>
-                    <input type="text" value="${ex.name}" class="flex-1 bg-transparent border-b border-gray-600 focus:border-blue-500 outline-none text-sm py-1 px-1">
-                    <button class="delete-btn text-red-500 p-1 hover:bg-red-500 hover:bg-opacity-10 rounded">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M3 6h18M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg>
-                    </button>
-                </div>
-                <div class="flex items-center justify-between">
-                    <span class="text-xs font-bold opacity-60 uppercase">Rounds</span>
-                    <div class="flex items-center gap-1">
-                        <button class="minus-btn w-10 h-10 bg-gray-700 rounded-lg btn font-black">-</button>
-                        <input type="number" value="${ex.rounds}" class="rounds-input w-12 bg-gray-900 py-2 rounded text-center text-sm font-bold">
-                        <button class="plus-btn w-10 h-10 bg-gray-700 rounded-lg btn font-black">+</button>
-                    </div>
-                </div>
-            `;
-            
-            div.querySelector('input[type="text"]').oninput = (e) => { state.settings.exercises[i].name = e.target.value; saveState(); };
-            div.querySelector('.delete-btn').onclick = () => {
-                if(state.settings.exercises.length > 1) {
-                    state.settings.exercises.splice(i, 1);
-                    state.settings.numSets = state.settings.exercises.length;
-                    saveState(); renderExercises();
-                } else alert("You must have at least one exercise.");
-            };
-            
-            const updateRounds = (val) => {
-                const num = Math.max(1, parseInt(val) || 1);
-                state.settings.exercises[i].rounds = num;
-                div.querySelector('.rounds-input').value = num;
-                saveState();
-            };
+    getElem('reset-btn').onclick = resetState;
+    getElem('done-reset-btn').onclick = resetState;
 
-            div.querySelector('.rounds-input').oninput = (e) => updateRounds(e.target.value);
-            div.querySelector('.plus-btn').onclick = () => updateRounds(state.settings.exercises[i].rounds + 1);
-            div.querySelector('.minus-btn').onclick = () => updateRounds(state.settings.exercises[i].rounds - 1);
-
-            container.appendChild(div);
-        });
+    const handlePresetChange = (presetName) => {
+        resetState();
+        state.lastPreset = presetName;
+        state.settings = JSON.parse(JSON.stringify(state.presets[presetName]));
+        syncUI();
+        saveState();
     };
 
-    getElem('add-exercise-btn').onclick = () => {
-        state.settings.exercises.push(createExercise("New Exercise", 1));
-        state.settings.numSets = state.settings.exercises.length;
-        saveState(); renderExercises();
-        setTimeout(() => {
-            const container = getElem('exercise-inputs-container');
-            container.scrollTop = container.scrollHeight;
-        }, 50);
-    };
+    getElem('main-preset-select').onchange = (e) => handlePresetChange(e.target.value);
+    getElem('preset-select').onchange = (e) => handlePresetChange(e.target.value);
 
     getElem('skip-forward-btn').onclick = () => {
         if (state.status === 'idle') return;
@@ -430,8 +411,8 @@ document.addEventListener('DOMContentLoaded', () => {
             state.currentRound--; state.phase = 'work'; state.currentTime = setPhaseTime('work');
         } else if (state.currentSet > 1) {
             state.currentSet--;
-            const prevEx = state.settings.exercises[state.currentSet - 1];
-            state.currentRound = prevEx.rounds; state.phase = 'work'; state.currentTime = setPhaseTime('work');
+            state.currentRound = state.settings.exercises[state.currentSet - 1].rounds;
+            state.phase = 'work'; state.currentTime = setPhaseTime('work');
         } else {
             state.phase = state.warmUpEnabled ? 'warmUp' : 'prepare';
             state.currentTime = setPhaseTime(state.phase);
@@ -440,11 +421,70 @@ document.addEventListener('DOMContentLoaded', () => {
         updateDisplay();
     };
 
-    getElem('settings-btn').onclick = () => showPanel('settings-panel');
-    getElem('close-settings-btn').onclick = () => { syncUI(); showPanel('main-timer-view'); };
-    getElem('back-to-settings-btn').onclick = () => showPanel('settings-panel');
-    getElem('back-to-settings-from-ex-btn').onclick = () => { syncUI(); showPanel('settings-panel'); };
-    getElem('exercise-settings-btn').onclick = () => { renderExercises(); showPanel('exercise-settings-panel'); };
+    const renderExercises = () => {
+        const container = getElem('exercise-inputs-container');
+        container.innerHTML = '';
+        state.settings.exercises.forEach((ex, i) => {
+            const div = document.createElement('div');
+            div.className = "bg-gray-800 p-3 rounded-lg border border-gray-700 space-y-3 relative";
+            div.innerHTML = `
+                <div class="flex items-center gap-2">
+                    <span class="text-xs font-bold bg-gray-900 w-6 h-6 flex items-center justify-center rounded-full">${i+1}</span>
+                    <input type="text" value="${ex.name}" class="flex-1 bg-transparent border-b border-gray-600 focus:border-blue-500 outline-none text-sm py-1">
+                    <button class="delete-btn text-red-500 p-1"><svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M3 6h18M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg></button>
+                </div>
+                <div class="flex items-center justify-between">
+                    <span class="text-xs font-bold opacity-60">ROUNDS</span>
+                    <div class="flex items-center gap-1">
+                        <button class="minus-btn w-8 h-8 bg-gray-700 rounded btn">-</button>
+                        <input type="number" value="${ex.rounds}" class="rounds-input w-10 bg-gray-900 text-center font-bold">
+                        <button class="plus-btn w-8 h-8 bg-gray-700 rounded btn">+</button>
+                    </div>
+                </div>
+            `;
+            div.querySelector('input[type="text"]').oninput = (e) => { state.settings.exercises[i].name = e.target.value; saveState(); };
+            div.querySelector('.delete-btn').onclick = () => {
+                if(state.settings.exercises.length > 1) {
+                    state.settings.exercises.splice(i, 1);
+                    saveState(); renderExercises();
+                }
+            };
+            const updateR = (v) => { 
+                state.settings.exercises[i].rounds = Math.max(1, parseInt(v) || 1); 
+                div.querySelector('.rounds-input').value = state.settings.exercises[i].rounds;
+                saveState(); 
+            };
+            div.querySelector('.minus-btn').onclick = () => updateR(state.settings.exercises[i].rounds - 1);
+            div.querySelector('.plus-btn').onclick = () => updateR(state.settings.exercises[i].rounds + 1);
+            div.querySelector('.rounds-input').oninput = (e) => updateR(e.target.value);
+            container.appendChild(div);
+        });
+    };
+
+    getElem('add-exercise-btn').onclick = () => {
+        state.settings.exercises.push(createExercise());
+        saveState(); renderExercises();
+    };
+
+    getElem('settings-btn').onclick = () => { ['main-timer-view', 'settings-panel', 'manage-presets-content', 'exercise-settings-panel'].forEach(p => getElem(p).classList.add('hidden')); getElem('settings-panel').classList.remove('hidden'); };
+    getElem('close-settings-btn').onclick = () => { ['main-timer-view', 'settings-panel', 'manage-presets-content', 'exercise-settings-panel'].forEach(p => getElem(p).classList.add('hidden')); getElem('main-timer-view').classList.remove('hidden'); syncUI(); };
+    getElem('exercise-settings-btn').onclick = () => { renderExercises(); ['main-timer-view', 'settings-panel', 'manage-presets-content', 'exercise-settings-panel'].forEach(p => getElem(p).classList.add('hidden')); getElem('exercise-settings-panel').classList.remove('hidden'); };
+    getElem('back-to-settings-from-ex-btn').onclick = () => { ['main-timer-view', 'settings-panel', 'manage-presets-content', 'exercise-settings-panel'].forEach(p => getElem(p).classList.add('hidden')); getElem('settings-panel').classList.remove('hidden'); syncUI(); };
+    getElem('manage-presets-btn').onclick = () => {
+        const list = getElem('preset-management-list');
+        list.innerHTML = '';
+        Object.keys(state.presets).forEach(name => {
+            const div = document.createElement('div');
+            div.className = "flex items-center justify-between bg-gray-700 p-2 rounded mb-2";
+            div.innerHTML = `<span class="font-bold">${name}</span><button class="bg-red-600 px-3 py-1 rounded text-xs btn">Delete</button>`;
+            div.querySelector('button').onclick = () => {
+                if (Object.keys(state.presets).length > 1) { delete state.presets[name]; if (state.lastPreset === name) handlePresetChange(Object.keys(state.presets)[0]); else syncUI(); saveState(); getElem('manage-presets-btn').click(); }
+            };
+            list.appendChild(div);
+        });
+        ['main-timer-view', 'settings-panel', 'manage-presets-content', 'exercise-settings-panel'].forEach(p => getElem(p).classList.add('hidden')); getElem('manage-presets-content').classList.remove('hidden');
+    };
+    getElem('back-to-settings-btn').onclick = () => { ['main-timer-view', 'settings-panel', 'manage-presets-content', 'exercise-settings-panel'].forEach(p => getElem(p).classList.add('hidden')); getElem('settings-panel').classList.remove('hidden'); };
 
     getElem('add-preset-btn').onclick = () => {
         const nameInput = getElem('new-preset-name');
@@ -454,82 +494,18 @@ document.addEventListener('DOMContentLoaded', () => {
             state.lastPreset = name;
             nameInput.value = '';
             saveState(); syncUI(); getElem('manage-presets-btn').click();
-        } else alert("Please enter a unique name.");
-    };
-
-    getElem('manage-presets-btn').onclick = () => {
-        const list = getElem('preset-management-list');
-        list.innerHTML = '';
-        Object.keys(state.presets).forEach(name => {
-            const div = document.createElement('div');
-            div.className = "flex items-center justify-between bg-gray-700 p-2 rounded mb-2";
-            div.innerHTML = `<span class="font-bold">${name}</span><button class="bg-red-600 px-3 py-1 rounded text-xs btn text-white">Delete</button>`;
-            div.querySelector('button').onclick = () => {
-                if (Object.keys(state.presets).length > 1) {
-                    delete state.presets[name];
-                    if (state.lastPreset === name) state.lastPreset = Object.keys(state.presets)[0];
-                    saveState(); syncUI(); getElem('manage-presets-btn').click();
-                } else alert("Must keep at least one preset.");
-            };
-            list.appendChild(div);
-        });
-        showPanel('manage-presets-content');
-    };
-
-    getElem('start-pause-btn').onclick = () => {
-        if (state.status === 'running') { 
-            stopTimer(); state.status = 'paused'; 
-            getElem('start-pause-btn').textContent = 'Resume'; 
-        } else {
-            if (state.status === 'idle') { 
-                state.phase = state.warmUpEnabled ? 'warmUp' : 'prepare'; 
-                state.currentTime = setPhaseTime(state.phase);
-                state.currentSet = 1; state.currentRound = 1; 
-            }
-            state.status = 'running'; getElem('start-pause-btn').textContent = 'Pause';
-            timerInterval = setInterval(tick, 1000);
-            updateDisplay();
         }
-    };
-
-    getElem('reset-btn').onclick = () => {
-        stopTimer(); state.status = 'idle'; state.phase = 'prepare'; state.currentTime = 0;
-        getElem('timer-display-content').classList.remove('hidden');
-        getElem('completion-message').classList.add('hidden');
-        getElem('start-pause-btn').textContent = 'Start';
-        syncUI();
-    };
-
-    getElem('main-preset-select').onchange = (e) => {
-        state.lastPreset = e.target.value;
-        state.settings = JSON.parse(JSON.stringify(state.presets[e.target.value]));
-        syncUI(); saveState();
-    };
-
-    getElem('preset-select').onchange = (e) => {
-        state.lastPreset = e.target.value;
-        state.settings = JSON.parse(JSON.stringify(state.presets[e.target.value]));
-        syncUI(); saveState();
     };
 
     getElem('update-preset-btn').onclick = () => {
         state.presets[state.lastPreset] = JSON.parse(JSON.stringify(state.settings));
         saveState(); 
-        const btn = getElem('update-preset-btn');
-        btn.textContent = "Saved!";
-        setTimeout(() => btn.textContent = "Save", 1500);
+        const btn = getElem('update-preset-btn'); btn.textContent = "Saved!";
+        setTimeout(() => btn.textContent = "Save", 1000);
     };
 
-    getElem('warm-up-toggle').onchange = (e) => { 
-        state.warmUpEnabled = e.target.checked; 
-        getElem('warm-up-duration-container').classList.toggle('hidden', !state.warmUpEnabled);
-        saveState(); 
-    };
-
-    getElem('warm-up-duration-input').oninput = (e) => {
-        state.settings.warmUpDuration = parseInt(e.target.value) || 0;
-        saveState();
-    };
+    getElem('warm-up-toggle').onchange = (e) => { state.warmUpEnabled = e.target.checked; getElem('warm-up-duration-container').classList.toggle('hidden', !state.warmUpEnabled); saveState(); };
+    getElem('warm-up-duration-input').oninput = (e) => { state.settings.warmUpDuration = parseInt(e.target.value) || 0; saveState(); };
 
     loadState();
 });
